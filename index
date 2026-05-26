@@ -1,0 +1,2731 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Responsible AI Assessment Workbench</title>
+
+  <style>
+    /* =====================================================
+       PART 1 — DESIGN SYSTEM
+    ===================================================== */
+
+    :root {
+      --navy-950: #061326;
+      --navy-900: #0b1f3b;
+      --navy-800: #12325b;
+      --navy-700: #1c4a7a;
+
+      --coral-600: #ff4d57;
+      --coral-500: #ff6b5f;
+      --coral-100: #ffe7e4;
+
+      --bg-main: #f6f4f2;
+      --bg-card: #ffffff;
+      --bg-soft: #f1f5f9;
+
+      --slate-900: #0f172a;
+      --slate-700: #334155;
+      --slate-600: #475569;
+      --slate-500: #64748b;
+      --slate-300: #cbd5e1;
+      --slate-200: #e2e8f0;
+      --slate-100: #f1f5f9;
+
+      --green-600: #15803d;
+      --green-100: #dcfce7;
+      --amber-600: #b45309;
+      --amber-100: #fef3c7;
+      --red-600: #b91c1c;
+      --red-100: #fee2e2;
+
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+
+      --shadow-soft: 0 16px 40px rgba(15, 23, 42, 0.08);
+      --shadow-card: 0 10px 30px rgba(15, 23, 42, 0.07);
+
+      --sidebar-width: 290px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(255, 107, 95, 0.16), transparent 32rem),
+        linear-gradient(135deg, #f8fafc, var(--bg-main));
+      color: var(--slate-900);
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app-shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 24px;
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(18px);
+      border-right: 1px solid var(--slate-200);
+      overflow-y: auto;
+      z-index: 10;
+    }
+
+    .brand {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+
+    .brand-mark {
+      width: 46px;
+      height: 46px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--navy-900), var(--coral-500));
+      color: white;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      box-shadow: var(--shadow-card);
+    }
+
+    .brand-title {
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+    }
+
+    .brand-subtitle {
+      margin-top: 4px;
+      color: var(--slate-500);
+      font-size: 0.82rem;
+    }
+
+    .nav {
+      display: grid;
+      gap: 8px;
+    }
+
+    .nav-button {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: var(--slate-600);
+      border-radius: 14px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-align: left;
+      transition: 0.18s ease;
+    }
+
+    .nav-button:hover {
+      background: var(--slate-100);
+      color: var(--navy-900);
+    }
+
+    .nav-button.active {
+      background: var(--navy-900);
+      color: white;
+      font-weight: 800;
+    }
+
+    .sidebar-section {
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid var(--slate-200);
+    }
+
+    .sidebar-label {
+      margin-bottom: 10px;
+      color: var(--slate-500);
+      font-size: 0.75rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .main {
+      min-width: 0;
+      padding: 28px;
+    }
+
+    .topbar {
+      margin-bottom: 24px;
+      padding: 22px;
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius-lg);
+      background: rgba(255, 255, 255, 0.86);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: flex-start;
+    }
+
+    .mobile-menu {
+      display: none;
+      margin-bottom: 12px;
+    }
+
+    .eyebrow {
+      color: var(--coral-600);
+      font-size: 0.78rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 8px;
+      font-size: clamp(1.75rem, 3vw, 2.65rem);
+      letter-spacing: -0.06em;
+      line-height: 1;
+    }
+
+    h2 {
+      font-size: 1.22rem;
+      letter-spacing: -0.03em;
+    }
+
+    h3 {
+      font-size: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      margin: 0;
+      max-width: 780px;
+      color: var(--slate-600);
+      line-height: 1.55;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .button {
+      border: 1px solid var(--slate-200);
+      background: white;
+      color: var(--slate-900);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-weight: 800;
+      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.05);
+      transition: 0.18s ease;
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1);
+    }
+
+    .button.primary {
+      background: var(--navy-900);
+      color: white;
+      border-color: var(--navy-900);
+    }
+
+    .button.coral {
+      background: var(--coral-500);
+      color: white;
+      border-color: var(--coral-500);
+    }
+
+    .button.ghost {
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .button.danger {
+      color: var(--red-600);
+    }
+
+    .button.small {
+      padding: 7px 11px;
+      font-size: 0.86rem;
+    }
+
+    .view {
+      display: grid;
+      gap: 20px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .card.soft {
+      background: rgba(248, 250, 252, 0.82);
+    }
+
+    .metric-card {
+      min-height: 150px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .metric-label {
+      color: var(--slate-500);
+      font-weight: 800;
+      font-size: 0.9rem;
+    }
+
+    .metric-value {
+      margin-top: 10px;
+      font-size: 2.3rem;
+      font-weight: 950;
+      letter-spacing: -0.07em;
+    }
+
+    .metric-helper {
+      margin-top: 12px;
+      color: var(--slate-500);
+      font-size: 0.9rem;
+    }
+
+    .pill {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--slate-100);
+      color: var(--slate-600);
+      font-size: 0.78rem;
+      font-weight: 900;
+    }
+
+    .pill.green {
+      background: var(--green-100);
+      color: var(--green-600);
+    }
+
+    .pill.amber {
+      background: var(--amber-100);
+      color: var(--amber-600);
+    }
+
+    .pill.red {
+      background: var(--red-100);
+      color: var(--red-600);
+    }
+
+    .list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .list-item {
+      border: 1px solid var(--slate-200);
+      background: white;
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .item-title {
+      font-weight: 900;
+      margin-bottom: 4px;
+    }
+
+    .item-meta {
+      color: var(--slate-500);
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+
+    .empty {
+      padding: 38px 24px;
+      border: 1px dashed var(--slate-300);
+      border-radius: var(--radius-lg);
+      background: rgba(255, 255, 255, 0.6);
+      text-align: center;
+      color: var(--slate-500);
+    }
+
+    .empty strong {
+      display: block;
+      color: var(--slate-900);
+      margin-bottom: 8px;
+      font-size: 1.05rem;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+    }
+
+    .field label {
+      font-weight: 900;
+      font-size: 0.9rem;
+    }
+
+    .field small {
+      color: var(--slate-500);
+    }
+
+    .input,
+    .select,
+    .textarea {
+      width: 100%;
+      border: 1px solid var(--slate-200);
+      border-radius: 14px;
+      background: white;
+      padding: 11px 13px;
+      color: var(--slate-900);
+      outline: none;
+    }
+
+    .input:focus,
+    .select:focus,
+    .textarea:focus {
+      border-color: var(--navy-700);
+      box-shadow: 0 0 0 4px rgba(28, 74, 122, 0.12);
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--slate-200);
+      margin: 18px 0;
+    }
+
+    .notice {
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      background: var(--coral-100);
+      color: var(--slate-900);
+      border: 1px solid rgba(255, 107, 95, 0.22);
+      line-height: 1.5;
+    }
+
+    .code-anchor {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 0.82rem;
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: var(--slate-100);
+      color: var(--slate-700);
+    }
+
+    @media (max-width: 940px) {
+      .app-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        display: none;
+        position: fixed;
+        inset: 0 auto 0 0;
+        width: min(86vw, 330px);
+      }
+
+      .sidebar.open {
+        display: block;
+      }
+
+      .main {
+        padding: 16px;
+      }
+
+      .topbar {
+        flex-direction: column;
+      }
+
+      .toolbar {
+        justify-content: flex-start;
+      }
+
+      .mobile-menu {
+        display: inline-flex;
+      }
+
+      .grid.two,
+      .grid.three {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* =====================================================
+       PASTE PART 7 CSS POLISH HERE
+    ===================================================== */
+.progress-bar {
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--slate-100);
+  overflow: hidden;
+  border: 1px solid var(--slate-200);
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--navy-900), var(--coral-500));
+  border-radius: inherit;
+}
+
+.print-only {
+  display: none;
+}
+
+@media print {
+  body {
+    background: white;
+  }
+
+  .sidebar,
+  .topbar,
+  .toolbar,
+  .button {
+    display: none !important;
+  }
+
+  .app-shell {
+    display: block;
+  }
+
+  .main {
+    padding: 0;
+  }
+
+  .card {
+    box-shadow: none;
+    break-inside: avoid;
+  }
+
+  .print-only {
+    display: block;
+  }
+}
+
+  </style>
+</head>
+
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark">AI</div>
+        <div>
+          <div class="brand-title">Responsible AI<br />Workbench</div>
+          <div class="brand-subtitle">Assessment, risk & controls</div>
+        </div>
+      </div>
+
+      <nav class="nav" id="nav"></nav>
+
+      <div class="sidebar-section">
+        <div class="sidebar-label">Local file build</div>
+        <button class="button small" data-action="seed-demo">Seed demo</button>
+        <button class="button small danger" data-action="reset-data">Reset</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <section class="topbar">
+        <div>
+          <button class="button mobile-menu" data-action="toggle-menu">Menu</button>
+          <div class="eyebrow" id="page-eyebrow">Responsible AI</div>
+          <h1 id="page-title">Dashboard</h1>
+          <p class="subtitle" id="page-subtitle"></p>
+        </div>
+
+        <div class="toolbar" id="toolbar"></div>
+      </section>
+
+      <section class="view" id="view"></section>
+    </main>
+  </div>
+
+  <script>
+    /* =====================================================
+       PART 1 — APP FOUNDATION
+    ===================================================== */
+
+    const APP_KEY = "responsible_ai_workbench_clean_v1";
+
+    const routes = [
+      {
+        id: "dashboard",
+        label: "Dashboard",
+        icon: "◇",
+        title: "Dashboard",
+        subtitle: "A local-first overview of assessment activity, risk posture, controls, and saved governance artefacts."
+      },
+      {
+        id: "assessments",
+        label: "Assessments",
+        icon: "▣",
+        title: "Assessments",
+        subtitle: "Create, edit, score, and review responsible AI assessments."
+      },
+      {
+        id: "wizard",
+        label: "Assessment Wizard",
+        icon: "→",
+        title: "Assessment Wizard",
+        subtitle: "A guided workflow for capturing context, risk signals, decisions, and assurance notes."
+      },
+      {
+        id: "results",
+        label: "Results & Controls",
+        icon: "✓",
+        title: "Results & Controls",
+        subtitle: "Review scoring outcomes, risk drivers, recommended controls, and mitigation actions."
+      },
+      {
+        id: "tools",
+        label: "Tools",
+        icon: "✦",
+        title: "Tools",
+        subtitle: "Prompt helper, governance checklist, export tools, and reusable artefacts."
+      },
+      {
+        id: "settings",
+        label: "Settings",
+        icon: "⚙",
+        title: "Settings",
+        subtitle: "Manage local data, demo content, and build status."
+      }
+    ];
+
+    const defaultState = {
+      activeRoute: "dashboard",
+      selectedAssessmentId: null,
+      assessments: [],
+      controls: [],
+      recommendations: [],
+      reports: [],
+      checklist: [],
+      promptHelper: {
+        input: "",
+        output: ""
+      },
+      build: {
+        part1: true,
+        part2: false,
+        part3: false,
+        part4: false,
+        part5: false,
+        part6: false,
+        part7: false
+      },
+      createdAt: nowIso(),
+      updatedAt: nowIso()
+    };
+
+    let state = loadState();
+
+    function nowIso() {
+      return new Date().toISOString();
+    }
+
+    function uid(prefix = "id") {
+      if (window.crypto && crypto.randomUUID) {
+        return `${prefix}_${crypto.randomUUID()}`;
+      }
+
+      return `${prefix}_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+    }
+
+    function clone(value) {
+      return JSON.parse(JSON.stringify(value));
+    }
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(APP_KEY);
+        if (!saved) return clone(defaultState);
+
+        return {
+          ...clone(defaultState),
+          ...JSON.parse(saved)
+        };
+      } catch (error) {
+        console.warn("State load failed. Starting from default state.", error);
+        return clone(defaultState);
+      }
+    }
+
+    function saveState() {
+      state.updatedAt = nowIso();
+      localStorage.setItem(APP_KEY, JSON.stringify(state));
+    }
+
+    function setState(patch, shouldRender = true) {
+      state = {
+        ...state,
+        ...patch,
+        updatedAt: nowIso()
+      };
+
+      saveState();
+
+      if (shouldRender) render();
+    }
+
+    function updateBuildFlag(partKey) {
+      state.build = {
+        ...state.build,
+        [partKey]: true
+      };
+
+      saveState();
+    }
+
+    function formatDate(value) {
+      if (!value) return "Not available";
+
+      try {
+        return new Intl.DateTimeFormat("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit"
+        }).format(new Date(value));
+      } catch {
+        return "Invalid date";
+      }
+    }
+
+    function getActiveRoute() {
+      return routes.find(route => route.id === state.activeRoute) || routes[0];
+    }
+
+    function navigate(routeId) {
+      if (!routes.some(route => route.id === routeId)) return;
+
+      state.activeRoute = routeId;
+      saveState();
+      closeMobileMenu();
+      render();
+    }
+
+    function getSelectedAssessment() {
+      if (!state.selectedAssessmentId) return null;
+      return state.assessments.find(assessment => assessment.id === state.selectedAssessmentId) || null;
+    }
+
+    function toggleMobileMenu() {
+      document.getElementById("sidebar").classList.toggle("open");
+    }
+
+    function closeMobileMenu() {
+      document.getElementById("sidebar").classList.remove("open");
+    }
+
+    function resetData() {
+      const confirmed = confirm("Reset all locally saved workbench data?");
+      if (!confirmed) return;
+
+      localStorage.removeItem(APP_KEY);
+      state = clone(defaultState);
+      render();
+    }
+
+    function seedDemoData() {
+      const demoAssessment = createDemoAssessment();
+
+      state.assessments = [demoAssessment];
+      state.selectedAssessmentId = demoAssessment.id;
+
+      if (!state.controls.length) {
+        state.controls = [
+          {
+            id: uid("control"),
+            name: "Human oversight",
+            category: "Accountability",
+            description: "Define clear points where a human reviews, approves, or intervenes in the AI-supported process.",
+            strength: "High"
+          },
+          {
+            id: uid("control"),
+            name: "Data protection review",
+            category: "Privacy",
+            description: "Check whether personal data is processed and whether DPIA or privacy review is required.",
+            strength: "High"
+          },
+          {
+            id: uid("control"),
+            name: "Output validation",
+            category: "Assurance",
+            description: "Test outputs for accuracy, bias, appropriateness, and reliability before operational use.",
+            strength: "Medium"
+          }
+        ];
+      }
+
+      saveState();
+      render();
+    }
+
+    function createDemoAssessment() {
+      return {
+        id: uid("assessment"),
+        title: "Example AI use case",
+        owner: "Responsible Data & AI",
+        businessArea: "Group Risk",
+        description: "A demonstration assessment used to validate the local-first workbench structure.",
+        status: "Draft",
+        riskLevel: "Not scored",
+        score: null,
+        progress: 0,
+        answers: {},
+        notes: "",
+        createdAt: nowIso(),
+        updatedAt: nowIso()
+      };
+    }
+
+    /* =====================================================
+       PASTE PART 2 — ASSESSMENT QUESTION BANK HERE
+    ===================================================== */
+
+    /* =====================================================
+   START PART 2 — ASSESSMENT QUESTION BANK
+===================================================== */
+
+const assessmentSections = [
+  {
+    id: "context",
+    title: "Use case context",
+    description: "Understand what the AI system is being used for, who owns it, and where it sits in the business process."
+  },
+  {
+    id: "data",
+    title: "Data and privacy",
+    description: "Identify personal data, sensitive data, data quality risks, and privacy obligations."
+  },
+  {
+    id: "impact",
+    title: "People and customer impact",
+    description: "Assess whether the use case affects customers, colleagues, vulnerable groups, decisions, or access to services."
+  },
+  {
+    id: "model",
+    title: "Model behaviour and reliability",
+    description: "Review explainability, accuracy, hallucination risk, human oversight, and operational dependency."
+  },
+  {
+    id: "governance",
+    title: "Governance and assurance",
+    description: "Check ownership, documentation, monitoring, controls, and readiness for deployment."
+  }
+];
+
+const assessmentQuestions = [
+  {
+    id: "context_purpose",
+    sectionId: "context",
+    type: "textarea",
+    label: "What is the AI use case trying to achieve?",
+    helper: "Describe the business problem, intended outcome, and why AI is being used.",
+    riskWeight: 1,
+    scoring: {
+      unclear: 3,
+      narrow: 1,
+      broad: 2
+    }
+  },
+  {
+    id: "context_users",
+    sectionId: "context",
+    type: "select",
+    label: "Who will use the AI output?",
+    helper: "Think about colleagues, customers, third parties, automated processes, or decision makers.",
+    options: [
+      { value: "", label: "Select an option", score: 0 },
+      { value: "internal_support", label: "Internal colleagues for support only", score: 1 },
+      { value: "expert_review", label: "Specialist users with review responsibility", score: 1 },
+      { value: "frontline", label: "Frontline colleagues serving customers", score: 2 },
+      { value: "customer_facing", label: "Customers or external users", score: 3 },
+      { value: "automated_process", label: "An automated process or workflow", score: 3 }
+    ]
+  },
+  {
+    id: "context_decision_role",
+    sectionId: "context",
+    type: "select",
+    label: "What role does the AI output play in decisions?",
+    helper: "This is one of the most important risk indicators.",
+    options: [
+      { value: "", label: "Select an option", score: 0 },
+      { value: "informational", label: "Informational only", score: 1 },
+      { value: "recommendation", label: "Provides recommendations for a human", score: 2 },
+      { value: "decision_support", label: "Materially influences a decision", score: 3 },
+      { value: "automated_decision", label: "Makes or triggers a decision automatically", score: 5 }
+    ]
+  },
+  {
+    id: "context_supplier",
+    sectionId: "context",
+    type: "select",
+    label: "Is this internally built or supplied by a third party?",
+    helper: "Third-party tools may need supplier assurance, contractual review, and operational monitoring.",
+    options: [
+      { value: "", label: "Select an option", score: 0 },
+      { value: "internal", label: "Internally built", score: 1 },
+      { value: "approved_supplier", label: "Approved supplier or enterprise platform", score: 2 },
+      { value: "new_supplier", label: "New supplier or unassured tool", score: 4 },
+      { value: "unknown", label: "Unknown", score: 4 }
+    ]
+  },
+
+  {
+    id: "data_personal",
+    sectionId: "data",
+    type: "select",
+    label: "Does the use case process personal data?",
+    helper: "Personal data increases privacy, legal, and governance obligations.",
+    options: [
+      { value: "", label: "Select an option", score: 0 },
+      { value: "no", label: "No personal data", score: 0 },
+      { value: "limited", label: "Limited personal data", score: 2 },
+      { value: "significant", label: "Significant personal data", score: 4 },
+      { value: "unknown", label: "Unknown or not yet assessed", score: 4 }
+    ]
+  },
+  {
+    id: "data_sensitive",
+    sectionId: "data",
+    type: "select",
+    label: "Does it use sensitive or special category data?",
+    helper: "Includes health, biometric, ethnicity, religion, political views, criminal offence data, or similar high-sensitivity fields.",
+    options: [
+      { value: "", label: "Select an option", score: 0 },
+      { value: "no", label: "No", score: 0 },
+      { value: "possible", label: "Possibly", score: 3 },
+      { value: "yes", label: "Yes", score: 5 },
+      { value: "unknown", label: "Unknown", score: 5 }
+    ]
+  },
+  {
+    id: "data_quality",
+    sectionId: "data",
+    type: "select",
+    label: "How reliable is the input data?",
+    helper: "Poor data quality can create inaccurate, unfair, or misleading outputs.",
+    options: [
+      { value: "", label: "Select an option", score: 0 },
+      { value: "known_good", label: "Known, governed, and quality checked", score: 0 },
+      { value: "partially_known", label: "Partially understood or inconsistently governed", score: 2 },
+      { value: "poor", label: "Known quality issues", score: 4 },
+      { value: "unknown", label: "Unknown quality", score: 4 }
+    ]
+  },
+  {
+    id: "data_reuse",
+    sectionId: "data",
+    type: "select",
+    label: "Is data being reused for a new purpose?",
+    helper: "Purpose change may require privacy, ethics, and policy review.",
+    options: [
+      { value: "", label: "Select an option", score: 0 },
+      { value: "no", label: "No, same purpose", score: 0 },
+      { value: "minor", label: "Minor adjacent reuse", score: 1 },
+      { value: "material", label: "Materially new purpose", score: 3 },
+      { value: "unknown", label: "Unknown", score: 3 }
+    ]
+  },
+
+  {
+    id: "impact_customer",
+    sectionId: "impact",
+    type: "select",
+    label: "Could this affect customers or external individuals?",
+    helper: "Consider pricing, eligibility, service quality, claims, complaints, communications, or access.",
+    options: [
+      { value: "", label: "Select an option", score: 0 },
+      { value: "no", label: "No direct customer impact", score: 0 },
+      { value: "indirect", label: "Indirect customer impact", score: 2 },
+      { value: "direct_low", label: "Direct but low materiality", score: 3 },
+      { value: "direct_high", label: "Direct and material impact", score: 5 }
+    ]
+  },
+  {
+    id: "impact_vulnerable",
+    sectionId: "impact",
+    type: "select",
+    label: "Could vulnerable customers or protected groups be affected?",
+    helper: "This increases the need for fairness, accessibility, explainability, and human oversight.",
+    options: [
+      { value: "", label: "Select an option", score: 0 },
+      { value: "no", label: "No", score: 0 },
+      { value: "possible", label: "Possibly", score: 3 },
+      { value: "yes", label: "Yes", score: 5 },
+      { value: "unknown", label: "Unknown", score: 5 }
+    ]
+  },
+  {
+    id: "impact_financial",
+    sectionId: "impact",
+    type: "select",
+    label: "Could the output influence financial outcomes?",
+    helper: "Includes pricing, affordability, credit, claims, fees, loss, eligibility, or commercial decisions.",
+    options: [
+      { value: "", label: "Select an option", score: 0 },
+      { value: "no", label: "No", score: 0 },
+      { value: "minor", label: "Minor or indirect influence", score: 2 },
+      { value: "material", label: "Material influence", score: 4 },
+      { value: "critical", label: "Critical or automated financial outcome", score: 5 }
+    ]
+  },
+
+  {
+    id: "model_explainability",
+    sectionId: "model",
+    type: "select",
+    label: "Can users explain how the output was produced?",
+    helper: "Low explainability increases review and challenge difficulty.",
+    options: [
+      { value: "", label: "Select an option", score: 0 },
+      { value: "clear", label: "Yes, clear and explainable", score: 0 },
+      { value: "partial", label: "Partially explainable", score: 2 },
+      { value: "limited", label: "Limited explainability", score: 4 },
+      { value: "unknown", label: "Unknown", score: 4 }
+    ]
+  },
+  {
+    id: "model_accuracy",
+    sectionId: "model",
+    type: "select",
+    label: "How well has output accuracy been tested?",
+    helper: "Untested outputs should not be relied on for material decisions.",
+    options: [
+      { value: "", label: "Select an option", score: 0 },
+      { value: "tested", label: "Tested with clear acceptance criteria", score: 0 },
+      { value: "sampled", label: "Sample tested informally", score: 2 },
+      { value: "limited", label: "Limited testing", score: 3 },
+      { value: "not_tested", label: "Not tested", score: 5 }
+    ]
+  },
+  {
+    id: "model_hallucination",
+    sectionId: "model",
+    type: "select",
+    label: "Is there a risk of hallucination or fabricated output?",
+    helper: "Especially relevant for generative AI, summarisation, advice, drafting, or content generation.",
+    options: [
+      { value: "", label: "Select an option", score: 0 },
+      { value: "none", label: "No meaningful hallucination risk", score: 0 },
+      { value: "low", label: "Low risk", score: 1 },
+      { value: "medium", label: "Medium risk", score: 3 },
+      { value: "high", label: "High risk", score: 5 }
+    ]
+  },
+  {
+    id: "model_human_oversight",
+    sectionId: "model",
+    type: "select",
+    label: "Is meaningful human oversight in place?",
+    helper: "Oversight should be skilled, timely, documented, and able to challenge the output.",
+    options: [
+      { value: "", label: "Select an option", score: 0 },
+      { value: "strong", label: "Yes, strong oversight", score: 0 },
+      { value: "basic", label: "Basic oversight", score: 2 },
+      { value: "weak", label: "Weak oversight", score: 4 },
+      { value: "none", label: "No meaningful oversight", score: 5 }
+    ]
+  },
+
+  {
+    id: "governance_owner",
+    sectionId: "governance",
+    type: "select",
+    label: "Is there a named accountable owner?",
+    helper: "Every use case should have clear business and technical accountability.",
+    options: [
+      { value: "", label: "Select an option", score: 0 },
+      { value: "yes", label: "Yes", score: 0 },
+      { value: "partial", label: "Partially clear", score: 2 },
+      { value: "no", label: "No", score: 4 }
+    ]
+  },
+  {
+    id: "governance_documentation",
+    sectionId: "governance",
+    type: "select",
+    label: "Is documentation in place?",
+    helper: "Include purpose, data, model behaviour, limitations, testing, owners, controls, and approval records.",
+    options: [
+      { value: "", label: "Select an option", score: 0 },
+      { value: "complete", label: "Complete and maintained", score: 0 },
+      { value: "partial", label: "Partial", score: 2 },
+      { value: "minimal", label: "Minimal", score: 3 },
+      { value: "none", label: "None", score: 5 }
+    ]
+  },
+  {
+    id: "governance_monitoring",
+    sectionId: "governance",
+    type: "select",
+    label: "Is ongoing monitoring defined?",
+    helper: "Consider drift, output quality, complaints, incidents, performance, and control effectiveness.",
+    options: [
+      { value: "", label: "Select an option", score: 0 },
+      { value: "defined", label: "Yes, monitoring is defined", score: 0 },
+      { value: "manual", label: "Manual or informal monitoring", score: 2 },
+      { value: "planned", label: "Planned but not yet implemented", score: 3 },
+      { value: "none", label: "No monitoring", score: 5 }
+    ]
+  },
+  {
+    id: "governance_approval",
+    sectionId: "governance",
+    type: "select",
+    label: "Has the use case received appropriate approval?",
+    helper: "Higher risk use cases may require legal, privacy, risk, compliance, security, model risk, or senior approval.",
+    options: [
+      { value: "", label: "Select an option", score: 0 },
+      { value: "approved", label: "Approved", score: 0 },
+      { value: "in_review", label: "In review", score: 2 },
+      { value: "not_started", label: "Not started", score: 4 },
+      { value: "unknown", label: "Unknown", score: 4 }
+    ]
+  }
+];
+
+updateBuildFlag("part2");
+
+/* =====================================================
+   END PART 2 — ASSESSMENT QUESTION BANK
+===================================================== */
+
+    /* =====================================================
+       PASTE PART 3 — ASSESSMENT WIZARD + ANSWER CAPTURE HERE
+    ===================================================== */
+/* =====================================================
+   START PART 3 — ASSESSMENT WIZARD + ANSWER CAPTURE
+===================================================== */
+
+let wizardSectionIndex = 0;
+
+function getWizardSection() {
+  return assessmentSections[wizardSectionIndex] || assessmentSections[0] || null;
+}
+
+function setWizardSection(index) {
+  wizardSectionIndex = Math.max(0, Math.min(index, assessmentSections.length - 1));
+  render();
+}
+
+function getQuestionsForSection(sectionId) {
+  return assessmentQuestions.filter(question => question.sectionId === sectionId);
+}
+
+function getAnsweredCount(assessment) {
+  return assessmentQuestions.filter(question => {
+    const value = assessment.answers?.[question.id];
+    return value !== undefined && value !== null && value !== "";
+  }).length;
+}
+
+function getSectionProgress(assessment, sectionId) {
+  const questions = getQuestionsForSection(sectionId);
+  if (!questions.length) return 0;
+
+  const answered = questions.filter(question => {
+    const value = assessment.answers?.[question.id];
+    return value !== undefined && value !== null && value !== "";
+  }).length;
+
+  return Math.round((answered / questions.length) * 100);
+}
+
+function renderWizard() {
+  const assessment = getSelectedAssessment();
+
+  if (!assessment) {
+    return `
+      <div class="card">
+        ${emptyState("No assessment selected", "Create or select an assessment before opening the wizard.")}
+      </div>
+    `;
+  }
+
+  if (!assessmentQuestions.length) {
+    return `
+      <div class="card">
+        <h2>Assessment Wizard</h2>
+        <p class="notice">
+          The wizard shell is ready, but the question bank has not been installed yet.
+        </p>
+      </div>
+    `;
+  }
+
+  const section = getWizardSection();
+  const questions = getQuestionsForSection(section.id);
+  const answeredCount = getAnsweredCount(assessment);
+  const totalQuestions = assessmentQuestions.length;
+  const progress = totalQuestions ? Math.round((answeredCount / totalQuestions) * 100) : 0;
+
+  return `
+    <div class="grid two">
+      <div class="card">
+        <h2>${escapeHtml(section.title)}</h2>
+        <p class="subtitle">${escapeHtml(section.description)}</p>
+
+        <div class="divider"></div>
+
+        <div class="list">
+          ${assessmentSections.map((item, index) => `
+            <button 
+              class="list-item" 
+              data-action="wizard-section" 
+              data-index="${index}"
+              style="text-align:left; cursor:pointer;"
+            >
+              <div>
+                <div class="item-title">${escapeHtml(item.title)}</div>
+                <div class="item-meta">${getSectionProgress(assessment, item.id)}% complete</div>
+              </div>
+              <span class="pill ${index === wizardSectionIndex ? "green" : ""}">
+                ${index === wizardSectionIndex ? "Current" : "Open"}
+              </span>
+            </button>
+          `).join("")}
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Assessment progress</h2>
+        <div class="metric-value">${progress}%</div>
+        <p class="metric-helper">${answeredCount} of ${totalQuestions} questions answered</p>
+
+        <div class="divider"></div>
+
+        ${renderSelectedAssessmentSummary(assessment)}
+
+        <div class="divider"></div>
+
+        <div class="toolbar">
+          <button class="button" data-action="wizard-prev">Previous</button>
+          <button class="button primary" data-action="wizard-next">Next</button>
+          <button class="button coral" data-route="results">View results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>${escapeHtml(section.title)} questions</h2>
+      <div class="form-grid">
+        ${questions.map(question => renderQuestionInput(assessment, question)).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function renderQuestionInput(assessment, question) {
+  const value = assessment.answers?.[question.id] ?? "";
+
+  if (question.type === "textarea") {
+    return `
+      <div class="field">
+        <label>${escapeHtml(question.label)}</label>
+        <small>${escapeHtml(question.helper || "")}</small>
+        <textarea 
+          class="textarea" 
+          data-answer-question="${question.id}" 
+          data-assessment-id="${assessment.id}"
+        >${escapeHtml(value)}</textarea>
+      </div>
+    `;
+  }
+
+  if (question.type === "select") {
+    return `
+      <div class="field">
+        <label>${escapeHtml(question.label)}</label>
+        <small>${escapeHtml(question.helper || "")}</small>
+        <select 
+          class="select" 
+          data-answer-question="${question.id}" 
+          data-assessment-id="${assessment.id}"
+        >
+          ${(question.options || []).map(option => `
+            <option value="${escapeAttr(option.value)}" ${String(value) === String(option.value) ? "selected" : ""}>
+              ${escapeHtml(option.label)}
+            </option>
+          `).join("")}
+        </select>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="field">
+      <label>${escapeHtml(question.label)}</label>
+      <small>${escapeHtml(question.helper || "")}</small>
+      <input 
+        class="input" 
+        value="${escapeAttr(value)}" 
+        data-answer-question="${question.id}" 
+        data-assessment-id="${assessment.id}"
+      />
+    </div>
+  `;
+}
+
+function completeAssessmentDraft() {
+  const assessment = getSelectedAssessment();
+  if (!assessment) return;
+
+  state.assessments = state.assessments.map(item => {
+    if (item.id !== assessment.id) return item;
+
+    return {
+      ...recalculateAssessment(item),
+      status: "Complete",
+      updatedAt: nowIso()
+    };
+  });
+
+  saveState();
+  state.activeRoute = "results";
+  render();
+}
+
+updateBuildFlag("part3");
+
+/* =====================================================
+   END PART 3 — ASSESSMENT WIZARD + ANSWER CAPTURE
+===================================================== */
+
+    function createAssessmentShell() {
+      const assessment = {
+        id: uid("assessment"),
+        title: "New AI assessment",
+        owner: "",
+        businessArea: "",
+        description: "",
+        status: "Draft",
+        riskLevel: "Not scored",
+        score: null,
+        progress: 0,
+        answers: {},
+        notes: "",
+        createdAt: nowIso(),
+        updatedAt: nowIso()
+      };
+
+      state.assessments.unshift(assessment);
+      state.selectedAssessmentId = assessment.id;
+      state.activeRoute = "assessments";
+      saveState();
+      render();
+    }
+
+    function selectAssessment(id) {
+      state.selectedAssessmentId = id;
+      saveState();
+      render();
+    }
+
+    function deleteAssessment(id) {
+      const confirmed = confirm("Delete this assessment?");
+      if (!confirmed) return;
+
+      state.assessments = state.assessments.filter(assessment => assessment.id !== id);
+
+      if (state.selectedAssessmentId === id) {
+        state.selectedAssessmentId = state.assessments[0]?.id || null;
+      }
+
+      saveState();
+      render();
+    }
+
+    function updateAssessmentField(id, field, value) {
+      state.assessments = state.assessments.map(assessment => {
+        if (assessment.id !== id) return assessment;
+
+        return {
+          ...assessment,
+          [field]: value,
+          updatedAt: nowIso()
+        };
+      });
+
+      saveState();
+    }
+
+    function updateAssessmentAnswer(id, questionId, value) {
+      state.assessments = state.assessments.map(assessment => {
+        if (assessment.id !== id) return assessment;
+
+        const next = {
+          ...assessment,
+          answers: {
+            ...assessment.answers,
+            [questionId]: value
+          },
+          updatedAt: nowIso()
+        };
+
+        return recalculateAssessment(next);
+      });
+
+      saveState();
+      render();
+    }
+
+    /* =====================================================
+       PASTE PART 4 — SCORING ENGINE + RISK LOGIC HERE
+    ===================================================== */
+/* =====================================================
+   START PART 4 — SCORING ENGINE + RISK LOGIC
+===================================================== */
+
+const riskBands = [
+  {
+    id: "low",
+    label: "Low risk",
+    min: 0,
+    max: 24,
+    className: "green",
+    summary: "The use case appears low risk, provided normal business controls and documentation are maintained."
+  },
+  {
+    id: "medium",
+    label: "Medium risk",
+    min: 25,
+    max: 54,
+    className: "amber",
+    summary: "The use case has material risk indicators and should have defined controls, ownership, and review evidence."
+  },
+  {
+    id: "high",
+    label: "High risk",
+    min: 55,
+    max: 100,
+    className: "red",
+    summary: "The use case has significant risk indicators and should receive enhanced governance, assurance, and approval."
+  }
+];
+
+function getQuestionScore(question, answerValue) {
+  if (!question || answerValue === undefined || answerValue === null || answerValue === "") {
+    return 0;
+  }
+
+  if (question.type === "select") {
+    const option = (question.options || []).find(item => String(item.value) === String(answerValue));
+    return Number(option?.score || 0);
+  }
+
+  if (question.scoring) {
+    const text = String(answerValue).trim().toLowerCase();
+
+    if (!text) return 0;
+    if (text.length < 30) return Number(question.scoring.unclear || 2);
+    if (text.length < 140) return Number(question.scoring.narrow || 1);
+
+    return Number(question.scoring.broad || 2);
+  }
+
+  return 0;
+}
+
+function getMaxQuestionScore(question) {
+  if (!question) return 0;
+
+  if (question.type === "select") {
+    return Math.max(...(question.options || []).map(option => Number(option.score || 0)), 0);
+  }
+
+  if (question.scoring) {
+    return Math.max(...Object.values(question.scoring).map(Number), 0);
+  }
+
+  return 0;
+}
+
+function calculateAssessmentScore(assessment) {
+  if (!assessmentQuestions.length) {
+    return {
+      rawScore: 0,
+      maxScore: 0,
+      weightedScore: 0,
+      riskLevel: "Not scored",
+      riskBand: null,
+      sectionScores: [],
+      drivers: []
+    };
+  }
+
+  let rawScore = 0;
+  let maxScore = 0;
+  const drivers = [];
+
+  const sectionScores = assessmentSections.map(section => {
+    const questions = getQuestionsForSection(section.id);
+    let sectionRaw = 0;
+    let sectionMax = 0;
+    let answered = 0;
+
+    questions.forEach(question => {
+      const answerValue = assessment.answers?.[question.id];
+      const questionScore = getQuestionScore(question, answerValue);
+      const questionMax = getMaxQuestionScore(question);
+
+      sectionRaw += questionScore;
+      sectionMax += questionMax;
+
+      if (answerValue !== undefined && answerValue !== null && answerValue !== "") {
+        answered += 1;
+      }
+
+      if (questionScore >= 4) {
+        drivers.push({
+          id: question.id,
+          sectionId: section.id,
+          sectionTitle: section.title,
+          label: question.label,
+          score: questionScore,
+          answer: getAnswerLabel(question, answerValue),
+          severity: questionScore >= 5 ? "High" : "Medium"
+        });
+      }
+    });
+
+    rawScore += sectionRaw;
+    maxScore += sectionMax;
+
+    return {
+      sectionId: section.id,
+      title: section.title,
+      rawScore: sectionRaw,
+      maxScore: sectionMax,
+      percentage: sectionMax ? Math.round((sectionRaw / sectionMax) * 100) : 0,
+      answered,
+      total: questions.length
+    };
+  });
+
+  const weightedScore = maxScore ? Math.round((rawScore / maxScore) * 100) : 0;
+  const riskBand = riskBands.find(band => weightedScore >= band.min && weightedScore <= band.max) || riskBands[0];
+
+  return {
+    rawScore,
+    maxScore,
+    weightedScore,
+    riskLevel: riskBand.label,
+    riskBand,
+    sectionScores,
+    drivers: drivers.sort((a, b) => b.score - a.score)
+  };
+}
+
+function getAnswerLabel(question, answerValue) {
+  if (!question) return "Unknown";
+
+  if (question.type === "select") {
+    const option = (question.options || []).find(item => String(item.value) === String(answerValue));
+    return option?.label || "Not answered";
+  }
+
+  if (!answerValue) return "Not answered";
+
+  return String(answerValue).length > 90
+    ? `${String(answerValue).slice(0, 90)}...`
+    : String(answerValue);
+}
+
+function getAssessmentStatus(assessment, progress, weightedScore) {
+  if (progress < 100) return "Draft";
+  if (weightedScore >= 55) return "Enhanced review required";
+  if (weightedScore >= 25) return "Review required";
+  return "Complete";
+}
+
+updateBuildFlag("part4");
+
+/* =====================================================
+   END PART 4 — SCORING ENGINE + RISK LOGIC
+===================================================== */
+    function recalculateAssessment(assessment) {
+  const answered = Object.values(assessment.answers || {}).filter(value => value !== "" && value !== null && value !== undefined).length;
+  const total = assessmentQuestions.length || 0;
+  const progress = total ? Math.round((answered / total) * 100) : 0;
+  const scoring = calculateAssessmentScore(assessment);
+
+  return {
+    ...assessment,
+    progress,
+    score: scoring.weightedScore,
+    rawScore: scoring.rawScore,
+    maxScore: scoring.maxScore,
+    riskLevel: total && answered ? scoring.riskLevel : "Not scored",
+    riskBand: scoring.riskBand,
+    sectionScores: scoring.sectionScores,
+    riskDrivers: scoring.drivers,
+    status: getAssessmentStatus(assessment, progress, scoring.weightedScore),
+    updatedAt: nowIso()
+  };
+}
+
+    function riskPillClass(riskLevel) {
+      const value = String(riskLevel || "").toLowerCase();
+
+      if (value.includes("low")) return "green";
+      if (value.includes("medium") || value.includes("amber")) return "amber";
+      if (value.includes("high") || value.includes("red")) return "red";
+
+      return "";
+    }
+
+    /* =====================================================
+       PASTE PART 5 — RESULTS, CONTROLS + RECOMMENDATIONS HERE
+    ===================================================== */
+/* =====================================================
+   START PART 5 — RESULTS, CONTROLS + RECOMMENDATIONS
+===================================================== */
+
+const recommendationRules = [
+  {
+    id: "human_oversight",
+    title: "Strengthen human oversight",
+    trigger: ["context_decision_role", "model_human_oversight"],
+    controlCategory: "Accountability",
+    description: "Define who reviews the output, what they check, when they can override it, and how review evidence is retained."
+  },
+  {
+    id: "privacy_review",
+    title: "Complete privacy and data protection review",
+    trigger: ["data_personal", "data_sensitive", "data_reuse"],
+    controlCategory: "Privacy",
+    description: "Confirm lawful basis, data minimisation, retention, access controls, and whether DPIA review is required."
+  },
+  {
+    id: "fairness_review",
+    title: "Assess fairness and vulnerable customer impact",
+    trigger: ["impact_vulnerable", "impact_customer", "impact_financial"],
+    controlCategory: "Fairness",
+    description: "Review whether outputs could create unfair, inaccessible, discriminatory, or harmful outcomes."
+  },
+  {
+    id: "output_testing",
+    title: "Define output testing and acceptance criteria",
+    trigger: ["model_accuracy", "model_hallucination", "model_explainability"],
+    controlCategory: "Assurance",
+    description: "Create test cases, expected behaviours, failure examples, tolerance thresholds, and sign-off evidence."
+  },
+  {
+    id: "monitoring",
+    title: "Create ongoing monitoring plan",
+    trigger: ["governance_monitoring", "governance_documentation", "governance_approval"],
+    controlCategory: "Monitoring",
+    description: "Track performance, drift, incidents, complaints, overrides, control failures, and periodic review dates."
+  }
+];
+
+function getRecommendedControls(assessment) {
+  if (!assessment) return [];
+
+  const drivers = assessment.riskDrivers || [];
+  const driverIds = drivers.map(driver => driver.id);
+
+  const recommendations = recommendationRules.filter(rule => {
+    return rule.trigger.some(questionId => driverIds.includes(questionId));
+  });
+
+  if (!recommendations.length && assessment.score >= 25) {
+    return recommendationRules.slice(0, 3);
+  }
+
+  if (!recommendations.length) {
+    return [
+      {
+        id: "baseline_documentation",
+        title: "Maintain baseline documentation",
+        controlCategory: "Governance",
+        description: "Keep purpose, owner, data, limitations, review approach, and approval notes up to date."
+      }
+    ];
+  }
+
+  return recommendations;
+}
+
+function getRiskDrivers(assessment) {
+  if (!assessment) return [];
+  return assessment.riskDrivers || [];
+}
+
+function renderResults() {
+  const assessment = getSelectedAssessment();
+
+  if (!assessment) {
+    return `
+      <div class="card">
+        ${emptyState("No assessment selected", "Select an assessment to view scoring results and recommendations.")}
+      </div>
+    `;
+  }
+
+  const recommendations = getRecommendedControls(assessment);
+  const drivers = getRiskDrivers(assessment);
+  const band = assessment.riskBand || riskBands?.find(item => item.label === assessment.riskLevel);
+
+  return `
+    <div class="grid three">
+      ${metricCard("Risk score", assessment.score ?? 0, "Normalised 0–100")}
+      ${metricCard("Progress", `${assessment.progress || 0}%`, "Assessment completion")}
+      ${metricCard("Risk drivers", drivers.length, "Material risk signals")}
+    </div>
+
+    <div class="grid two">
+      <div class="card">
+        <h2>Assessment outcome</h2>
+        <span class="pill ${riskPillClass(assessment.riskLevel)}">${escapeHtml(assessment.riskLevel)}</span>
+        <div class="divider"></div>
+        <p class="subtitle">
+          ${escapeHtml(band?.summary || "Complete the assessment to generate a clearer risk outcome.")}
+        </p>
+        <div class="divider"></div>
+        ${renderSelectedAssessmentSummary(assessment)}
+      </div>
+
+      <div class="card">
+        <h2>Section scores</h2>
+        ${renderSectionScores(assessment)}
+      </div>
+    </div>
+
+    <div class="grid two">
+      <div class="card">
+        <h2>Key risk drivers</h2>
+        ${renderRiskDrivers(drivers)}
+      </div>
+
+      <div class="card">
+        <h2>Recommended controls</h2>
+        ${renderRecommendations(recommendations)}
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Governance action plan</h2>
+      ${renderActionPlan(assessment, recommendations)}
+    </div>
+  `;
+}
+
+function renderSectionScores(assessment) {
+  const sectionScores = assessment.sectionScores || [];
+
+  if (!sectionScores.length) {
+    return emptyState("No section scores", "Answer questions in the wizard to calculate section-level scores.");
+  }
+
+  return `
+    <div class="list">
+      ${sectionScores.map(section => `
+        <div class="list-item">
+          <div>
+            <div class="item-title">${escapeHtml(section.title)}</div>
+            <div class="item-meta">${section.answered} of ${section.total} answered · raw ${section.rawScore}/${section.maxScore}</div>
+          </div>
+          <span class="pill ${section.percentage >= 55 ? "red" : section.percentage >= 25 ? "amber" : "green"}">
+            ${section.percentage}%
+          </span>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+function renderRiskDrivers(drivers) {
+  if (!drivers.length) {
+    return emptyState("No major drivers yet", "Higher-risk answers will appear here as risk drivers.");
+  }
+
+  return `
+    <div class="list">
+      ${drivers.map(driver => `
+        <div class="list-item">
+          <div>
+            <div class="item-title">${escapeHtml(driver.label)}</div>
+            <div class="item-meta">${escapeHtml(driver.sectionTitle)} · Answer: ${escapeHtml(driver.answer)}</div>
+          </div>
+          <span class="pill ${driver.severity === "High" ? "red" : "amber"}">${escapeHtml(driver.severity)}</span>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+function renderRecommendations(recommendations) {
+  if (!recommendations.length) {
+    return emptyState("No recommendations", "Recommendations will appear once scoring is available.");
+  }
+
+  return `
+    <div class="list">
+      ${recommendations.map(item => `
+        <div class="list-item">
+          <div>
+            <div class="item-title">${escapeHtml(item.title)}</div>
+            <div class="item-meta">${escapeHtml(item.description)}</div>
+          </div>
+          <span class="pill">${escapeHtml(item.controlCategory)}</span>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+function renderActionPlan(assessment, recommendations) {
+  const reviewLevel = assessment.score >= 55
+    ? "Enhanced governance review"
+    : assessment.score >= 25
+      ? "Standard governance review"
+      : "Baseline governance record";
+
+  return `
+    <div class="list">
+      ${infoRow("Recommended review level", reviewLevel)}
+      ${infoRow("Immediate action", recommendations[0]?.title || "Maintain documentation")}
+      ${infoRow("Approval position", assessment.score >= 55 ? "Do not deploy without senior approval and evidence review" : "Proceed subject to controls and owner sign-off")}
+      ${infoRow("Monitoring expectation", assessment.score >= 25 ? "Define recurring monitoring and review cadence" : "Review when scope, data, model, or usage changes")}
+    </div>
+  `;
+}
+
+updateBuildFlag("part5");
+
+/* =====================================================
+   END PART 5 — RESULTS, CONTROLS + RECOMMENDATIONS
+===================================================== */
+    
+
+    /* =====================================================
+       PASTE PART 6 — TOOLS, EXPORTS, PROMPT HELPER, CHECKLIST HERE
+    ===================================================== */
+/* =====================================================
+   START PART 6 — TOOLS, EXPORTS, PROMPT HELPER, CHECKLIST
+===================================================== */
+
+const governanceChecklistItems = [
+  "Purpose and intended use clearly documented",
+  "Named accountable owner confirmed",
+  "Data sources, data quality and privacy position reviewed",
+  "Customer, colleague and vulnerable group impact considered",
+  "Human oversight model defined",
+  "Output testing and acceptance criteria documented",
+  "Limitations and failure modes recorded",
+  "Monitoring and review cadence agreed",
+  "Approval route confirmed",
+  "Deployment decision evidenced"
+];
+
+function generateMarkdownReport() {
+  const assessment = getSelectedAssessment();
+
+  if (!assessment) {
+    return "# Responsible AI Assessment\n\nNo assessment selected.";
+  }
+
+  const recommendations = getRecommendedControls(assessment);
+  const drivers = getRiskDrivers(assessment);
+
+  return `# Responsible AI Assessment Report
+
+## Use case
+**Title:** ${assessment.title}
+**Owner:** ${assessment.owner || "Not assigned"}
+**Business area:** ${assessment.businessArea || "Not set"}
+**Status:** ${assessment.status}
+
+## Outcome
+**Risk level:** ${assessment.riskLevel}
+**Risk score:** ${assessment.score ?? 0}/100
+**Progress:** ${assessment.progress || 0}%
+
+## Description
+${assessment.description || "No description provided."}
+
+## Key risk drivers
+${drivers.length ? drivers.map(driver => `- **${driver.severity}:** ${driver.label} — ${driver.answer}`).join("\n") : "- No major risk drivers identified."}
+
+## Recommended controls
+${recommendations.map(item => `- **${item.title}:** ${item.description}`).join("\n")}
+
+## Governance checklist
+${governanceChecklistItems.map(item => `- [ ] ${item}`).join("\n")}
+`;
+}
+
+function copyMarkdownReport() {
+  navigator.clipboard.writeText(generateMarkdownReport());
+  alert("Markdown report copied.");
+}
+
+function downloadMarkdownReport() {
+  const assessment = getSelectedAssessment();
+  const filename = assessment
+    ? `${assessment.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-rai-report.md`
+    : "responsible-ai-report.md";
+
+  const blob = new Blob([generateMarkdownReport()], {
+    type: "text/markdown"
+  });
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+function buildPromptHelperOutput(input) {
+  const assessment = getSelectedAssessment();
+  const context = assessment
+    ? `Use case: ${assessment.title}. Risk level: ${assessment.riskLevel}.`
+    : "No selected assessment context.";
+
+  if (!input.trim()) {
+    return "";
+  }
+
+  return `Responsible AI prompt review
+
+Context:
+${context}
+
+Original prompt or AI task:
+${input}
+
+Recommended safer framing:
+1. State the intended purpose clearly.
+2. Specify what data may and may not be used.
+3. Ask the model to explain assumptions and uncertainty.
+4. Require human review before relying on outputs.
+5. Avoid asking for final decisions where the use case affects customers, finances, rights, access, or vulnerable groups.
+6. Request evidence, limitations, and next-step checks.
+
+Improved prompt template:
+"Act as a support tool for [role/team]. Using only the information provided, help with [specific task]. Do not make final decisions. Highlight uncertainty, assumptions, potential risks, and what a human reviewer should verify before use."`;
+}
+
+function updatePromptHelper(value) {
+  state.promptHelper = {
+    input: value,
+    output: buildPromptHelperOutput(value)
+  };
+
+  saveState();
+  render();
+}
+
+function renderTools() {
+  const markdown = generateMarkdownReport();
+
+  return `
+    <div class="grid two">
+      <div class="card">
+        <h2>Export tools</h2>
+        <p class="subtitle">Create portable governance artefacts from the selected assessment.</p>
+
+        <div class="divider"></div>
+
+        <div class="toolbar">
+          <button class="button primary" data-action="export-json">Export JSON</button>
+          <button class="button" data-action="copy-summary">Copy summary</button>
+          <button class="button" data-action="copy-markdown">Copy Markdown report</button>
+          <button class="button" data-action="download-markdown">Download Markdown</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Governance checklist</h2>
+        <div class="list">
+          ${governanceChecklistItems.map(item => `
+            <div class="list-item">
+              <div>
+                <div class="item-title">${escapeHtml(item)}</div>
+                <div class="item-meta">Evidence required before approval or deployment.</div>
+              </div>
+              <span class="pill">Check</span>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+    </div>
+
+    <div class="grid two">
+      <div class="card">
+        <h2>Prompt safety helper</h2>
+        <p class="subtitle">Paste a prompt or AI task and generate safer governance-aware framing.</p>
+
+        <div class="divider"></div>
+
+        <div class="field">
+          <label>Prompt or AI task</label>
+          <textarea 
+            class="textarea" 
+            data-prompt-helper-input
+            placeholder="Paste the prompt, workflow, or AI task here..."
+          >${escapeHtml(state.promptHelper.input)}</textarea>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Suggested safer framing</h2>
+        ${
+          state.promptHelper.output
+            ? `<pre style="white-space:pre-wrap; line-height:1.55; margin:0;">${escapeHtml(state.promptHelper.output)}</pre>`
+            : emptyState("No prompt reviewed yet", "Paste something into the prompt helper to generate safer framing.")
+        }
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Markdown report preview</h2>
+      <pre style="white-space:pre-wrap; line-height:1.55; margin:0;">${escapeHtml(markdown)}</pre>
+    </div>
+  `;
+}
+
+updateBuildFlag("part6");
+
+/* =====================================================
+   END PART 6 — TOOLS, EXPORTS, PROMPT HELPER, CHECKLIST
+===================================================== */
+    function exportStateAsJson() {
+      const blob = new Blob([JSON.stringify(state, null, 2)], {
+        type: "application/json"
+      });
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "responsible-ai-workbench-export.json";
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function copySummaryToClipboard() {
+      const assessment = getSelectedAssessment();
+
+      const summary = assessment
+        ? `Responsible AI Assessment: ${assessment.title}\nRisk: ${assessment.riskLevel}\nProgress: ${assessment.progress}%`
+        : "No assessment selected.";
+
+      navigator.clipboard.writeText(summary);
+      alert("Summary copied.");
+    }
+
+    /* =====================================================
+       PART 1 — RENDERING
+    ===================================================== */
+
+    function render() {
+      renderNav();
+      renderTopbar();
+      renderView();
+    }
+
+    function renderNav() {
+      const nav = document.getElementById("nav");
+
+      nav.innerHTML = routes.map(route => `
+        <button class="nav-button ${state.activeRoute === route.id ? "active" : ""}" data-route="${route.id}">
+          <span>${route.icon}</span>
+          <span>${route.label}</span>
+        </button>
+      `).join("");
+    }
+
+    function renderTopbar() {
+      const route = getActiveRoute();
+
+      document.getElementById("page-title").textContent = route.title;
+      document.getElementById("page-subtitle").textContent = route.subtitle;
+
+      const toolbar = document.getElementById("toolbar");
+      toolbar.innerHTML = getToolbarHtml();
+    }
+
+    function getToolbarHtml() {
+      if (state.activeRoute === "dashboard") {
+        return `
+          <button class="button primary" data-action="create-assessment">New assessment</button>
+          <button class="button" data-route="wizard">Open wizard</button>
+        `;
+      }
+
+      if (state.activeRoute === "assessments") {
+        return `
+          <button class="button primary" data-action="create-assessment">New assessment</button>
+          <button class="button" data-action="seed-demo">Seed demo</button>
+        `;
+      }
+
+      if (state.activeRoute === "tools") {
+        return `
+          <button class="button" data-action="copy-summary">Copy summary</button>
+          <button class="button primary" data-action="export-json">Export JSON</button>
+        `;
+      }
+
+      return "";
+    }
+
+    function renderView() {
+      const view = document.getElementById("view");
+
+      const viewMap = {
+        dashboard: renderDashboard,
+        assessments: renderAssessments,
+        wizard: renderWizard,
+        results: renderResults,
+        tools: renderTools,
+        settings: renderSettings
+      };
+
+      const renderer = viewMap[state.activeRoute] || renderDashboard;
+      view.innerHTML = renderer();
+    }
+
+    function renderDashboard() {
+      const selected = getSelectedAssessment();
+      const completedCount = state.assessments.filter(item => item.status === "Complete").length;
+
+      return `
+        <div class="grid three">
+          ${metricCard("Assessments", state.assessments.length, "Saved locally")}
+          ${metricCard("Completed", completedCount, "Ready for reporting")}
+          ${metricCard("Controls", state.controls.length, "Reusable controls")}
+        </div>
+
+        <div class="grid two">
+          <div class="card">
+            <h2>Build status</h2>
+            <p class="notice">
+              Part 1 is installed. This is the clean app shell with permanent paste anchors for the rest of the build.
+            </p>
+            <div class="divider"></div>
+            ${renderBuildChecklist()}
+          </div>
+
+          <div class="card">
+            <h2>Selected assessment</h2>
+            ${
+              selected
+                ? renderSelectedAssessmentSummary(selected)
+                : emptyState("No assessment selected", "Create or seed an assessment to start using the workbench.")
+            }
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAssessments() {
+      return `
+        <div class="grid two">
+          <div class="card">
+            <h2>Assessment library</h2>
+            <p class="subtitle">Create and select assessments. Part 2 and Part 3 will add the full question bank and wizard.</p>
+            <div class="divider"></div>
+            ${
+              state.assessments.length
+                ? renderAssessmentList()
+                : emptyState("No assessments yet", "Use New assessment or Seed demo to create your first local record.")
+            }
+          </div>
+
+          <div class="card">
+            <h2>Assessment details</h2>
+            ${renderAssessmentDetails()}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAssessmentDetails() {
+      const assessment = getSelectedAssessment();
+
+      if (!assessment) {
+        return emptyState("Nothing selected", "Choose an assessment from the library.");
+      }
+
+      return `
+        <div class="form-grid">
+          <div class="field">
+            <label>Use case title</label>
+            <input class="input" data-input-field="title" data-assessment-id="${assessment.id}" value="${escapeAttr(assessment.title)}" />
+          </div>
+
+          <div class="field">
+            <label>Owner</label>
+            <input class="input" data-input-field="owner" data-assessment-id="${assessment.id}" value="${escapeAttr(assessment.owner)}" />
+          </div>
+
+          <div class="field">
+            <label>Business area</label>
+            <input class="input" data-input-field="businessArea" data-assessment-id="${assessment.id}" value="${escapeAttr(assessment.businessArea)}" />
+          </div>
+
+          <div class="field">
+            <label>Description</label>
+            <textarea class="textarea" data-input-field="description" data-assessment-id="${assessment.id}">${escapeHtml(assessment.description)}</textarea>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="list">
+            ${infoRow("Status", assessment.status)}
+            ${infoRow("Risk", assessment.riskLevel)}
+            ${infoRow("Progress", `${assessment.progress || 0}%`)}
+            ${infoRow("Updated", formatDate(assessment.updatedAt))}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderWizard() {
+      const assessment = getSelectedAssessment();
+
+      if (!assessment) {
+        return `
+          <div class="card">
+            ${emptyState("No assessment selected", "Create or select an assessment before opening the wizard.")}
+          </div>
+        `;
+      }
+
+      if (!assessmentQuestions.length) {
+        return `
+          <div class="card">
+            <h2>Assessment Wizard</h2>
+            <p class="notice">
+              The wizard shell is ready. Paste Part 2 into <span class="code-anchor">PASTE PART 2 — ASSESSMENT QUESTION BANK HERE</span>, then Part 3 will activate the guided workflow.
+            </p>
+            ${renderSelectedAssessmentSummary(assessment)}
+          </div>
+        `;
+      }
+
+      return renderQuestionBankPlaceholder(assessment);
+    }
+
+    function renderQuestionBankPlaceholder(assessment) {
+      return `
+        <div class="card">
+          <h2>Question bank loaded</h2>
+          <p>Questions are available, but the full wizard UI is added in Part 3.</p>
+          ${renderSelectedAssessmentSummary(assessment)}
+        </div>
+      `;
+    }
+
+    function renderResults() {
+      const assessment = getSelectedAssessment();
+
+      return `
+        <div class="grid two">
+          <div class="card">
+            <h2>Scoring results</h2>
+            ${
+              assessment
+                ? renderSelectedAssessmentSummary(assessment)
+                : emptyState("No assessment selected", "Select an assessment to view results.")
+            }
+          </div>
+
+          <div class="card">
+            <h2>Recommended controls</h2>
+            ${
+              assessment
+                ? renderControlList(getRecommendedControls(assessment))
+                : emptyState("No controls to show", "Controls will appear once an assessment is selected.")
+            }
+          </div>
+        </div>
+      `;
+    }
+
+    function renderTools() {
+      return `
+        <div class="grid two">
+          <div class="card">
+            <h2>Export tools</h2>
+            <p>Export your local workbench data or copy a short assessment summary.</p>
+            <div class="toolbar">
+              <button class="button primary" data-action="export-json">Export JSON</button>
+              <button class="button" data-action="copy-summary">Copy summary</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Prompt helper & checklist</h2>
+            <p class="notice">
+              Part 6 will add the prompt helper, governance checklist, Markdown export, and richer reporting tools.
+            </p>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderSettings() {
+      return `
+        <div class="grid two">
+          <div class="card">
+            <h2>Local storage</h2>
+            <div class="list">
+              ${infoRow("Created", formatDate(state.createdAt))}
+              ${infoRow("Updated", formatDate(state.updatedAt))}
+              ${infoRow("Assessments", state.assessments.length)}
+              ${infoRow("Selected ID", state.selectedAssessmentId || "None")}
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Data actions</h2>
+            <div class="toolbar">
+              <button class="button primary" data-action="seed-demo">Seed demo</button>
+              <button class="button danger" data-action="reset-data">Reset local data</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderBuildChecklist() {
+      const rows = [
+        ["Part 1", "Shell, state, routing, anchors", state.build.part1],
+        ["Part 2", "Question bank", state.build.part2],
+        ["Part 3", "Wizard UX", state.build.part3],
+        ["Part 4", "Scoring engine", state.build.part4],
+        ["Part 5", "Results and controls", state.build.part5],
+        ["Part 6", "Exports and tools", state.build.part6],
+        ["Part 7", "Polish and QA", state.build.part7]
+      ];
+
+      return `
+        <div class="list">
+          ${rows.map(([part, label, done]) => `
+            <div class="list-item">
+              <div>
+                <div class="item-title">${part}</div>
+                <div class="item-meta">${label}</div>
+              </div>
+              <span class="pill ${done ? "green" : ""}">${done ? "Installed" : "Pending"}</span>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function renderAssessmentList() {
+      return `
+        <div class="list">
+          ${state.assessments.map(assessment => `
+            <div class="list-item">
+              <div>
+                <div class="item-title">${escapeHtml(assessment.title)}</div>
+                <div class="item-meta">
+                  ${escapeHtml(assessment.owner || "No owner")} · ${escapeHtml(assessment.businessArea || "No area")} · ${assessment.progress || 0}% complete
+                </div>
+              </div>
+              <div class="toolbar">
+                <span class="pill ${riskPillClass(assessment.riskLevel)}">${escapeHtml(assessment.riskLevel)}</span>
+                <button class="button small" data-action="select-assessment" data-id="${assessment.id}">Select</button>
+                <button class="button small danger" data-action="delete-assessment" data-id="${assessment.id}">Delete</button>
+              </div>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function renderSelectedAssessmentSummary(assessment) {
+      return `
+        <div class="list">
+          ${infoRow("Title", assessment.title)}
+          ${infoRow("Owner", assessment.owner || "Not assigned")}
+          ${infoRow("Business area", assessment.businessArea || "Not set")}
+          ${infoRow("Status", assessment.status)}
+          ${infoRow("Risk level", assessment.riskLevel)}
+          ${infoRow("Progress", `${assessment.progress || 0}%`)}
+        </div>
+      `;
+    }
+
+    function renderControlList(controls) {
+      if (!controls || !controls.length) {
+        return emptyState("No controls yet", "Part 5 will add richer recommended controls.");
+      }
+
+      return `
+        <div class="list">
+          ${controls.map(control => `
+            <div class="list-item">
+              <div>
+                <div class="item-title">${escapeHtml(control.name)}</div>
+                <div class="item-meta">${escapeHtml(control.category)} · ${escapeHtml(control.description)}</div>
+              </div>
+              <span class="pill">${escapeHtml(control.strength || "Control")}</span>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function metricCard(label, value, helper) {
+      return `
+        <div class="card metric-card">
+          <div>
+            <div class="metric-label">${label}</div>
+            <div class="metric-value">${value}</div>
+          </div>
+          <div class="metric-helper">${helper}</div>
+        </div>
+      `;
+    }
+
+    function infoRow(label, value) {
+      return `
+        <div class="list-item">
+          <div class="item-title">${escapeHtml(label)}</div>
+          <div class="item-meta">${escapeHtml(String(value ?? ""))}</div>
+        </div>
+      `;
+    }
+
+    function emptyState(title, message) {
+      return `
+        <div class="empty">
+          <strong>${escapeHtml(title)}</strong>
+          <span>${escapeHtml(message)}</span>
+        </div>
+      `;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function escapeAttr(value) {
+      return escapeHtml(value);
+    }
+/* =====================================================
+   START PART 7 — FINAL POLISH / QA / DEMO DATA
+===================================================== */
+
+function runQaChecks() {
+  const checks = [
+    {
+      label: "Question bank installed",
+      passed: Array.isArray(assessmentQuestions) && assessmentQuestions.length > 0
+    },
+    {
+      label: "Assessment sections installed",
+      passed: Array.isArray(assessmentSections) && assessmentSections.length > 0
+    },
+    {
+      label: "Scoring engine installed",
+      passed: typeof calculateAssessmentScore === "function"
+    },
+    {
+      label: "Recommendations installed",
+      passed: typeof getRecommendedControls === "function"
+    },
+    {
+      label: "Markdown export installed",
+      passed: typeof generateMarkdownReport === "function"
+    },
+    {
+      label: "Local storage available",
+      passed: typeof localStorage !== "undefined"
+    }
+  ];
+
+  return checks;
+}
+
+function renderQaPanel() {
+  const checks = runQaChecks();
+
+  return `
+    <div class="card">
+      <h2>Final QA checklist</h2>
+      <p class="subtitle">Use this to confirm the single-file build is complete and stable.</p>
+
+      <div class="divider"></div>
+
+      <div class="list">
+        ${checks.map(check => `
+          <div class="list-item">
+            <div>
+              <div class="item-title">${escapeHtml(check.label)}</div>
+              <div class="item-meta">${check.passed ? "Working as expected" : "Needs review"}</div>
+            </div>
+            <span class="pill ${check.passed ? "green" : "red"}">${check.passed ? "Pass" : "Fail"}</span>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function printCurrentView() {
+  window.print();
+}
+
+function seedRichDemoData() {
+  const demo = {
+    id: uid("assessment"),
+    title: "Customer communications AI assistant",
+    owner: "Responsible Data & AI",
+    businessArea: "Customer Operations",
+    description: "A generative AI assistant used by frontline colleagues to draft customer communication responses. Outputs are reviewed by a human before being sent.",
+    status: "Review required",
+    riskLevel: "Medium risk",
+    score: 42,
+    rawScore: 0,
+    maxScore: 0,
+    progress: 100,
+    answers: {
+      context_purpose: "The tool supports colleagues by drafting suggested responses to customer queries. It does not send messages automatically and should remain a drafting aid.",
+      context_users: "frontline",
+      context_decision_role: "recommendation",
+      context_supplier: "approved_supplier",
+      data_personal: "limited",
+      data_sensitive: "possible",
+      data_quality: "partially_known",
+      data_reuse: "minor",
+      impact_customer: "direct_low",
+      impact_vulnerable: "possible",
+      impact_financial: "minor",
+      model_explainability: "partial",
+      model_accuracy: "sampled",
+      model_hallucination: "medium",
+      model_human_oversight: "basic",
+      governance_owner: "yes",
+      governance_documentation: "partial",
+      governance_monitoring: "planned",
+      governance_approval: "in_review"
+    },
+    notes: "Demo record for testing the final workbench flow.",
+    createdAt: nowIso(),
+    updatedAt: nowIso()
+  };
+
+  const recalculated = recalculateAssessment(demo);
+
+  state.assessments = [recalculated];
+  state.selectedAssessmentId = recalculated.id;
+  state.activeRoute = "dashboard";
+  saveState();
+  render();
+}
+
+function renderSettings() {
+  return `
+    <div class="grid two">
+      <div class="card">
+        <h2>Local storage</h2>
+        <div class="list">
+          ${infoRow("Created", formatDate(state.createdAt))}
+          ${infoRow("Updated", formatDate(state.updatedAt))}
+          ${infoRow("Assessments", state.assessments.length)}
+          ${infoRow("Selected ID", state.selectedAssessmentId || "None")}
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="toolbar">
+          <button class="button primary" data-action="seed-rich-demo">Seed rich demo</button>
+          <button class="button" data-action="seed-demo">Seed simple demo</button>
+          <button class="button danger" data-action="reset-data">Reset local data</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Single-file deployment</h2>
+        <p class="subtitle">
+          This app is designed to run as one local-first GitHub Pages file: HTML, CSS, JavaScript, state, scoring, exports, and tools are all contained in <strong>index.html</strong>.
+        </p>
+
+        <div class="divider"></div>
+
+        <div class="toolbar">
+          <button class="button" data-action="print-view">Print current view</button>
+          <button class="button primary" data-route="tools">Open tools</button>
+        </div>
+      </div>
+    </div>
+
+    ${renderQaPanel()}
+  `;
+}
+
+function enhancedMetricCard(label, value, helper, progressValue = null) {
+  return `
+    <div class="card metric-card">
+      <div>
+        <div class="metric-label">${escapeHtml(label)}</div>
+        <div class="metric-value">${escapeHtml(value)}</div>
+      </div>
+      ${progressValue !== null ? `
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:${Math.max(0, Math.min(100, Number(progressValue)))}%"></div>
+        </div>
+      ` : ""}
+      <div class="metric-helper">${escapeHtml(helper)}</div>
+    </div>
+  `;
+}
+
+updateBuildFlag("part7");
+
+/* =====================================================
+   END PART 7 — FINAL POLISH / QA / DEMO DATA
+===================================================== */
+    /* =====================================================
+       PART 1 — EVENTS
+    ===================================================== */
+
+    document.addEventListener("click", event => {
+      const routeTarget = event.target.closest("[data-route]");
+      const actionTarget = event.target.closest("[data-action]");
+
+      if (routeTarget) {
+        navigate(routeTarget.dataset.route);
+        return;
+      }
+
+      if (!actionTarget) return;
+
+      const action = actionTarget.dataset.action;
+      const id = actionTarget.dataset.id;
+
+      const actions = {
+  "toggle-menu": toggleMobileMenu,
+  "seed-demo": seedDemoData,
+  "seed-rich-demo": seedRichDemoData,
+  "reset-data": resetData,
+  "create-assessment": createAssessmentShell,
+  "select-assessment": () => selectAssessment(id),
+  "delete-assessment": () => deleteAssessment(id),
+  "export-json": exportStateAsJson,
+  "copy-summary": copySummaryToClipboard,
+  "wizard-prev": () => setWizardSection(wizardSectionIndex - 1),
+  "wizard-next": () => setWizardSection(wizardSectionIndex + 1),
+  "wizard-section": () => setWizardSection(Number(actionTarget.dataset.index)),
+  "complete-assessment": completeAssessmentDraft,
+  "copy-markdown": copyMarkdownReport,
+  "download-markdown": downloadMarkdownReport,
+  "print-view": printCurrentView
+};
+      if (actions[action]) actions[action]();
+    });
+
+    document.addEventListener("input", event => {
+      
+const promptHelperInput = event.target.closest("[data-prompt-helper-input]");
+if (promptHelperInput) {
+  updatePromptHelper(promptHelperInput.value);
+  return;
+}
+const input = event.target.closest("[data-input-field]");
+      if (!input) return;
+
+		const answerInput = event.target.closest("[data-answer-question]");
+if (answerInput) {
+  updateAssessmentAnswer(
+    answerInput.dataset.assessmentId,
+    answerInput.dataset.answerQuestion,
+    answerInput.value
+  );
+  return;
+}
+      updateAssessmentField(
+        input.dataset.assessmentId,
+        input.dataset.inputField,
+        input.value
+      );
+    });
+
+    render();
+  </script>
+</body>
+</html>
