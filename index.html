@@ -2889,6 +2889,8 @@ function renderResults() {
     return `
       <div class="card">
         ${emptyState("No assessment selected", "Select an assessment to view scoring results and recommendations.")}
+        ${renderAiActAlignmentPanel(assessment)}
+        ${renderAssessmentMethodology()}
       </div>
     `;
   }
@@ -2968,10 +2970,6 @@ function renderResults() {
     </div>
   `;
 }
-
-${renderAiActAlignmentPanel(assessment)}
-
-${renderAssessmentMethodology()}
 
 function getGovernanceDecision(assessment) {
   const score = assessment.score || 0;
