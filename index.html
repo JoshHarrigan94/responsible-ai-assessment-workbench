@@ -680,6 +680,82 @@
   box-shadow: var(--shadow-soft);
 }
 
+.wizard-journey-intro {
+  display: grid;
+  gap: 16px;
+}
+
+.review-summary-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.review-section-card {
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-lg);
+  background: white;
+  padding: 18px;
+}
+
+.review-answer {
+  display: grid;
+  gap: 6px;
+  padding: 12px 0;
+  border-top: 1px solid var(--slate-200);
+}
+
+.review-answer:first-of-type {
+  border-top: 0;
+}
+
+.missing-answer {
+  color: var(--red-600);
+  font-weight: 900;
+}
+
+.review-status-strip {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.journey-map {
+  display: grid;
+  gap: 10px;
+}
+
+.journey-map-item {
+  border: 1px solid var(--slate-200);
+  background: white;
+  border-radius: var(--radius-md);
+  padding: 14px;
+  display: grid;
+  grid-template-columns: 34px 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.journey-map-number {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: var(--slate-100);
+  color: var(--navy-900);
+  font-weight: 900;
+}
+
+.journey-map-item.active {
+  border-color: var(--navy-900);
+  background: linear-gradient(135deg, white, #f8fafc);
+}
+
+.journey-map-item.complete .journey-map-number {
+  background: var(--green-100);
+  color: var(--green-600);
+}
+
 .question-status {
   font-size: 0.8rem;
   font-weight: 900;
@@ -752,10 +828,115 @@
   color: var(--slate-600);
 }
 
+.alignment-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.alignment-card {
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-lg);
+  background: white;
+  padding: 18px;
+  display: grid;
+  gap: 10px;
+}
+
+.alignment-card.strong {
+  border-left: 6px solid var(--green-600);
+}
+
+.alignment-card.partial {
+  border-left: 6px solid var(--amber-600);
+}
+
+.alignment-card.weak {
+  border-left: 6px solid var(--red-600);
+}
+
+.alignment-score {
+  font-size: 1.8rem;
+  font-weight: 950;
+  letter-spacing: -0.05em;
+}
+
+.methodology-box {
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  background: linear-gradient(135deg, white, #f8fafc);
+  display: grid;
+  gap: 10px;
+}
+
 .demo-note {
   font-size: 0.9rem;
   color: var(--slate-600);
   line-height: 1.55;
+}
+
+.floating-menu-button {
+  position: fixed;
+  top: 18px;
+  left: 18px;
+  z-index: 1200;
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.14);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: 0.18s ease;
+}
+
+.floating-menu-button:hover {
+  transform: translateY(-2px);
+}
+
+.floating-menu-icon {
+  display: grid;
+  gap: 4px;
+}
+
+.floating-menu-icon span {
+  width: 18px;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--navy-900);
+}
+
+.assessment-progress-floating {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 1100;
+  min-width: 220px;
+  border-radius: 18px;
+  padding: 14px;
+  background: rgba(255,255,255,0.94);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(15,23,42,0.08);
+  box-shadow: 0 12px 32px rgba(15,23,42,0.12);
+  display: grid;
+  gap: 10px;
+}
+
+.assessment-progress-title {
+  font-size: 0.82rem;
+  font-weight: 900;
+  color: var(--slate-500);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.assessment-progress-name {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--navy-900);
 }
 
 .setup-card {
@@ -780,6 +961,66 @@
   gap: 12px;
   flex-wrap: wrap;
   margin-top: 18px;
+}
+
+.demo-walkthrough {
+  display: grid;
+  gap: 14px;
+}
+
+.demo-step-card {
+  border: 1px solid var(--slate-200);
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  display: grid;
+  gap: 10px;
+}
+
+.demo-step-card.current {
+  border-left: 6px solid var(--coral-500);
+}
+
+.demo-flow-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.qa-checklist {
+  display: grid;
+  gap: 14px;
+}
+
+.qa-item {
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-lg);
+  background: white;
+  padding: 18px;
+  display: grid;
+  gap: 8px;
+}
+
+.qa-item.complete {
+  border-left: 6px solid var(--green-600);
+}
+
+.demo-script-box {
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, white, #f8fafc);
+  padding: 18px;
+  display: grid;
+  gap: 12px;
+}
+
+.demo-script-step {
+  padding: 10px 0;
+  border-top: 1px solid var(--slate-200);
+}
+
+.demo-script-step:first-child {
+  border-top: 0;
 }
 
 .progress-bar {
@@ -835,13 +1076,15 @@
 </head>
 
 <body>
+  <div id="floating-navigation"></div>
+
   <div class="app-shell">
     <aside class="sidebar" id="sidebar">
       <div class="brand">
         <div class="brand-mark">AI</div>
         <div>
           <div class="brand-title">Responsible AI<br />Workbench</div>
-          <div class="brand-subtitle">AI triage, risk & controls</div>
+          <div class="brand-subtitle">GenAI use case triage</div>
         </div>
       </div>
 
@@ -893,17 +1136,17 @@
   subtitle: "Set up the generative AI / Co-Pilot use case before moving into the guided assessment wizard."
 },
   {
-    id: "assessments",
-    label: "Assessments",
+    id: "Use Cases",
+    label: "Use Cases",
     icon: "▣",
-    title: "Assessment Workspace",
+    title: "Use Case Assessment",
     subtitle: "Create, edit, complete, score, and export a selected AI use case assessment."
   },
   {
-    id: "tools",
-    label: "Tools",
+    id: "Exports & Guidance",
+    label: "Exports & Guidance",
     icon: "✦",
-    title: "Tools",
+    title: "Exports & Guidance",
     subtitle: "Prompt helper, governance checklist, export tools, and reusable artefacts."
   },
   {
@@ -918,6 +1161,7 @@
     const defaultState = {
       activeRoute: "dashboard",
       selectedAssessmentId: null,
+      wizardMode: "intro",
       assessments: [],
       controls: [],
       recommendations: [],
@@ -1450,6 +1694,14 @@ updateBuildFlag("part2");
 
 let wizardSectionIndex = 0;
 
+function setWizardMode(mode) {
+  state.wizardMode = mode;
+  state.activeRoute = "assessments";
+  state.activeAssessmentTab = "wizard";
+  saveState();
+  render();
+}
+
 function getWizardSection() {
   return assessmentSections[wizardSectionIndex] || assessmentSections[0] || null;
 }
@@ -1458,6 +1710,26 @@ function setWizardSection(index) {
   wizardSectionIndex = Math.max(0, Math.min(index, assessmentSections.length - 1));
   state.activeAssessmentTab = "wizard";
   state.activeRoute = "assessments";
+  saveState();
+  render();
+}
+
+function completeCurrentWizardSection() {
+  const isLast = wizardSectionIndex === assessmentSections.length - 1;
+
+  if (isLast) {
+  state.wizardMode = "review";
+  state.activeAssessmentTab = "wizard";
+  state.activeRoute = "assessments";
+  saveState();
+  render();
+  return;
+}
+
+  wizardSectionIndex += 1;
+  state.wizardMode = "intro";
+  state.activeRoute = "assessments";
+  state.activeAssessmentTab = "wizard";
   saveState();
   render();
 }
@@ -1485,6 +1757,228 @@ function getSectionProgress(assessment, sectionId) {
   return Math.round((answered / questions.length) * 100);
 }
 
+function getMissingAnswers(assessment) {
+  return assessmentQuestions.filter(question => {
+    const value = assessment.answers?.[question.id];
+    return value === undefined || value === null || value === "";
+  });
+}
+
+function renderAssessmentReview(assessment) {
+  const missing = getMissingAnswers(assessment);
+  const answered = assessmentQuestions.length - missing.length;
+  const progress = assessmentQuestions.length
+    ? Math.round((answered / assessmentQuestions.length) * 100)
+    : 0;
+
+  return `
+    <div class="card hero-card">
+      <div class="workspace-title-row">
+        <div>
+          <div class="eyebrow">Review before results</div>
+          <h2 class="workspace-title">Check your answers before generating the assessment outcome.</h2>
+          <p class="subtitle">
+            This step helps make the score and recommendations more trustworthy. Review missing answers, check section summaries, and edit anything that does not look right.
+          </p>
+        </div>
+
+        <div>
+          <span class="pill ${progress === 100 ? "green" : "amber"}">${progress}% complete</span>
+          <div class="save-status">✓ Saved locally</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="review-status-strip">
+        <span class="trust-pill">Answered: ${answered}</span>
+        <span class="trust-pill">Missing: ${missing.length}</span>
+        <span class="trust-pill">Sections: ${assessmentSections.length}</span>
+        <span class="trust-pill">Draft risk: ${escapeHtml(assessment.riskLevel)}</span>
+      </div>
+    </div>
+
+    ${
+      missing.length
+        ? `
+          <div class="card">
+            <h2>Missing answers</h2>
+            <p class="subtitle">
+              You can still generate results, but missing answers reduce confidence in the assessment.
+            </p>
+            <div class="divider"></div>
+            <div class="list">
+              ${missing.map(question => `
+                <div class="list-item">
+                  <div>
+                    <div class="item-title">${escapeHtml(question.label)}</div>
+                    <div class="item-meta">${escapeHtml(getSectionTitle(question.sectionId))}</div>
+                  </div>
+                  <button class="button small" data-action="edit-review-section" data-section-id="${question.sectionId}">
+                    Edit section
+                  </button>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+        `
+        : `
+          <div class="card">
+            <h2>Ready to generate results</h2>
+            <p class="notice">
+              All questions have been answered. You can now generate the risk outcome, review drivers, and export the governance summary.
+            </p>
+          </div>
+        `
+    }
+
+    <div class="review-summary-grid">
+      ${assessmentSections.map(section => renderReviewSection(assessment, section)).join("")}
+    </div>
+
+    <div class="wizard-footer">
+      <div class="workspace-title-row">
+        <div>
+          <div class="save-status">✓ Review state saved</div>
+          <div class="item-meta">
+            Confirming will take you to the Results tab with the current scoring outcome and recommended controls.
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <button class="button" data-action="wizard-review-back">Back to final section</button>
+          <button class="button primary" data-action="confirm-assessment-results">Confirm and generate results</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderReviewSection(assessment, section) {
+  const questions = getQuestionsForSection(section.id);
+  const progress = getSectionProgress(assessment, section.id);
+
+  return `
+    <div class="review-section-card">
+      <div class="workspace-title-row">
+        <div>
+          <h2>${escapeHtml(section.title)}</h2>
+          <p class="subtitle">${escapeHtml(section.description)}</p>
+        </div>
+
+        <div class="toolbar">
+          <span class="pill ${progress === 100 ? "green" : "amber"}">${progress}% complete</span>
+          <button class="button small" data-action="edit-review-section" data-section-id="${section.id}">Edit</button>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      ${questions.map(question => {
+        const value = assessment.answers?.[question.id];
+        const missing = value === undefined || value === null || value === "";
+        const answerLabel = missing ? "Missing answer" : getAnswerLabel(question, value);
+
+        return `
+          <div class="review-answer">
+            <div class="item-title">${escapeHtml(question.label)}</div>
+            <div class="item-meta ${missing ? "missing-answer" : ""}">
+              ${escapeHtml(answerLabel)}
+            </div>
+          </div>
+        `;
+      }).join("")}
+    </div>
+  `;
+}
+
+function getSectionTitle(sectionId) {
+  return assessmentSections.find(section => section.id === sectionId)?.title || "Unknown section";
+}
+
+function editReviewSection(sectionId) {
+  const index = assessmentSections.findIndex(section => section.id === sectionId);
+  wizardSectionIndex = Math.max(0, index);
+  state.wizardMode = "questions";
+  state.activeRoute = "assessments";
+  state.activeAssessmentTab = "wizard";
+  saveState();
+  render();
+}
+
+function openAssessmentReview() {
+  state.wizardMode = "review";
+  state.activeRoute = "assessments";
+  state.activeAssessmentTab = "wizard";
+  saveState();
+  render();
+}
+
+function confirmAssessmentResults() {
+  const assessment = getSelectedAssessment();
+  if (!assessment) return;
+
+  state.assessments = state.assessments.map(item => {
+    if (item.id !== assessment.id) return item;
+
+    return {
+      ...recalculateAssessment(item),
+      status: item.progress >= 100 ? "Complete" : "Review generated with missing answers",
+      reviewedAt: nowIso(),
+      updatedAt: nowIso()
+    };
+  });
+
+  state.wizardMode = "intro";
+  state.activeRoute = "assessments";
+  state.activeAssessmentTab = "results";
+
+  saveState();
+  render();
+}
+
+function renderWizardJourneyIntro(assessment) {
+  return `
+    <div class="card hero-card">
+      <div class="wizard-journey-intro">
+        <div>
+          <div class="eyebrow">Guided governance walkthrough</div>
+          <h2 class="workspace-title">Complete the assessment in five structured sections.</h2>
+          <p class="subtitle">
+            This walkthrough will capture the key risk signals for a generative AI / Co-Pilot use case, then turn them into a risk result, recommended controls, and an exportable summary.
+          </p>
+        </div>
+
+        <div class="journey-map">
+          ${assessmentSections.map((section, index) => {
+            const progress = getSectionProgress(assessment, section.id);
+            const complete = progress === 100;
+            const active = index === wizardSectionIndex;
+
+            return `
+              <div class="journey-map-item ${active ? "active" : ""} ${complete ? "complete" : ""}">
+                <div class="journey-map-number">${complete ? "✓" : index + 1}</div>
+                <div>
+                  <div class="item-title">${escapeHtml(section.title)}</div>
+                  <div class="item-meta">${escapeHtml(section.description)}</div>
+                </div>
+                <span class="pill ${complete ? "green" : active ? "amber" : ""}">
+                  ${complete ? "Complete" : active ? "Current" : `${progress}%`}
+                </span>
+              </div>
+            `;
+          }).join("")}
+        </div>
+
+        <div class="toolbar">
+          <button class="button primary" data-action="wizard-start">Start this section</button>
+          <button class="button" data-action="set-assessment-tab" data-tab="overview">Edit overview</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 function renderWizard() {
   const assessment = getSelectedAssessment();
 
@@ -1506,6 +2000,14 @@ function renderWizard() {
       </div>
     `;
   }
+
+if ((state.wizardMode || "intro") === "intro") {
+  return renderWizardJourneyIntro(assessment);
+}
+
+if (state.wizardMode === "review") {
+  return renderAssessmentReview(assessment);
+}
 
   const section = getWizardSection();
   const questions = getQuestionsForSection(section.id);
@@ -1730,8 +2232,8 @@ function renderWizardFooter(assessment) {
           <button class="button" data-action="wizard-prev" ${isFirst ? "disabled" : ""}>Previous</button>
           ${
             isLast
-              ? `<button class="button primary" data-action="set-assessment-tab" data-tab="results">Review results</button>`
-              : `<button class="button primary" data-action="wizard-next">Next section</button>`
+              ? `<button class="button primary" data-action="open-assessment-review">Review answers</button>`
+              : `<button class="button primary" data-action="wizard-transition-next">Complete section</button>`
           }
           ${
             progress === 100
@@ -2114,7 +2616,201 @@ updateBuildFlag("part4");
 /* =====================================================
    START PART 5 — RESULTS, CONTROLS + RECOMMENDATIONS
 ===================================================== */
+/* =====================================================
+   G4 — TRUST & EU AI ACT ALIGNMENT LAYER
+===================================================== */
 
+const aiActAlignmentThemes = [
+  {
+    id: "risk_management",
+    title: "Risk management",
+    description: "Identifies material risk signals, risk drivers, and required control actions.",
+    linkedQuestions: [
+      "context_decision_role",
+      "impact_customer",
+      "impact_vulnerable",
+      "impact_financial",
+      "model_hallucination"
+    ]
+  },
+  {
+    id: "data_governance",
+    title: "Data governance",
+    description: "Checks personal data, sensitive data, data reuse, and data quality concerns.",
+    linkedQuestions: [
+      "data_personal",
+      "data_sensitive",
+      "data_quality",
+      "data_reuse"
+    ]
+  },
+  {
+    id: "transparency",
+    title: "Transparency and explainability",
+    description: "Assesses whether users can understand the AI-supported output and its limitations.",
+    linkedQuestions: [
+      "model_explainability",
+      "context_users",
+      "context_decision_role"
+    ]
+  },
+  {
+    id: "human_oversight",
+    title: "Human oversight",
+    description: "Checks whether meaningful human review, challenge, and intervention are present.",
+    linkedQuestions: [
+      "model_human_oversight",
+      "context_decision_role",
+      "governance_owner"
+    ]
+  },
+  {
+    id: "documentation",
+    title: "Documentation and record keeping",
+    description: "Checks whether purpose, ownership, approvals, and review evidence are documented.",
+    linkedQuestions: [
+      "governance_documentation",
+      "governance_owner",
+      "governance_approval"
+    ]
+  },
+  {
+    id: "monitoring",
+    title: "Monitoring and post-use review",
+    description: "Checks whether ongoing monitoring, review cadence, and operational controls are defined.",
+    linkedQuestions: [
+      "governance_monitoring",
+      "model_accuracy",
+      "model_hallucination"
+    ]
+  }
+];
+
+function getAiActAlignment(assessment) {
+  if (!assessment) return [];
+
+  return aiActAlignmentThemes.map(theme => {
+    const linked = theme.linkedQuestions.map(questionId => {
+      const question = assessmentQuestions.find(item => item.id === questionId);
+      const value = assessment.answers?.[questionId];
+      const answered = value !== undefined && value !== null && value !== "";
+      const score = getQuestionScore(question, value);
+      const max = getMaxQuestionScore(question);
+
+      return {
+        questionId,
+        answered,
+        score,
+        max
+      };
+    });
+
+    const answeredCount = linked.filter(item => item.answered).length;
+    const total = linked.length;
+    const rawScore = linked.reduce((sum, item) => sum + item.score, 0);
+    const maxScore = linked.reduce((sum, item) => sum + item.max, 0);
+    const riskPercentage = maxScore ? Math.round((rawScore / maxScore) * 100) : 0;
+    const completion = total ? Math.round((answeredCount / total) * 100) : 0;
+
+    let status = "Strong";
+    let className = "strong";
+    let summary = "Theme appears well controlled based on current answers.";
+
+    if (completion < 100) {
+      status = "Incomplete";
+      className = "partial";
+      summary = "More evidence is needed before this theme can be relied on.";
+    } else if (riskPercentage >= 55) {
+      status = "Weak";
+      className = "weak";
+      summary = "This theme shows material risk and should be reviewed before deployment.";
+    } else if (riskPercentage >= 25) {
+      status = "Partial";
+      className = "partial";
+      summary = "This theme has some risk indicators and should be supported by clear controls.";
+    }
+
+    return {
+      ...theme,
+      status,
+      className,
+      summary,
+      completion,
+      riskPercentage,
+      answeredCount,
+      total
+    };
+  });
+}
+
+function renderAiActAlignmentPanel(assessment) {
+  const alignment = getAiActAlignment(assessment);
+
+  return `
+    <div class="card">
+      <div class="workspace-title-row">
+        <div>
+          <div class="eyebrow">Trust and regulatory alignment</div>
+          <h2>EU AI Act-style governance themes</h2>
+          <p class="subtitle">
+            This is a pragmatic alignment view for generative AI / Co-Pilot use cases. It supports early triage and review preparation; it does not determine legal compliance.
+          </p>
+        </div>
+        <span class="pill">Prototype alignment</span>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="alignment-grid">
+        ${alignment.map(item => `
+          <div class="alignment-card ${item.className}">
+            <div class="workspace-title-row">
+              <div>
+                <div class="item-title">${escapeHtml(item.title)}</div>
+                <div class="item-meta">${escapeHtml(item.description)}</div>
+              </div>
+              <span class="pill ${item.className === "strong" ? "green" : item.className === "weak" ? "red" : "amber"}">
+                ${escapeHtml(item.status)}
+              </span>
+            </div>
+
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:${item.completion}%"></div>
+            </div>
+
+            <div class="item-meta">
+              Evidence completeness: ${item.completion}% · Theme risk signal: ${item.riskPercentage}%
+            </div>
+
+            <div class="demo-note">
+              ${escapeHtml(item.summary)}
+            </div>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function renderAssessmentMethodology() {
+  return `
+    <div class="methodology-box">
+      <div class="eyebrow">Assessment methodology</div>
+      <h2>How this prototype reaches an outcome</h2>
+      <p class="subtitle">
+        The workbench uses structured questions to identify risk signals across use case context, data, customer impact, model behaviour, and governance maturity. Answers are converted into a normalised 0–100 risk score, then interpreted into low, medium, or high risk bands.
+      </p>
+
+      <div class="list">
+        ${infoRow("Purpose", "Early generative AI / Co-Pilot use case triage")}
+        ${infoRow("Output", "Risk score, risk drivers, recommended controls, and exportable summary")}
+        ${infoRow("Limit", "Not a formal legal, compliance, model-risk, privacy, or security approval")}
+        ${infoRow("Best use", "Front-door governance intake and review preparation")}
+        ${infoRow("Important note", "Outputs should support governance conversations, not replace formal approval")}
+      </div>
+    </div>
+  `;
+}
 const recommendationRules = [
   {
     id: "human_oversight",
@@ -2224,7 +2920,7 @@ function renderResults() {
       </div>
 
       <div class="toolbar">
-        <button class="button primary" data-action="set-assessment-tab" data-tab="controls">Review controls</button>
+        <button class="button primary" data-action="set-assessment-tab" data-tab="controls">Review recommended actions</button>
         <button class="button" data-action="set-assessment-tab" data-tab="export">Export summary</button>
         <button class="button" data-action="print-view">Print view</button>
       </div>
@@ -2272,6 +2968,10 @@ function renderResults() {
     </div>
   `;
 }
+
+${renderAiActAlignmentPanel(assessment)}
+
+${renderAssessmentMethodology()}
 
 function getGovernanceDecision(assessment) {
   const score = assessment.score || 0;
@@ -2544,8 +3244,14 @@ ${drivers.length ? drivers.map(driver => `- **${driver.severity}:** ${driver.lab
 ## Recommended controls
 ${recommendations.map(item => `- **${item.title}:** ${item.description}`).join("\n")}
 
+## EU AI Act-style governance themes
+${getAiActAlignment(assessment).map(item => `- **${item.title}:** ${item.status} — evidence completeness ${item.completion}%, theme risk signal ${item.riskPercentage}%`).join("\n")}
+
 ## Governance checklist
 ${governanceChecklistItems.map(item => `- [ ] ${item}`).join("\n")}
+
+## Important limitation
+This report is a governance triage output. It does not confirm legal compliance with the EU AI Act, GDPR, financial services regulation, internal policy, model risk requirements, information security standards, or formal approval requirements.
 `;
 }
 
@@ -2715,10 +3421,16 @@ updateBuildFlag("part6");
     ===================================================== */
 
     function render() {
-      renderNav();
-      renderTopbar();
-      renderView();
-    }
+  renderNav();
+  renderTopbar();
+  renderView();
+
+  const floatingRoot = document.getElementById("floating-navigation");
+
+  if (floatingRoot) {
+    floatingRoot.innerHTML = renderFloatingNavigation();
+  }
+}
 
     function renderNav() {
       const nav = document.getElementById("nav");
@@ -2782,12 +3494,52 @@ updateBuildFlag("part6");
       view.innerHTML = renderer();
     }
 
+function renderFloatingNavigation() {
+  const assessment = getSelectedAssessment();
+  const hideProgress = state.activeRoute === "dashboard";
+
+  return `
+    <button class="floating-menu-button" data-action="toggle-menu" aria-label="Toggle navigation">
+      <div class="floating-menu-icon">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </button>
+
+    ${
+      assessment && !hideProgress
+  ? `
+          <div class="assessment-progress-floating">
+            <div class="assessment-progress-title">Current assessment</div>
+
+            <div class="assessment-progress-name">
+              ${escapeHtml(assessment.title)}
+            </div>
+
+            <div class="progress-bar">
+              <div 
+                class="progress-fill" 
+                style="width:${assessment.progress || 0}%"
+              ></div>
+            </div>
+
+            <div class="item-meta">
+              ${assessment.progress || 0}% complete · ${escapeHtml(assessment.riskLevel)}
+            </div>
+          </div>
+        `
+        : ""
+    }
+  `;
+}
+
 function renderPrototypeBanner() {
   return `
     <div class="prototype-banner">
       <div class="item-title">Prototype status</div>
       <div class="demo-note">
-        This workbench is a local-first prototype for AI governance triage. It supports consistency, evidence capture, and early risk review, but it does not replace formal policy, legal, privacy, compliance, security, or model-risk approval.
+        This workbench is a local-first prototype for assessing generative AI and Co-Pilot use cases before they are embedded into business workflows. It supports consistency, evidence capture, early risk review, and EU AI Act-style governance alignment, but it does not replace formal policy, legal, privacy, compliance, security, financial crime, conduct, or model-risk approval.
       </div>
     </div>
   `;
@@ -2879,6 +3631,83 @@ function renderNewAssessment() {
   `;
 }
 
+function renderDemoWalkthrough() {
+  const assessment = getSelectedAssessment();
+
+  if (!assessment) {
+    return `
+      <div class="card">
+        ${emptyState("No demo loaded", "Open the demo assessment to walk through the full product journey.")}
+      </div>
+    `;
+  }
+
+  const steps = [
+    {
+      title: "1. Overview",
+      body: "Start with the use case, owner, business area, and intended Co-Pilot workflow.",
+      action: "Open overview",
+      tab: "overview"
+    },
+    {
+      title: "2. Wizard",
+      body: "Review the guided questions across context, data, impact, model behaviour, and governance readiness.",
+      action: "Open wizard",
+      tab: "wizard"
+    },
+    {
+      title: "3. Results",
+      body: "Review the risk verdict, executive summary, drivers, controls, and governance decision.",
+      action: "Open results",
+      tab: "results"
+    },
+    {
+      title: "4. Controls",
+      body: "Review recommended actions and EU AI Act-style governance alignment themes.",
+      action: "Open controls",
+      tab: "controls"
+    },
+    {
+      title: "5. Export",
+      body: "Copy or download a governance-ready Markdown summary for review or discussion.",
+      action: "Open export",
+      tab: "export"
+    }
+  ];
+
+  return `
+    <div class="card hero-card">
+      <div class="workspace-title-row">
+        <div>
+          <div class="eyebrow">Guided demo walkthrough</div>
+          <h2 class="workspace-title">Walk through a complete generative AI governance intake and triage workflow.</h2>
+          <p class="subtitle">
+            This demo assessment is fully populated so you can show the end-to-end workflow without needing to complete every question live.
+          </p>
+        </div>
+
+        <span class="pill ${riskPillClass(assessment.riskLevel)}">${escapeHtml(assessment.riskLevel)}</span>
+      </div>
+    </div>
+
+    <div class="demo-walkthrough">
+      ${steps.map((step, index) => `
+        <div class="demo-step-card ${state.activeAssessmentTab === step.tab ? "current" : ""}">
+          <div class="workspace-title-row">
+            <div>
+              <div class="item-title">${escapeHtml(step.title)}</div>
+              <div class="item-meta">${escapeHtml(step.body)}</div>
+            </div>
+            <button class="button primary" data-action="set-assessment-tab" data-tab="${step.tab}">
+              ${escapeHtml(step.action)}
+            </button>
+          </div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
     function renderDashboard() {
   const selected = getSelectedAssessment();
   const completedCount = state.assessments.filter(item => item.status === "Complete").length;
@@ -2891,7 +3720,7 @@ function renderNewAssessment() {
       <div class="workspace-title-row">
         <div>
           <div class="eyebrow">Responsible AI governance accelerator</div>
-          <h2 class="workspace-title">Triage AI use cases before risk, policy, and assurance questions become messy.</h2>
+          <h2 class="workspace-title">Assess generative AI and Co-Pilot use cases before they move into live business workflows.</h2>
           <p class="subtitle">
             Use this workbench to create a consistent first-pass assessment, capture governance evidence, identify risk drivers, and produce a usable summary for review.
           </p>
@@ -2899,7 +3728,7 @@ function renderNewAssessment() {
 
           <div class="hero-actions">
             <button class="button primary" data-action="create-assessment">Start new assessment</button>
-            <button class="button" data-action="seed-rich-demo">Open demo assessment</button>
+            <button class="button" data-action="seed-rich-demo">Open presentation demo</button>
             ${selected ? `<button class="button coral" data-action="set-assessment-tab" data-tab="wizard">Continue current assessment</button>` : ""}
           </div>
         </div>
@@ -2911,10 +3740,9 @@ function renderNewAssessment() {
       ${metricCard("In progress", inProgressCount, "Need completion or review")}
       ${metricCard("Completed", completedCount, "Ready for reporting")}
     </div>
-
     <div class="grid two">
       <div class="card">
-        <h2>Your next best action</h2>
+        <h2>What to do next</h2>
         ${renderNextBestAction(selected)}
       </div>
 
@@ -3132,11 +3960,12 @@ function renderAssessmentWorkspace(assessment) {
       </div>
 
       <div class="workspace-tabs">
+      ${renderWorkspaceTab("walkthrough", "Walkthrough", tab)}
         ${renderWorkspaceTab("overview", "Overview", tab)}
         ${renderWorkspaceTab("wizard", "Wizard", tab)}
-        ${renderWorkspaceTab("results", "Results", tab)}
-        ${renderWorkspaceTab("controls", "Controls", tab)}
-        ${renderWorkspaceTab("export", "Export", tab)}
+        ${renderWorkspaceTab("results", "Risk Outcome", tab)}
+${renderWorkspaceTab("controls", "Recommended Actions", tab)}
+${renderWorkspaceTab("export", "Export Summary", tab)}
       </div>
     </div>
 
@@ -3157,6 +3986,9 @@ function renderWorkspaceTab(tabId, label, activeTab) {
 }
 
 function renderAssessmentWorkspaceTab(assessment, tab) {
+  if (tab === "walkthrough") {
+  return renderDemoWalkthrough();
+}
   if (tab === "overview") {
     return `
       <div class="card">
@@ -3175,13 +4007,23 @@ function renderAssessmentWorkspaceTab(assessment, tab) {
   }
 
   if (tab === "controls") {
-    return `
+  return `
+    <div class="grid">
       <div class="card">
-        <h2>Recommended controls</h2>
+        <h2>Recommended actions</h2>
+        <p class="subtitle">
+          These controls are generated from the assessment’s main risk drivers and are intended to guide review, not replace formal approval.
+        </p>
+        <div class="divider"></div>
         ${renderRecommendations(getRecommendedControls(assessment))}
       </div>
-    `;
-  }
+
+      ${renderAiActAlignmentPanel(assessment)}
+
+      ${renderAssessmentMethodology()}
+    </div>
+  `;
+}
 
   if (tab === "export") {
     return renderTools();
@@ -3425,49 +4267,222 @@ function printCurrentView() {
 function seedRichDemoData() {
   const demo = {
     id: uid("assessment"),
-    title: "Customer communications AI assistant",
-    owner: "Responsible Data & AI",
-    businessArea: "Customer Operations",
-    description: "A generative AI assistant used by frontline colleagues to draft customer communication responses. Outputs are reviewed by a human before being sent.",
-    status: "Review required",
+    title: "Co-Pilot assistant for customer complaint summaries",
+    owner: "Customer Operations",
+    businessArea: "Customer Support / Complaints",
+    description: "A Microsoft Co-Pilot enabled workflow used by colleagues to summarise customer complaint histories, draft internal case notes, and suggest response themes. Outputs are reviewed by a human before being used in customer communication.",
+    status: "Complete",
     riskLevel: "Medium risk",
-    score: 42,
+    score: 0,
     rawScore: 0,
     maxScore: 0,
     progress: 100,
     answers: {
-      context_purpose: "The tool supports colleagues by drafting suggested responses to customer queries. It does not send messages automatically and should remain a drafting aid.",
+      context_purpose: "The use case helps colleagues summarise complaint histories, identify key themes, and draft internal notes before a human writes or approves any customer-facing response.",
       context_users: "frontline",
       context_decision_role: "recommendation",
       context_supplier: "approved_supplier",
-      data_personal: "limited",
+
+      data_personal: "significant",
       data_sensitive: "possible",
       data_quality: "partially_known",
       data_reuse: "minor",
+
       impact_customer: "direct_low",
       impact_vulnerable: "possible",
       impact_financial: "minor",
+
       model_explainability: "partial",
       model_accuracy: "sampled",
       model_hallucination: "medium",
       model_human_oversight: "basic",
+
       governance_owner: "yes",
       governance_documentation: "partial",
       governance_monitoring: "planned",
       governance_approval: "in_review"
     },
-    notes: "Demo record for testing the final workbench flow.",
+    notes: "Demo assessment showing a pragmatic financial-services generative AI / Co-Pilot governance workflow.",
     createdAt: nowIso(),
-    updatedAt: nowIso()
+    updatedAt: nowIso(),
+    reviewedAt: nowIso()
   };
 
   const recalculated = recalculateAssessment(demo);
 
   state.assessments = [recalculated];
   state.selectedAssessmentId = recalculated.id;
-  state.activeRoute = "dashboard";
+  state.activeRoute = "assessments";
+  state.activeAssessmentTab = "walkthrough";
+  state.wizardMode = "intro";
   saveState();
   render();
+}
+
+function renderBossDemoChecklist() {
+  const checks = [
+    {
+      title: "Guided walkthrough works",
+      body: "Open guided demo → walkthrough → wizard → results → export.",
+      complete: true
+    },
+    {
+      title: "Assessment survives refresh",
+      body: "Refresh browser and confirm local state persists.",
+      complete: true
+    },
+    {
+      title: "Risk outcome generates correctly",
+      body: "Results tab shows verdict, risk drivers, actions, and alignment themes.",
+      complete: true
+    },
+    {
+      title: "Export works",
+      body: "Markdown export generates usable governance summary.",
+      complete: true
+    },
+    {
+      title: "Prototype positioning is clear",
+      body: "The app does not claim formal compliance or production approval capability.",
+      complete: true
+    },
+    {
+      title: "Pilot narrative prepared",
+      body: "You can explain what problem this solves and what it does not solve.",
+      complete: false
+    }
+  ];
+
+  return `
+    <div class="card">
+      <div class="workspace-title-row">
+        <div>
+          <div class="eyebrow">Presentation readiness</div>
+          <h2>Boss demo checklist</h2>
+          <p class="subtitle">
+            Use this checklist before showing the prototype internally.
+          </p>
+        </div>
+        <span class="pill">Internal prototype</span>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="qa-checklist">
+        ${checks.map(item => `
+          <div class="qa-item ${item.complete ? "complete" : ""}">
+            <div class="workspace-title-row">
+              <div class="item-title">${escapeHtml(item.title)}</div>
+              <span class="pill ${item.complete ? "green" : "amber"}">
+                ${item.complete ? "Ready" : "Prepare"}
+              </span>
+            </div>
+
+            <div class="item-meta">
+              ${escapeHtml(item.body)}
+            </div>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function renderBossDemoScript() {
+  const steps = [
+    {
+      title: "1. Frame the problem",
+      body: "Generative AI and Co-Pilot use cases are emerging quickly, but intake, governance triage, and evidence capture are inconsistent."
+    },
+    {
+      title: "2. Explain the purpose",
+      body: "This prototype explores whether a lightweight guided workflow can standardise early-stage governance review."
+    },
+    {
+      title: "3. Open guided demo",
+      body: "Walk through the example Co-Pilot complaint summarisation use case."
+    },
+    {
+      title: "4. Show the wizard",
+      body: "Explain the structured governance journey across context, data, impact, model behaviour, and governance readiness."
+    },
+    {
+      title: "5. Show results",
+      body: "Highlight the risk verdict, governance recommendation, risk drivers, and recommended actions."
+    },
+    {
+      title: "6. Show alignment themes",
+      body: "Explain the pragmatic EU AI Act-style governance alignment layer."
+    },
+    {
+      title: "7. Show export summary",
+      body: "Demonstrate the exportable governance-ready Markdown summary."
+    },
+    {
+      title: "8. Position responsibly",
+      body: "Clarify this is a governance accelerator prototype, not a production approval platform."
+    }
+  ];
+
+  return `
+    <div class="card">
+      <div class="workspace-title-row">
+        <div>
+          <div class="eyebrow">Walkthrough narrative</div>
+          <h2>Suggested boss demo script</h2>
+          <p class="subtitle">
+            Use this structure to keep the conversation strategic and operational rather than purely technical.
+          </p>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="demo-script-box">
+        ${steps.map(step => `
+          <div class="demo-script-step">
+            <div class="item-title">${escapeHtml(step.title)}</div>
+            <div class="item-meta">${escapeHtml(step.body)}</div>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function renderKnownLimitations() {
+  const limitations = [
+    "Single-user local-first prototype",
+    "No authentication or access control",
+    "No audit trail or approval workflow",
+    "No backend persistence",
+    "No evidence upload capability",
+    "No formal policy integration",
+    "No legal or regulatory assurance",
+    "Risk scoring is prototype logic only"
+  ];
+
+  return `
+    <div class="card">
+      <div class="workspace-title-row">
+        <div>
+          <div class="eyebrow">Known limitations</div>
+          <h2>What this prototype does not yet do</h2>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="list">
+        ${limitations.map(item => `
+          <div class="list-item">
+            <div class="item-meta">${escapeHtml(item)}</div>
+            <span class="pill">Prototype</span>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `;
 }
 
 function renderSettings() {
@@ -3514,7 +4529,13 @@ function renderSettings() {
     ${infoRow("Best next step", "Run a controlled pilot with a small number of real or anonymised use cases")}
   </div>
 </div>
-    ${renderQaPanel()}
+    ${renderBossDemoChecklist()}
+
+${renderBossDemoScript()}
+
+${renderKnownLimitations()}
+
+${renderQaPanel()}
   `;
 }
 
@@ -3574,6 +4595,12 @@ updateBuildFlag("part7");
   "copy-summary": copySummaryToClipboard,
   "wizard-prev": () => setWizardSection(wizardSectionIndex - 1),
   "wizard-next": () => setWizardSection(wizardSectionIndex + 1),
+  "wizard-start": () => setWizardMode("questions"),
+"wizard-transition-next": completeCurrentWizardSection,
+  "open-assessment-review": openAssessmentReview,
+"edit-review-section": () => editReviewSection(actionTarget.dataset.sectionId),
+"wizard-review-back": () => setWizardMode("questions"),
+"confirm-assessment-results": confirmAssessmentResults,
   "wizard-section": () => setWizardSection(Number(actionTarget.dataset.index)),
   "complete-assessment": completeAssessmentDraft,
   "copy-markdown": copyMarkdownReport,
