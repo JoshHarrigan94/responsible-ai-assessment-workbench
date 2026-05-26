@@ -758,6 +758,30 @@
   line-height: 1.55;
 }
 
+.setup-card {
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+.setup-intro {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.required-dot {
+  color: var(--coral-600);
+  font-weight: 900;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
 .progress-bar {
   width: 100%;
   height: 10px;
@@ -862,6 +886,13 @@
     subtitle: "Start, continue, and review responsible AI assessments from one place."
   },
   {
+  id: "new-assessment",
+  label: "New Assessment",
+  icon: "+",
+  title: "New Assessment",
+  subtitle: "Set up the generative AI / Co-Pilot use case before moving into the guided assessment wizard."
+},
+  {
     id: "assessments",
     label: "Assessments",
     icon: "▣",
@@ -892,6 +923,12 @@
       recommendations: [],
       reports: [],
       checklist: [],
+      draftAssessment: {
+  title: "",
+  owner: "",
+  businessArea: "",
+  description: ""
+},
       promptHelper: {
         input: "",
         output: ""
@@ -1734,29 +1771,83 @@ updateBuildFlag("part3");
 ===================================================== */
 
     function createAssessmentShell() {
-      const assessment = {
-        id: uid("assessment"),
-        title: "Untitled AI use case assessment",
-        owner: "",
-        businessArea: "",
-        description: "",
-        status: "Draft",
-        riskLevel: "Not scored",
-        score: null,
-        progress: 0,
-        answers: {},
-        notes: "",
-        createdAt: nowIso(),
-        updatedAt: nowIso()
-      };
+  state.draftAssessment = {
+    title: "",
+    owner: "",
+    businessArea: "",
+    description: ""
+  };
 
-      state.assessments.unshift(assessment);
-      state.selectedAssessmentId = assessment.id;
-      state.activeRoute = "assessments";
-      state.activeAssessmentTab = "overview";
-      saveState();
-      render();
-    }
+  state.activeRoute = "new-assessment";
+  saveState();
+  render();
+}
+
+function updateDraftAssessmentField(field, value) {
+  state.draftAssessment = {
+    ...(state.draftAssessment || {}),
+    [field]: value
+  };
+
+  saveState();
+}
+
+function cancelNewAssessment() {
+  state.draftAssessment = {
+    title: "",
+    owner: "",
+    businessArea: "",
+    description: ""
+  };
+
+  state.activeRoute = "dashboard";
+  saveState();
+  render();
+}
+
+function createAssessmentFromDraft() {
+  const draft = state.draftAssessment || {};
+
+  const title = String(draft.title || "").trim();
+  const owner = String(draft.owner || "").trim();
+  const businessArea = String(draft.businessArea || "").trim();
+  const description = String(draft.description || "").trim();
+
+  if (!title) {
+    alert("Please add a use case title before continuing.");
+    return;
+  }
+
+  const assessment = recalculateAssessment({
+    id: uid("assessment"),
+    title,
+    owner,
+    businessArea,
+    description,
+    status: "Draft",
+    riskLevel: "Not scored",
+    score: null,
+    progress: 0,
+    answers: {},
+    notes: "",
+    createdAt: nowIso(),
+    updatedAt: nowIso()
+  });
+
+  state.assessments.unshift(assessment);
+  state.selectedAssessmentId = assessment.id;
+  state.activeAssessmentTab = "wizard";
+  state.activeRoute = "assessments";
+  state.draftAssessment = {
+    title: "",
+    owner: "",
+    businessArea: "",
+    description: ""
+  };
+
+  saveState();
+  render();
+}
 
     function selectAssessment(id) {
       state.selectedAssessmentId = id;
@@ -2680,13 +2771,12 @@ updateBuildFlag("part6");
       const view = document.getElementById("view");
 
       const viewMap = {
-        dashboard: renderDashboard,
-        assessments: renderAssessments,
-        wizard: renderWizard,
-        results: renderResults,
-        tools: renderTools,
-        settings: renderSettings
-      };
+  dashboard: renderDashboard,
+  "new-assessment": renderNewAssessment,
+  assessments: renderAssessments,
+  tools: renderTools,
+  settings: renderSettings
+};
 
       const renderer = viewMap[state.activeRoute] || renderDashboard;
       view.innerHTML = renderer();
@@ -2710,6 +2800,81 @@ function renderTrustStrip() {
       <span class="trust-pill">✓ Single-file GitHub Pages build</span>
       <span class="trust-pill">✓ No backend database</span>
       <span class="trust-pill">Updated ${formatDate(state.updatedAt)}</span>
+    </div>
+  `;
+}
+function renderNewAssessment() {
+  const draft = state.draftAssessment || {};
+
+  return `
+    <div class="card setup-card hero-card">
+      <div class="setup-intro">
+        <div class="eyebrow">New generative AI / Co-Pilot use case</div>
+        <h2 class="workspace-title">Start with the basics before the risk wizard.</h2>
+        <p class="subtitle">
+          Capture enough context so the assessment has a clear owner, purpose, and business area. You can refine this later.
+        </p>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label>Use case title <span class="required-dot">*</span></label>
+          <small>Example: “Co-Pilot assistant for customer complaint summaries”.</small>
+          <input 
+            class="input" 
+            data-draft-field="title" 
+            value="${escapeAttr(draft.title || "")}" 
+            placeholder="Name the generative AI / Co-Pilot use case"
+          />
+        </div>
+
+        <div class="grid two">
+          <div class="field">
+            <label>Owner</label>
+            <small>Who is accountable for this use case?</small>
+            <input 
+              class="input" 
+              data-draft-field="owner" 
+              value="${escapeAttr(draft.owner || "")}" 
+              placeholder="Business owner or team"
+            />
+          </div>
+
+          <div class="field">
+            <label>Business area</label>
+            <small>Where will this be used?</small>
+            <input 
+              class="input" 
+              data-draft-field="businessArea" 
+              value="${escapeAttr(draft.businessArea || "")}" 
+              placeholder="e.g. Claims, Finance, Risk, Customer Ops"
+            />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>What will generative AI / Co-Pilot help with?</label>
+          <small>Describe the workflow, output, or process being augmented.</small>
+          <textarea 
+            class="textarea" 
+            data-draft-field="description" 
+            placeholder="Briefly describe how generative AI is being used..."
+          >${escapeHtml(draft.description || "")}</textarea>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="notice">
+        Next, the wizard will ask structured questions about data, customer impact, hallucination risk, human oversight, and governance readiness.
+      </div>
+
+      <div class="form-actions">
+        <button class="button" data-action="cancel-new-assessment">Cancel</button>
+        <button class="button primary" data-action="create-assessment-from-draft">Create and start wizard</button>
+      </div>
     </div>
   `;
 }
@@ -3399,6 +3564,8 @@ updateBuildFlag("part7");
   "seed-rich-demo": seedRichDemoData,
   "reset-data": resetData,
   "create-assessment": createAssessmentShell,
+  "cancel-new-assessment": cancelNewAssessment,
+  "create-assessment-from-draft": createAssessmentFromDraft,
   "select-assessment": () => selectAssessment(id),
   "open-assessment": () => openAssessmentWorkspace(id, "overview"),
   "open-assessment-wizard": () => openAssessmentWorkspace(id, "wizard"),
@@ -3419,6 +3586,11 @@ updateBuildFlag("part7");
 
     document.addEventListener("input", event => {
       
+      const draftInput = event.target.closest("[data-draft-field]");
+if (draftInput) {
+  updateDraftAssessmentField(draftInput.dataset.draftField, draftInput.value);
+  return;
+}
 const promptHelperInput = event.target.closest("[data-prompt-helper-input]");
 if (promptHelperInput) {
   updatePromptHelper(promptHelperInput.value);
