@@ -517,6 +517,247 @@
     /* =====================================================
        PASTE PART 7 CSS POLISH HERE
     ===================================================== */
+.workspace-header {
+  display: grid;
+  gap: 14px;
+}
+
+.workspace-title-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.workspace-title {
+  margin: 0;
+  font-size: 1.45rem;
+  letter-spacing: -0.04em;
+}
+
+.workspace-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 6px;
+  border: 1px solid var(--slate-200);
+  background: var(--slate-100);
+  border-radius: 999px;
+  width: fit-content;
+}
+
+.workspace-tab {
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--slate-600);
+  padding: 9px 13px;
+  font-weight: 900;
+}
+
+.workspace-tab.active {
+  background: white;
+  color: var(--navy-900);
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.08);
+}
+
+.assessment-rail {
+  position: sticky;
+  top: 24px;
+}
+
+.save-status {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  color: var(--green-600);
+  font-size: 0.86rem;
+  font-weight: 900;
+}
+
+.hero-card {
+  background:
+    radial-gradient(circle at top right, rgba(255, 107, 95, 0.18), transparent 20rem),
+    linear-gradient(135deg, white, #f8fafc);
+}
+
+.workflow-steps {
+  display: grid;
+  gap: 12px;
+}
+
+.workflow-step {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.step-number {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: var(--navy-900);
+  color: white;
+  font-weight: 900;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.assessment-card {
+  transition: 0.18s ease;
+}
+
+.assessment-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-soft);
+}
+
+.empty-action {
+  margin-top: 16px;
+}
+
+.wizard-stepper {
+  display: grid;
+  gap: 10px;
+}
+
+.wizard-step {
+  border: 1px solid var(--slate-200);
+  background: white;
+  border-radius: var(--radius-md);
+  padding: 14px;
+  text-align: left;
+  display: grid;
+  gap: 6px;
+  transition: 0.18s ease;
+}
+
+.wizard-step:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-card);
+}
+
+.wizard-step.active {
+  border-color: var(--navy-900);
+  background: var(--navy-900);
+  color: white;
+}
+
+.wizard-step.active .item-meta {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.wizard-question {
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  background: white;
+}
+
+.wizard-question.answered {
+  border-color: rgba(21, 128, 61, 0.35);
+  background: linear-gradient(135deg, white, #f8fff9);
+}
+
+.wizard-footer {
+  position: sticky;
+  bottom: 16px;
+  z-index: 5;
+  border: 1px solid var(--slate-200);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
+  border-radius: var(--radius-lg);
+  padding: 14px;
+  box-shadow: var(--shadow-soft);
+}
+
+.question-status {
+  font-size: 0.8rem;
+  font-weight: 900;
+  color: var(--green-600);
+}
+
+.risk-hero {
+  display: grid;
+  gap: 16px;
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  background: linear-gradient(135deg, white, #f8fafc);
+  border: 1px solid var(--slate-200);
+}
+
+.risk-score-large {
+  font-size: clamp(3rem, 8vw, 5rem);
+  font-weight: 950;
+  letter-spacing: -0.08em;
+  line-height: 0.9;
+}
+
+.priority-card {
+  border-left: 6px solid var(--navy-900);
+}
+
+.priority-card.high {
+  border-left-color: var(--red-600);
+}
+
+.priority-card.medium {
+  border-left-color: var(--amber-600);
+}
+
+.priority-card.low {
+  border-left-color: var(--green-600);
+}
+
+.executive-summary {
+  white-space: pre-wrap;
+  line-height: 1.65;
+}
+
+.prototype-banner {
+  border: 1px solid rgba(255, 107, 95, 0.35);
+  background: linear-gradient(135deg, #fff7f5, white);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  display: grid;
+  gap: 6px;
+}
+
+.trust-strip {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.trust-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  background: white;
+  border: 1px solid var(--slate-200);
+  padding: 7px 11px;
+  font-size: 0.82rem;
+  font-weight: 900;
+  color: var(--slate-600);
+}
+
+.demo-note {
+  font-size: 0.9rem;
+  color: var(--slate-600);
+  line-height: 1.55;
+}
+
 .progress-bar {
   width: 100%;
   height: 10px;
@@ -576,7 +817,7 @@
         <div class="brand-mark">AI</div>
         <div>
           <div class="brand-title">Responsible AI<br />Workbench</div>
-          <div class="brand-subtitle">Assessment, risk & controls</div>
+          <div class="brand-subtitle">AI triage, risk & controls</div>
         </div>
       </div>
 
@@ -613,49 +854,35 @@
     const APP_KEY = "responsible_ai_workbench_clean_v1";
 
     const routes = [
-      {
-        id: "dashboard",
-        label: "Dashboard",
-        icon: "◇",
-        title: "Dashboard",
-        subtitle: "A local-first overview of assessment activity, risk posture, controls, and saved governance artefacts."
-      },
-      {
-        id: "assessments",
-        label: "Assessments",
-        icon: "▣",
-        title: "Assessments",
-        subtitle: "Create, edit, score, and review responsible AI assessments."
-      },
-      {
-        id: "wizard",
-        label: "Assessment Wizard",
-        icon: "→",
-        title: "Assessment Wizard",
-        subtitle: "A guided workflow for capturing context, risk signals, decisions, and assurance notes."
-      },
-      {
-        id: "results",
-        label: "Results & Controls",
-        icon: "✓",
-        title: "Results & Controls",
-        subtitle: "Review scoring outcomes, risk drivers, recommended controls, and mitigation actions."
-      },
-      {
-        id: "tools",
-        label: "Tools",
-        icon: "✦",
-        title: "Tools",
-        subtitle: "Prompt helper, governance checklist, export tools, and reusable artefacts."
-      },
-      {
-        id: "settings",
-        label: "Settings",
-        icon: "⚙",
-        title: "Settings",
-        subtitle: "Manage local data, demo content, and build status."
-      }
-    ];
+  {
+    id: "dashboard",
+    label: "Dashboard",
+    icon: "◇",
+    title: "Dashboard",
+    subtitle: "Start, continue, and review responsible AI assessments from one place."
+  },
+  {
+    id: "assessments",
+    label: "Assessments",
+    icon: "▣",
+    title: "Assessment Workspace",
+    subtitle: "Create, edit, complete, score, and export a selected AI use case assessment."
+  },
+  {
+    id: "tools",
+    label: "Tools",
+    icon: "✦",
+    title: "Tools",
+    subtitle: "Prompt helper, governance checklist, export tools, and reusable artefacts."
+  },
+  {
+    id: "settings",
+    label: "Settings",
+    icon: "⚙",
+    title: "Settings",
+    subtitle: "Manage local data, demo content, QA checks, and deployment settings."
+  }
+];
 
     const defaultState = {
       activeRoute: "dashboard",
@@ -769,7 +996,24 @@
       closeMobileMenu();
       render();
     }
+function getActiveAssessmentTab() {
+  return state.activeAssessmentTab || "overview";
+}
 
+function setAssessmentTab(tabId) {
+  state.activeAssessmentTab = tabId;
+  state.activeRoute = "assessments";
+  saveState();
+  render();
+}
+
+function openAssessmentWorkspace(id, tabId = "overview") {
+  state.selectedAssessmentId = id;
+  state.activeAssessmentTab = tabId;
+  state.activeRoute = "assessments";
+  saveState();
+  render();
+}
     function getSelectedAssessment() {
       if (!state.selectedAssessmentId) return null;
       return state.assessments.find(assessment => assessment.id === state.selectedAssessmentId) || null;
@@ -1175,6 +1419,9 @@ function getWizardSection() {
 
 function setWizardSection(index) {
   wizardSectionIndex = Math.max(0, Math.min(index, assessmentSections.length - 1));
+  state.activeAssessmentTab = "wizard";
+  state.activeRoute = "assessments";
+  saveState();
   render();
 }
 
@@ -1228,58 +1475,68 @@ function renderWizard() {
   const answeredCount = getAnsweredCount(assessment);
   const totalQuestions = assessmentQuestions.length;
   const progress = totalQuestions ? Math.round((answeredCount / totalQuestions) * 100) : 0;
+  const currentSectionProgress = getSectionProgress(assessment, section.id);
 
   return `
-    <div class="grid two">
-      <div class="card">
-        <h2>${escapeHtml(section.title)}</h2>
-        <p class="subtitle">${escapeHtml(section.description)}</p>
+    <div class="card hero-card">
+      <div class="workspace-title-row">
+        <div>
+          <div class="eyebrow">Guided assessment wizard</div>
+          <h2 class="workspace-title">${escapeHtml(section.title)}</h2>
+          <p class="subtitle">${escapeHtml(section.description)}</p>
+        </div>
 
-        <div class="divider"></div>
-
-        <div class="list">
-          ${assessmentSections.map((item, index) => `
-            <button 
-              class="list-item" 
-              data-action="wizard-section" 
-              data-index="${index}"
-              style="text-align:left; cursor:pointer;"
-            >
-              <div>
-                <div class="item-title">${escapeHtml(item.title)}</div>
-                <div class="item-meta">${getSectionProgress(assessment, item.id)}% complete</div>
-              </div>
-              <span class="pill ${index === wizardSectionIndex ? "green" : ""}">
-                ${index === wizardSectionIndex ? "Current" : "Open"}
-              </span>
-            </button>
-          `).join("")}
+        <div>
+          <span class="pill ${progress === 100 ? "green" : ""}">${progress}% complete</span>
+          <div class="save-status">✓ Saved locally</div>
         </div>
       </div>
 
-      <div class="card">
-        <h2>Assessment progress</h2>
-        <div class="metric-value">${progress}%</div>
-        <p class="metric-helper">${answeredCount} of ${totalQuestions} questions answered</p>
+      <div class="divider"></div>
 
-        <div class="divider"></div>
-
-        ${renderSelectedAssessmentSummary(assessment)}
-
-        <div class="divider"></div>
-
-        <div class="toolbar">
-          <button class="button" data-action="wizard-prev">Previous</button>
-          <button class="button primary" data-action="wizard-next">Next</button>
-          <button class="button coral" data-route="results">View results</button>
-        </div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width:${progress}%"></div>
       </div>
+
+      <p class="item-meta" style="margin-top:10px;">
+        ${answeredCount} of ${totalQuestions} questions answered · Current section ${currentSectionProgress}% complete
+      </p>
     </div>
 
-    <div class="card">
-      <h2>${escapeHtml(section.title)} questions</h2>
-      <div class="form-grid">
-        ${questions.map(question => renderQuestionInput(assessment, question)).join("")}
+    <div class="grid two">
+      <div class="card assessment-rail">
+        <h2>Assessment sections</h2>
+        <p class="subtitle">Work through each section. Your answers save automatically.</p>
+
+        <div class="divider"></div>
+
+        ${renderWizardStepper(assessment)}
+
+        <div class="divider"></div>
+
+        <div class="notice">
+          ${renderWizardGuidance(section.id)}
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <div class="workspace-title-row">
+            <div>
+              <h2>${escapeHtml(section.title)}</h2>
+              <p class="subtitle">${escapeHtml(section.description)}</p>
+            </div>
+            <span class="pill">${currentSectionProgress}% section complete</span>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="form-grid">
+            ${questions.map(question => renderQuestionInput(assessment, question)).join("")}
+          </div>
+        </div>
+
+        ${renderWizardFooter(assessment)}
       </div>
     </div>
   `;
@@ -1287,16 +1544,30 @@ function renderWizard() {
 
 function renderQuestionInput(assessment, question) {
   const value = assessment.answers?.[question.id] ?? "";
+  const answered = value !== undefined && value !== null && value !== "";
+
+  const status = answered
+    ? `<div class="question-status">✓ Answer saved</div>`
+    : `<div class="item-meta">Not answered yet</div>`;
 
   if (question.type === "textarea") {
     return `
-      <div class="field">
-        <label>${escapeHtml(question.label)}</label>
-        <small>${escapeHtml(question.helper || "")}</small>
+      <div class="wizard-question ${answered ? "answered" : ""}">
+        <div class="workspace-title-row">
+          <div>
+            <label class="item-title">${escapeHtml(question.label)}</label>
+            <div class="item-meta">${escapeHtml(question.helper || "")}</div>
+          </div>
+          ${status}
+        </div>
+
+        <div style="height:10px;"></div>
+
         <textarea 
           class="textarea" 
           data-answer-question="${question.id}" 
           data-assessment-id="${assessment.id}"
+          placeholder="Add context here..."
         >${escapeHtml(value)}</textarea>
       </div>
     `;
@@ -1304,9 +1575,17 @@ function renderQuestionInput(assessment, question) {
 
   if (question.type === "select") {
     return `
-      <div class="field">
-        <label>${escapeHtml(question.label)}</label>
-        <small>${escapeHtml(question.helper || "")}</small>
+      <div class="wizard-question ${answered ? "answered" : ""}">
+        <div class="workspace-title-row">
+          <div>
+            <label class="item-title">${escapeHtml(question.label)}</label>
+            <div class="item-meta">${escapeHtml(question.helper || "")}</div>
+          </div>
+          ${status}
+        </div>
+
+        <div style="height:10px;"></div>
+
         <select 
           class="select" 
           data-answer-question="${question.id}" 
@@ -1323,15 +1602,107 @@ function renderQuestionInput(assessment, question) {
   }
 
   return `
-    <div class="field">
-      <label>${escapeHtml(question.label)}</label>
-      <small>${escapeHtml(question.helper || "")}</small>
+    <div class="wizard-question ${answered ? "answered" : ""}">
+      <div class="workspace-title-row">
+        <div>
+          <label class="item-title">${escapeHtml(question.label)}</label>
+          <div class="item-meta">${escapeHtml(question.helper || "")}</div>
+        </div>
+        ${status}
+      </div>
+
+      <div style="height:10px;"></div>
+
       <input 
         class="input" 
         value="${escapeAttr(value)}" 
         data-answer-question="${question.id}" 
         data-assessment-id="${assessment.id}"
       />
+    </div>
+  `;
+}
+
+function renderWizardStepper(assessment) {
+  return `
+    <div class="wizard-stepper">
+      ${assessmentSections.map((section, index) => {
+        const progress = getSectionProgress(assessment, section.id);
+        const isActive = index === wizardSectionIndex;
+        const isComplete = progress === 100;
+
+        return `
+          <button 
+            class="wizard-step ${isActive ? "active" : ""}" 
+            data-action="wizard-section" 
+            data-index="${index}"
+          >
+            <div class="workspace-title-row">
+              <div>
+                <div class="item-title">${escapeHtml(section.title)}</div>
+                <div class="item-meta">${progress}% complete</div>
+              </div>
+              <span class="pill ${isComplete ? "green" : ""}">
+                ${isComplete ? "Done" : isActive ? "Now" : "Open"}
+              </span>
+            </div>
+
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:${progress}%"></div>
+            </div>
+          </button>
+        `;
+      }).join("")}
+    </div>
+  `;
+}
+
+function renderWizardGuidance(sectionId) {
+  const guidance = {
+    context: "Start by clarifying what the AI use case is for, who uses it, and whether it influences decisions.",
+    data: "Focus on personal data, sensitive data, data reuse, and whether the data is reliable enough for this purpose.",
+    impact: "Consider who could be affected, whether customers are involved, and whether financial or vulnerable-customer impacts exist.",
+    model: "Think about reliability, hallucination, explainability, output testing, and whether human oversight is meaningful.",
+    governance: "Confirm ownership, documentation, monitoring, approval, and whether the use case is ready to move forward."
+  };
+
+  return guidance[sectionId] || "Answer the questions in this section as clearly as possible.";
+}
+
+function renderWizardFooter(assessment) {
+  const progress = assessment.progress || 0;
+  const isFirst = wizardSectionIndex === 0;
+  const isLast = wizardSectionIndex === assessmentSections.length - 1;
+  const nextSection = assessmentSections[wizardSectionIndex + 1];
+
+  return `
+    <div class="wizard-footer">
+      <div class="workspace-title-row">
+        <div>
+          <div class="save-status">✓ Autosaved</div>
+          <div class="item-meta">
+            ${
+              isLast
+                ? "Final section. Review the results when you are ready."
+                : `Next: ${escapeHtml(nextSection?.title || "Results")}`
+            }
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <button class="button" data-action="wizard-prev" ${isFirst ? "disabled" : ""}>Previous</button>
+          ${
+            isLast
+              ? `<button class="button primary" data-action="set-assessment-tab" data-tab="results">Review results</button>`
+              : `<button class="button primary" data-action="wizard-next">Next section</button>`
+          }
+          ${
+            progress === 100
+              ? `<button class="button coral" data-action="complete-assessment">Mark complete</button>`
+              : ""
+          }
+        </div>
+      </div>
     </div>
   `;
 }
@@ -1351,7 +1722,8 @@ function completeAssessmentDraft() {
   });
 
   saveState();
-  state.activeRoute = "results";
+  state.activeRoute = "assessments";
+state.activeAssessmentTab = "results";
   render();
 }
 
@@ -1364,7 +1736,7 @@ updateBuildFlag("part3");
     function createAssessmentShell() {
       const assessment = {
         id: uid("assessment"),
-        title: "New AI assessment",
+        title: "Untitled AI use case assessment",
         owner: "",
         businessArea: "",
         description: "",
@@ -1381,6 +1753,7 @@ updateBuildFlag("part3");
       state.assessments.unshift(assessment);
       state.selectedAssessmentId = assessment.id;
       state.activeRoute = "assessments";
+      state.activeAssessmentTab = "overview";
       saveState();
       render();
     }
@@ -1736,47 +2109,201 @@ function renderResults() {
   const recommendations = getRecommendedControls(assessment);
   const drivers = getRiskDrivers(assessment);
   const band = assessment.riskBand || riskBands?.find(item => item.label === assessment.riskLevel);
+  const decision = getGovernanceDecision(assessment);
 
   return `
-    <div class="grid three">
-      ${metricCard("Risk score", assessment.score ?? 0, "Normalised 0–100")}
-      ${metricCard("Progress", `${assessment.progress || 0}%`, "Assessment completion")}
-      ${metricCard("Risk drivers", drivers.length, "Material risk signals")}
+    <div class="risk-hero">
+      <div class="workspace-title-row">
+        <div>
+          <div class="eyebrow">Assessment verdict</div>
+          <h2 class="workspace-title">${escapeHtml(assessment.riskLevel)}</h2>
+          <p class="subtitle">
+            ${escapeHtml(decision.summary)}
+          </p>
+        </div>
+
+        <div>
+          <div class="risk-score-large">${assessment.score ?? 0}</div>
+          <div class="item-meta">Risk score / 100</div>
+        </div>
+      </div>
+
+      <div class="progress-bar">
+        <div class="progress-fill" style="width:${assessment.score || 0}%"></div>
+      </div>
+
+      <div class="toolbar">
+        <button class="button primary" data-action="set-assessment-tab" data-tab="controls">Review controls</button>
+        <button class="button" data-action="set-assessment-tab" data-tab="export">Export summary</button>
+        <button class="button" data-action="print-view">Print view</button>
+      </div>
     </div>
 
     <div class="grid two">
       <div class="card">
-        <h2>Assessment outcome</h2>
-        <span class="pill ${riskPillClass(assessment.riskLevel)}">${escapeHtml(assessment.riskLevel)}</span>
-        <div class="divider"></div>
-        <p class="subtitle">
-          ${escapeHtml(band?.summary || "Complete the assessment to generate a clearer risk outcome.")}
-        </p>
-        <div class="divider"></div>
-        ${renderSelectedAssessmentSummary(assessment)}
+        <h2>Executive summary</h2>
+        <p class="executive-summary">${escapeHtml(generateExecutiveSummary(assessment, drivers, recommendations))}</p>
       </div>
 
       <div class="card">
-        <h2>Section scores</h2>
+        <h2>Governance decision</h2>
+        <div class="list">
+          ${infoRow("Recommended decision", decision.decision)}
+          ${infoRow("Review route", decision.reviewRoute)}
+          ${infoRow("Approval position", decision.approval)}
+          ${infoRow("Monitoring expectation", decision.monitoring)}
+        </div>
+      </div>
+    </div>
+
+    <div class="grid two">
+      <div class="card">
+        <h2>Top risk drivers</h2>
+        ${renderPrioritisedRiskDrivers(drivers)}
+      </div>
+
+      <div class="card">
+        <h2>Priority controls</h2>
+        ${renderPriorityRecommendations(recommendations)}
+      </div>
+    </div>
+
+    <div class="grid two">
+      <div class="card">
+        <h2>Section score profile</h2>
         ${renderSectionScores(assessment)}
       </div>
-    </div>
-
-    <div class="grid two">
-      <div class="card">
-        <h2>Key risk drivers</h2>
-        ${renderRiskDrivers(drivers)}
-      </div>
 
       <div class="card">
-        <h2>Recommended controls</h2>
-        ${renderRecommendations(recommendations)}
+        <h2>Next actions</h2>
+        ${renderNextActions(assessment, recommendations)}
       </div>
     </div>
+  `;
+}
 
-    <div class="card">
-      <h2>Governance action plan</h2>
-      ${renderActionPlan(assessment, recommendations)}
+function getGovernanceDecision(assessment) {
+  const score = assessment.score || 0;
+  const progress = assessment.progress || 0;
+
+  if (progress < 100) {
+    return {
+      decision: "Assessment incomplete",
+      reviewRoute: "Complete wizard before formal review",
+      approval: "Not ready for deployment decision",
+      monitoring: "Not yet defined",
+      summary: "This assessment is still incomplete. Complete all wizard sections before relying on the risk outcome."
+    };
+  }
+
+  if (score >= 55) {
+    return {
+      decision: "Enhanced review required",
+      reviewRoute: "Responsible AI, Data Governance, Privacy, Security, and senior business owner review",
+      approval: "Do not deploy without explicit approval and evidence review",
+      monitoring: "Formal monitoring plan required before go-live",
+      summary: "This use case has significant risk indicators and should not proceed without enhanced governance review."
+    };
+  }
+
+  if (score >= 25) {
+    return {
+      decision: "Proceed only with controls",
+      reviewRoute: "Responsible AI / Data Governance review with business owner sign-off",
+      approval: "Can progress if recommended controls are completed and evidenced",
+      monitoring: "Define recurring monitoring and review cadence",
+      summary: "This use case has material risk indicators. It may proceed only if controls are implemented and review evidence is retained."
+    };
+  }
+
+  return {
+    decision: "Baseline governance sufficient",
+    reviewRoute: "Business owner sign-off with baseline documentation",
+    approval: "Can proceed subject to normal governance expectations",
+    monitoring: "Review if scope, data, model, or usage changes",
+    summary: "This use case appears low risk based on current answers, provided baseline documentation and oversight are maintained."
+  };
+}
+
+function generateExecutiveSummary(assessment, drivers, recommendations) {
+  const decision = getGovernanceDecision(assessment);
+  const topDrivers = drivers.slice(0, 3).map(driver => driver.label).join("; ") || "no major risk drivers identified";
+  const topControls = recommendations.slice(0, 3).map(item => item.title).join("; ") || "baseline documentation";
+
+  return `${assessment.title} has been assessed as ${assessment.riskLevel} with a score of ${assessment.score ?? 0}/100.
+
+The recommended governance position is: ${decision.decision}.
+
+The main risk drivers are: ${topDrivers}.
+
+The priority controls are: ${topControls}.
+
+This output should be treated as a governance triage summary, not a final legal, compliance, privacy, or model-risk approval.`;
+}
+
+function renderPrioritisedRiskDrivers(drivers) {
+  if (!drivers.length) {
+    return emptyState("No major risk drivers", "No high-scoring risk drivers have been identified from the current answers.");
+  }
+
+  return `
+    <div class="list">
+      ${drivers.slice(0, 6).map(driver => `
+        <div class="list-item priority-card ${driver.severity === "High" ? "high" : "medium"}">
+          <div>
+            <div class="item-title">${escapeHtml(driver.label)}</div>
+            <div class="item-meta">
+              ${escapeHtml(driver.sectionTitle)} · ${escapeHtml(driver.answer)}
+            </div>
+          </div>
+          <span class="pill ${driver.severity === "High" ? "red" : "amber"}">${escapeHtml(driver.severity)}</span>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+function renderPriorityRecommendations(recommendations) {
+  if (!recommendations.length) {
+    return emptyState("No priority controls", "No additional controls have been recommended yet.");
+  }
+
+  return `
+    <div class="list">
+      ${recommendations.slice(0, 6).map((item, index) => `
+        <div class="list-item priority-card ${index === 0 ? "high" : index < 3 ? "medium" : "low"}">
+          <div>
+            <div class="item-title">${escapeHtml(item.title)}</div>
+            <div class="item-meta">${escapeHtml(item.description)}</div>
+          </div>
+          <span class="pill">${escapeHtml(item.controlCategory)}</span>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+function renderNextActions(assessment, recommendations) {
+  const decision = getGovernanceDecision(assessment);
+
+  const actions = [
+    `Confirm accountable owner and review route: ${decision.reviewRoute}`,
+    `Evidence the deployment position: ${decision.approval}`,
+    ...recommendations.slice(0, 3).map(item => `Complete control: ${item.title}`),
+    `Set monitoring expectation: ${decision.monitoring}`
+  ];
+
+  return `
+    <div class="list">
+      ${actions.map((action, index) => `
+        <div class="list-item">
+          <div>
+            <div class="item-title">Action ${index + 1}</div>
+            <div class="item-meta">${escapeHtml(action)}</div>
+          </div>
+          <span class="pill">${index === 0 ? "First" : "Next"}</span>
+        </div>
+      `).join("")}
     </div>
   `;
 }
@@ -1907,10 +2434,15 @@ function generateMarkdownReport() {
 **Business area:** ${assessment.businessArea || "Not set"}
 **Status:** ${assessment.status}
 
+## Executive summary
+${generateExecutiveSummary(assessment, drivers, recommendations)}
+
 ## Outcome
 **Risk level:** ${assessment.riskLevel}
 **Risk score:** ${assessment.score ?? 0}/100
 **Progress:** ${assessment.progress || 0}%
+**Recommended decision:** ${getGovernanceDecision(assessment).decision}
+**Review route:** ${getGovernanceDecision(assessment).reviewRoute}
 
 ## Description
 ${assessment.description || "No description provided."}
@@ -2119,29 +2651,30 @@ updateBuildFlag("part6");
     }
 
     function getToolbarHtml() {
-      if (state.activeRoute === "dashboard") {
-        return `
-          <button class="button primary" data-action="create-assessment">New assessment</button>
-          <button class="button" data-route="wizard">Open wizard</button>
-        `;
-      }
+  if (state.activeRoute === "dashboard") {
+    return `
+      <button class="button primary" data-action="create-assessment">Start new assessment</button>
+      <button class="button" data-action="seed-rich-demo">Open demo</button>
+    `;
+  }
 
-      if (state.activeRoute === "assessments") {
-        return `
-          <button class="button primary" data-action="create-assessment">New assessment</button>
-          <button class="button" data-action="seed-demo">Seed demo</button>
-        `;
-      }
+  if (state.activeRoute === "assessments") {
+    return `
+      <button class="button primary" data-action="create-assessment">New assessment</button>
+      <button class="button" data-action="set-assessment-tab" data-tab="wizard">Continue wizard</button>
+      <button class="button" data-action="set-assessment-tab" data-tab="results">View results</button>
+    `;
+  }
 
-      if (state.activeRoute === "tools") {
-        return `
-          <button class="button" data-action="copy-summary">Copy summary</button>
-          <button class="button primary" data-action="export-json">Export JSON</button>
-        `;
-      }
+  if (state.activeRoute === "tools") {
+    return `
+      <button class="button" data-action="copy-summary">Copy summary</button>
+      <button class="button primary" data-action="export-json">Export JSON</button>
+    `;
+  }
 
-      return "";
-    }
+  return "";
+}
 
     function renderView() {
       const view = document.getElementById("view");
@@ -2159,60 +2692,342 @@ updateBuildFlag("part6");
       view.innerHTML = renderer();
     }
 
+function renderPrototypeBanner() {
+  return `
+    <div class="prototype-banner">
+      <div class="item-title">Prototype status</div>
+      <div class="demo-note">
+        This workbench is a local-first prototype for AI governance triage. It supports consistency, evidence capture, and early risk review, but it does not replace formal policy, legal, privacy, compliance, security, or model-risk approval.
+      </div>
+    </div>
+  `;
+}
+
+function renderTrustStrip() {
+  return `
+    <div class="trust-strip">
+      <span class="trust-pill">✓ Saved locally</span>
+      <span class="trust-pill">✓ Single-file GitHub Pages build</span>
+      <span class="trust-pill">✓ No backend database</span>
+      <span class="trust-pill">Updated ${formatDate(state.updatedAt)}</span>
+    </div>
+  `;
+}
+
     function renderDashboard() {
-      const selected = getSelectedAssessment();
-      const completedCount = state.assessments.filter(item => item.status === "Complete").length;
+  const selected = getSelectedAssessment();
+  const completedCount = state.assessments.filter(item => item.status === "Complete").length;
+  const inProgressCount = state.assessments.filter(item => item.status !== "Complete").length;
+  const latestAssessments = state.assessments.slice(0, 4);
 
-      return `
-        <div class="grid three">
-          ${metricCard("Assessments", state.assessments.length, "Saved locally")}
-          ${metricCard("Completed", completedCount, "Ready for reporting")}
-          ${metricCard("Controls", state.controls.length, "Reusable controls")}
-        </div>
+  return `
+  ${renderPrototypeBanner()}
+    <div class="card hero-card">
+      <div class="workspace-title-row">
+        <div>
+          <div class="eyebrow">Responsible AI governance accelerator</div>
+          <h2 class="workspace-title">Triage AI use cases before risk, policy, and assurance questions become messy.</h2>
+          <p class="subtitle">
+            Use this workbench to create a consistent first-pass assessment, capture governance evidence, identify risk drivers, and produce a usable summary for review.
+          </p>
+          ${renderTrustStrip()}
 
-        <div class="grid two">
-          <div class="card">
-            <h2>Build status</h2>
-            <p class="notice">
-              Part 1 is installed. This is the clean app shell with permanent paste anchors for the rest of the build.
-            </p>
-            <div class="divider"></div>
-            ${renderBuildChecklist()}
-          </div>
-
-          <div class="card">
-            <h2>Selected assessment</h2>
-            ${
-              selected
-                ? renderSelectedAssessmentSummary(selected)
-                : emptyState("No assessment selected", "Create or seed an assessment to start using the workbench.")
-            }
+          <div class="hero-actions">
+            <button class="button primary" data-action="create-assessment">Start new assessment</button>
+            <button class="button" data-action="seed-rich-demo">Open demo assessment</button>
+            ${selected ? `<button class="button coral" data-action="set-assessment-tab" data-tab="wizard">Continue current assessment</button>` : ""}
           </div>
         </div>
-      `;
-    }
+      </div>
+    </div>
+
+    <div class="grid three">
+      ${metricCard("Total assessments", state.assessments.length, "Saved locally")}
+      ${metricCard("In progress", inProgressCount, "Need completion or review")}
+      ${metricCard("Completed", completedCount, "Ready for reporting")}
+    </div>
+
+    <div class="grid two">
+      <div class="card">
+        <h2>Your next best action</h2>
+        ${renderNextBestAction(selected)}
+      </div>
+
+      <div class="card">
+        <h2>How the workflow works</h2>
+        ${renderWorkflowSteps()}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="workspace-title-row">
+        <div>
+          <h2>Recent assessments</h2>
+          <p class="subtitle">Open an assessment to continue the wizard, review results, or export a governance summary.</p>
+        </div>
+        <button class="button primary" data-action="create-assessment">New assessment</button>
+      </div>
+
+      <div class="divider"></div>
+
+      ${
+        latestAssessments.length
+          ? renderDashboardAssessmentCards(latestAssessments)
+          : renderEmptyDashboardAssessments()
+      }
+    </div>
+  `;
+}
+
+function renderNextBestAction(assessment) {
+  if (!assessment) {
+    return `
+      <p class="subtitle">
+        You have no active assessment yet. Start with a new AI use case, or open the demo to see the full workflow.
+      </p>
+      <div class="hero-actions">
+        <button class="button primary" data-action="create-assessment">Start new assessment</button>
+        <button class="button" data-action="seed-rich-demo">Open demo</button>
+      </div>
+    `;
+  }
+
+  if ((assessment.progress || 0) < 100) {
+    return `
+      <p class="subtitle">
+        Continue completing <strong>${escapeHtml(assessment.title)}</strong>. It is currently ${assessment.progress || 0}% complete.
+      </p>
+      <div class="divider"></div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width:${assessment.progress || 0}%"></div>
+      </div>
+      <div class="hero-actions">
+        <button class="button primary" data-action="set-assessment-tab" data-tab="wizard">Continue wizard</button>
+        <button class="button" data-action="set-assessment-tab" data-tab="overview">Edit overview</button>
+      </div>
+    `;
+  }
+
+  if ((assessment.score || 0) >= 55) {
+    return `
+      <p class="subtitle">
+        <strong>${escapeHtml(assessment.title)}</strong> is complete and currently rated high risk. Review the risk drivers and controls before any deployment decision.
+      </p>
+      <div class="hero-actions">
+        <button class="button primary" data-action="set-assessment-tab" data-tab="results">Review results</button>
+        <button class="button" data-action="set-assessment-tab" data-tab="export">Export summary</button>
+      </div>
+    `;
+  }
+
+  return `
+    <p class="subtitle">
+      <strong>${escapeHtml(assessment.title)}</strong> is ready for review. Open the results or export a governance summary.
+    </p>
+    <div class="hero-actions">
+      <button class="button primary" data-action="set-assessment-tab" data-tab="results">View results</button>
+      <button class="button" data-action="set-assessment-tab" data-tab="export">Export summary</button>
+    </div>
+  `;
+}
+
+function renderWorkflowSteps() {
+  const steps = [
+    ["1", "Create assessment", "Capture the AI use case, owner, business area, and intended purpose."],
+    ["2", "Complete wizard", "Answer structured questions across context, data, impact, model behaviour, and governance."],
+    ["3", "Review outcome", "Use the score, risk drivers, and recommended controls to understand what needs attention."],
+    ["4", "Export evidence", "Copy or download a governance-ready summary for discussion, review, or sign-off."]
+  ];
+
+  return `
+    <div class="workflow-steps">
+      ${steps.map(([number, title, body]) => `
+        <div class="workflow-step">
+          <div class="step-number">${number}</div>
+          <div>
+            <div class="item-title">${escapeHtml(title)}</div>
+            <div class="item-meta">${escapeHtml(body)}</div>
+          </div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+function renderDashboardAssessmentCards(items) {
+  return `
+    <div class="grid two">
+      ${items.map(assessment => `
+        <div class="card soft assessment-card">
+          <div class="workspace-title-row">
+            <div>
+              <h3>${escapeHtml(assessment.title)}</h3>
+              <p class="item-meta">
+                ${escapeHtml(assessment.owner || "No owner")} · ${escapeHtml(assessment.businessArea || "No area")}
+              </p>
+            </div>
+            <span class="pill ${riskPillClass(assessment.riskLevel)}">${escapeHtml(assessment.riskLevel)}</span>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="progress-bar">
+            <div class="progress-fill" style="width:${assessment.progress || 0}%"></div>
+          </div>
+
+          <p class="item-meta" style="margin-top:10px;">
+            ${assessment.progress || 0}% complete · Updated ${formatDate(assessment.updatedAt)}
+          </p>
+
+          <div class="hero-actions">
+            <button class="button primary" data-action="open-assessment" data-id="${assessment.id}">Open workspace</button>
+            <button class="button" data-action="open-assessment-wizard" data-id="${assessment.id}">Continue wizard</button>
+          </div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+function renderEmptyDashboardAssessments() {
+  return `
+    <div class="empty">
+      <strong>No AI assessments yet</strong>
+      <span>
+        Start by creating a lightweight governance triage record. You can complete the wizard in around 10–15 minutes.
+      </span>
+      <div class="empty-action">
+        <button class="button primary" data-action="create-assessment">Start your first assessment</button>
+        <button class="button" data-action="seed-rich-demo">Open demo instead</button>
+      </div>
+    </div>
+  `;
+}
 
     function renderAssessments() {
-      return `
-        <div class="grid two">
-          <div class="card">
-            <h2>Assessment library</h2>
-            <p class="subtitle">Create and select assessments. Part 2 and Part 3 will add the full question bank and wizard.</p>
-            <div class="divider"></div>
-            ${
-              state.assessments.length
-                ? renderAssessmentList()
-                : emptyState("No assessments yet", "Use New assessment or Seed demo to create your first local record.")
-            }
-          </div>
+  const assessment = getSelectedAssessment();
 
-          <div class="card">
-            <h2>Assessment details</h2>
-            ${renderAssessmentDetails()}
-          </div>
+  return `
+    <div class="grid two">
+      <div class="card assessment-rail">
+        <h2>Assessment library</h2>
+        <p class="subtitle">Select an assessment, then work through its overview, wizard, results, controls, and export tabs.</p>
+
+        <div class="divider"></div>
+
+        <div class="toolbar">
+          <button class="button primary" data-action="create-assessment">New assessment</button>
+          <button class="button" data-action="seed-rich-demo">Demo</button>
         </div>
-      `;
-    }
+
+        <div class="divider"></div>
+
+        ${
+          state.assessments.length
+            ? renderAssessmentList()
+            : emptyState("No assessments yet", "Create a new assessment to begin.")
+        }
+      </div>
+
+      <div class="grid">
+        ${
+          assessment
+            ? renderAssessmentWorkspace(assessment)
+            : `
+              <div class="card">
+                ${emptyState("No assessment selected", "Choose an assessment or start a new one.")}
+              </div>
+            `
+        }
+      </div>
+    </div>
+  `;
+}
+function renderAssessmentWorkspace(assessment) {
+  const tab = getActiveAssessmentTab();
+
+  return `
+    <div class="card workspace-header">
+      <div class="workspace-title-row">
+        <div>
+          <div class="eyebrow">Current assessment</div>
+          <h2 class="workspace-title">${escapeHtml(assessment.title)}</h2>
+          <p class="subtitle">
+            ${renderTrustStrip()}
+            ${escapeHtml(assessment.businessArea || "No business area")} · 
+            ${escapeHtml(assessment.owner || "No owner")} · 
+            Last updated ${formatDate(assessment.updatedAt)}
+          </p>
+        </div>
+
+        <div>
+          <span class="pill ${riskPillClass(assessment.riskLevel)}">${escapeHtml(assessment.riskLevel)}</span>
+          <div class="save-status">✓ Saved locally</div>
+        </div>
+      </div>
+
+      <div class="workspace-tabs">
+        ${renderWorkspaceTab("overview", "Overview", tab)}
+        ${renderWorkspaceTab("wizard", "Wizard", tab)}
+        ${renderWorkspaceTab("results", "Results", tab)}
+        ${renderWorkspaceTab("controls", "Controls", tab)}
+        ${renderWorkspaceTab("export", "Export", tab)}
+      </div>
+    </div>
+
+    ${renderAssessmentWorkspaceTab(assessment, tab)}
+  `;
+}
+
+function renderWorkspaceTab(tabId, label, activeTab) {
+  return `
+    <button 
+      class="workspace-tab ${activeTab === tabId ? "active" : ""}" 
+      data-action="set-assessment-tab" 
+      data-tab="${tabId}"
+    >
+      ${label}
+    </button>
+  `;
+}
+
+function renderAssessmentWorkspaceTab(assessment, tab) {
+  if (tab === "overview") {
+    return `
+      <div class="card">
+        <h2>Overview</h2>
+        ${renderAssessmentDetails()}
+      </div>
+    `;
+  }
+
+  if (tab === "wizard") {
+    return renderWizard();
+  }
+
+  if (tab === "results") {
+    return renderResults();
+  }
+
+  if (tab === "controls") {
+    return `
+      <div class="card">
+        <h2>Recommended controls</h2>
+        ${renderRecommendations(getRecommendedControls(assessment))}
+      </div>
+    `;
+  }
+
+  if (tab === "export") {
+    return renderTools();
+  }
+
+  return `
+    <div class="card">
+      ${emptyState("Unknown tab", "Choose another assessment workspace tab.")}
+    </div>
+  `;
+}
 
     function renderAssessmentDetails() {
       const assessment = getSelectedAssessment();
@@ -2402,7 +3217,7 @@ updateBuildFlag("part6");
               </div>
               <div class="toolbar">
                 <span class="pill ${riskPillClass(assessment.riskLevel)}">${escapeHtml(assessment.riskLevel)}</span>
-                <button class="button small" data-action="select-assessment" data-id="${assessment.id}">Select</button>
+                <button class="button small" data-action="open-assessment" data-id="${assessment.id}">Open</button>
                 <button class="button small danger" data-action="delete-assessment" data-id="${assessment.id}">Delete</button>
               </div>
             </div>
@@ -2622,8 +3437,8 @@ function renderSettings() {
       <div class="card">
         <h2>Single-file deployment</h2>
         <p class="subtitle">
-          This app is designed to run as one local-first GitHub Pages file: HTML, CSS, JavaScript, state, scoring, exports, and tools are all contained in <strong>index.html</strong>.
-        </p>
+  This app is currently suitable as a working prototype, demo, or pilot discussion artefact. Before business implementation, it should go through internal review for policy alignment, information security, data protection, ownership, scoring thresholds, and audit requirements.
+</p>
 
         <div class="divider"></div>
 
@@ -2633,7 +3448,15 @@ function renderSettings() {
         </div>
       </div>
     </div>
-
+<div class="card">
+  <h2>Boss demo checklist</h2>
+  <div class="list">
+    ${infoRow("Positioning", "Lightweight governance accelerator prototype")}
+    ${infoRow("What it does", "Standardises AI use case intake, triage, scoring, controls, and exportable summaries")}
+    ${infoRow("What it does not do", "It does not provide formal approval or replace existing governance forums")}
+    ${infoRow("Best next step", "Run a controlled pilot with a small number of real or anonymised use cases")}
+  </div>
+</div>
     ${renderQaPanel()}
   `;
 }
@@ -2685,6 +3508,8 @@ updateBuildFlag("part7");
   "reset-data": resetData,
   "create-assessment": createAssessmentShell,
   "select-assessment": () => selectAssessment(id),
+  "open-assessment": () => openAssessmentWorkspace(id, "overview"),
+  "open-assessment-wizard": () => openAssessmentWorkspace(id, "wizard"),
   "delete-assessment": () => deleteAssessment(id),
   "export-json": exportStateAsJson,
   "copy-summary": copySummaryToClipboard,
@@ -2694,7 +3519,8 @@ updateBuildFlag("part7");
   "complete-assessment": completeAssessmentDraft,
   "copy-markdown": copyMarkdownReport,
   "download-markdown": downloadMarkdownReport,
-  "print-view": printCurrentView
+  "print-view": printCurrentView,
+  "set-assessment-tab": () => setAssessmentTab(actionTarget.dataset.tab)
 };
       if (actions[action]) actions[action]();
     });
