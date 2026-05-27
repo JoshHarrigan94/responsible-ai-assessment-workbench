@@ -4036,9 +4036,28 @@ function createAssessmentFromDraft() {
     score: null,
     progress: 0,
     answers: {},
-    notes: "",
-    createdAt: nowIso(),
-    updatedAt: nowIso()
+notes: "",
+metadata: {
+  version: "1.0",
+  owner,
+  businessArea,
+  assessmentStatus: "Draft",
+  createdAt: nowIso(),
+  updatedAt: nowIso(),
+  lastReviewedAt: "",
+  approvalOwner: "",
+  approvalDate: ""
+},
+auditTrail: [
+  {
+    timestamp: nowIso(),
+    action: "Assessment created",
+    detail: "New responsible AI assessment created.",
+    actor: owner || "Current user"
+  }
+],
+createdAt: nowIso(),
+updatedAt: nowIso()
   });
 
   state.assessments.unshift(assessment);
@@ -4095,13 +4114,26 @@ function createAssessmentFromDraft() {
         if (assessment.id !== id) return assessment;
 
         const next = {
-          ...assessment,
-          answers: {
-            ...assessment.answers,
-            [questionId]: value
-          },
-          updatedAt: nowIso()
-        };
+  ...assessment,
+  answers: {
+    ...assessment.answers,
+    [questionId]: value
+  },
+  metadata: {
+    ...(assessment.metadata || {}),
+    updatedAt: nowIso()
+  },
+  auditTrail: [
+    ...(assessment.auditTrail || []),
+    {
+      timestamp: nowIso(),
+      action: "Answer updated",
+      detail: `${questionId} updated.`,
+      actor: assessment.owner || assessment.metadata?.owner || "Current user"
+    }
+  ],
+  updatedAt: nowIso()
+};
 
         return recalculateAssessment(next);
       });
@@ -4516,7 +4548,15 @@ const total = visibleQuestions.length || 0;
     unansweredPrimaryQuestions: governanceRouting.unansweredPrimaryQuestions,
 
     status: getAssessmentStatus(assessment, progress, scoring.weightedScore),
-    updatedAt: nowIso()
+updatedAt: nowIso(),
+metadata: {
+  ...(assessment.metadata || {}),
+  owner: assessment.metadata?.owner || assessment.owner || "",
+  businessArea: assessment.metadata?.businessArea || assessment.businessArea || "",
+  updatedAt: nowIso(),
+  assessmentStatus: getAssessmentStatus(assessment, progress, scoring.weightedScore)
+},
+auditTrail: assessment.auditTrail || []
   };
 }
 
@@ -4951,6 +4991,67 @@ function renderResults() {
     </div>
 
     <div class="grid two">
+  <div class="card">
+    <div class="workspace-title-row">
+      <div>
+        <div class="eyebrow">Auditability foundation</div>
+        <h2>Assessment record</h2>
+        <p class="subtitle">
+          Lightweight audit metadata for ownership, review status, versioning, and defensible record keeping.
+        </p>
+      </div>
+      <span class="pill">${escapeHtml(routedAssessment.metadata?.assessmentStatus || routedAssessment.status || "Draft")}</span>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="list">
+      ${infoRow("Version", routedAssessment.metadata?.version || "1.0")}
+      ${infoRow("Owner", routedAssessment.metadata?.owner || routedAssessment.owner || "Not assigned")}
+      ${infoRow("Business area", routedAssessment.metadata?.businessArea || routedAssessment.businessArea || "Not assigned")}
+      ${infoRow("Assessment status", routedAssessment.metadata?.assessmentStatus || routedAssessment.status || "Draft")}
+      ${infoRow("Created", formatDate(routedAssessment.metadata?.createdAt || routedAssessment.createdAt))}
+      ${infoRow("Last updated", formatDate(routedAssessment.metadata?.updatedAt || routedAssessment.updatedAt))}
+      ${infoRow("Approval owner", routedAssessment.metadata?.approvalOwner || "Not assigned")}
+      ${infoRow("Approval date", routedAssessment.metadata?.approvalDate || "Not approved")}
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="workspace-title-row">
+      <div>
+        <div class="eyebrow">Decision history</div>
+        <h2>Audit trail</h2>
+        <p class="subtitle">
+          Recent changes and assessment events are retained locally to support traceability.
+        </p>
+      </div>
+      <span class="pill">${(routedAssessment.auditTrail || []).length} events</span>
+    </div>
+
+    <div class="divider"></div>
+
+    ${
+      routedAssessment.auditTrail?.length
+        ? `
+          <div class="list">
+            ${routedAssessment.auditTrail.slice(-8).reverse().map(event => `
+              <div class="list-item">
+                <div>
+                  <div class="item-title">${escapeHtml(event.action)}</div>
+                  <div class="item-meta">${escapeHtml(event.detail)}</div>
+                </div>
+                <span class="pill">${escapeHtml(formatDate(event.timestamp))}</span>
+              </div>
+            `).join("")}
+          </div>
+        `
+        : `<p class="notice">No audit events have been recorded yet.</p>`
+    }
+  </div>
+</div>
+
+    <div class="grid two">
       <div class="card">
         <h2>Section score profile</h2>
         ${renderSectionScores(assessment)}
@@ -4966,6 +5067,7 @@ function renderResults() {
 
 function getGovernanceDecision(assessment) {
   const routedAssessment = recalculateAssessment(assessment);
+  const assessmentStatus = routedAssessment.metadata?.assessmentStatus || routedAssessment.status || "Draft";
   const score = routedAssessment.score || 0;
   const progress = routedAssessment.progress || 0;
   const routeId = routedAssessment.governanceRouteId || "lightweight";
@@ -4980,6 +5082,7 @@ function getGovernanceDecision(assessment) {
     return {
       decision: "Assessment incomplete",
       decisionLevel: "draft",
+      assessmentStatus,
       reviewRoute: "Complete the active wizard questions before formal review",
       approval: "Not ready for deployment decision",
       monitoring: "Not yet defined",
@@ -4995,6 +5098,7 @@ function getGovernanceDecision(assessment) {
     return {
       decision: "More information required",
       decisionLevel: "blocked",
+      assessmentStatus,
       reviewRoute: "Business owner to complete missing primary governance questions",
       approval: "Do not approve until routing confidence improves",
       monitoring: "Not yet defined",
@@ -5010,6 +5114,7 @@ function getGovernanceDecision(assessment) {
     return {
       decision: "Senior review required",
       decisionLevel: "critical",
+      assessmentStatus,
       reviewRoute: "Responsible AI, Data Governance, Privacy, Security, Legal/Compliance, and senior business owner review",
       approval: "Do not deploy without explicit senior approval and evidence review",
       monitoring: "Continuous or enhanced monitoring required before go-live",
@@ -5026,6 +5131,7 @@ function getGovernanceDecision(assessment) {
     return {
       decision: "Enhanced review required",
       decisionLevel: "enhanced",
+      assessmentStatus,
       reviewRoute: "Responsible AI / Data Governance review with Privacy, Security, Legal/Compliance, and business owner input as required",
       approval: "Can progress only after required controls are completed and reviewed",
       monitoring: "Formal monitoring plan required before go-live",
@@ -5042,6 +5148,7 @@ function getGovernanceDecision(assessment) {
     return {
       decision: "Approved with conditions",
       decisionLevel: "conditional",
+      assessmentStatus,
       reviewRoute: "Business owner sign-off with Responsible AI / Data Governance support where needed",
       approval: "Can proceed if required controls are completed and evidence is retained",
       monitoring: "Define a proportionate review cadence",
@@ -5057,6 +5164,7 @@ function getGovernanceDecision(assessment) {
   return {
     decision: "Baseline governance sufficient",
     decisionLevel: "approved",
+    assessmentStatus,
     reviewRoute: "Business owner sign-off with baseline documentation",
     approval: "Can proceed subject to normal governance expectations",
     monitoring: "Review if scope, data, model, or usage changes",
