@@ -458,6 +458,25 @@
       margin: 18px 0;
     }
 
+.hero-card {
+  padding: 28px;
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(circle at top right, rgba(255, 122, 89, 0.14), transparent 30%),
+    linear-gradient(135deg, #ffffff, #f8fafc);
+  border: 1px solid var(--slate-200);
+  box-shadow: var(--shadow-card);
+}
+
+.hero-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-start;
+  justify-content: flex-end;
+  min-width: 220px;
+}
+
     .compact-route-card {
   display: flex;
   justify-content: space-between;
@@ -4856,6 +4875,10 @@ function renderResults() {
   }
 
   const recommendations = getRecommendedControls(assessment);
+  const requiredControls = routedAssessment.controlRecommendations?.required || [];
+const recommendedControls = routedAssessment.controlRecommendations?.recommended || [];
+const triggerCount = routedAssessment.governanceTriggers?.length || 0;
+const unansweredPrimary = routedAssessment.unansweredPrimaryQuestions?.length || 0;
   const drivers = getRiskDrivers(assessment);
   const band = assessment.riskBand || riskBands?.find(item => item.label === assessment.riskLevel);
   const decision = getGovernanceDecision(assessment);
@@ -4898,51 +4921,86 @@ function renderResults() {
       </div>
     </div>
 
-    <div class="grid two">
-      <div class="card">
-        <h2>Executive summary</h2>
-        <p class="executive-summary">${escapeHtml(generateExecutiveSummary(assessment, drivers, recommendations))}</p>
-      </div>
+   return `
+  <div class="stack">
 
-            <div class="card">
-        <h2>Governance decision</h2>
-        <div class="list">
-          ${infoRow("Recommended decision", decision.decision)}
-          ${infoRow("Decision level", decision.decisionLevel)}
-          ${infoRow("Adaptive route", route.label)}
-          ${infoRow("Route approval", route.approvalLevel)}
-          ${infoRow("Assurance depth", route.assuranceDepth)}
-          ${infoRow("Routing confidence", routedAssessment.routingConfidence || "Not assessed")}
-          ${infoRow("Monitoring expectation", decision.monitoring)}
-          ${infoRow("Decision rationale", decision.rationale?.join(" "))}
-        </div>
-      </div>
-    </div>
-
-    <div class="grid two">
-      <div class="card">
-        <h2>Top risk drivers</h2>
-        ${renderPrioritisedRiskDrivers(drivers)}
-      </div>
-
-      <div class="card">
-        <h2>Priority controls</h2>
-        ${renderPriorityRecommendations(recommendations)}
-      </div>
-    </div>
-    
-    ${renderControlRecommendationCard(routedAssessment)}
-    
-        <div class="card">
+    <div class="hero-card">
       <div class="workspace-title-row">
         <div>
-          <div class="eyebrow">Governance trigger explanation</div>
-          <h2>Why this route was selected</h2>
+          <div class="eyebrow">Governance decision</div>
+          <h1 class="workspace-title">${escapeHtml(decision.decision)}</h1>
+
           <p class="subtitle">
-            This explains the main signals that escalated the assessment route. It supports transparent, defensible governance rather than black-box scoring.
+            ${escapeHtml(decision.summary)}
           </p>
         </div>
-        <span class="pill ${routeClass}">${escapeHtml(route.label)}</span>
+
+        <div class="hero-metrics">
+          <span class="pill ${routeClass}">
+            ${escapeHtml(route.label)}
+          </span>
+
+          <span class="pill">
+            ${escapeHtml(routedAssessment.routingConfidence || "Not assessed")} confidence
+          </span>
+
+          <span class="pill">
+            ${requiredControls.length} required controls
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid two">
+
+      <div class="card">
+        <div class="eyebrow">Governance route</div>
+        <h2>${escapeHtml(route.label)}</h2>
+
+        <p class="subtitle">
+          ${escapeHtml(route.description)}
+        </p>
+
+        <div class="divider"></div>
+
+        <div class="list">
+          ${infoRow("Approval route", route.approvalLevel)}
+          ${infoRow("Assurance depth", route.assuranceDepth)}
+          ${infoRow("Decision level", decision.decisionLevel)}
+          ${infoRow("Assessment status", decision.assessmentStatus)}
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="eyebrow">Assessment coverage</div>
+        <h2>Governance completeness</h2>
+
+        <div class="divider"></div>
+
+        <div class="list">
+          ${infoRow("Completion", `${routedAssessment.progress}%`)}
+          ${infoRow("Governance triggers", `${triggerCount}`)}
+          ${infoRow("Required controls", `${requiredControls.length}`)}
+          ${infoRow("Unanswered primary questions", `${unansweredPrimary}`)}
+        </div>
+      </div>
+
+    </div>
+
+    <div class="card">
+      <div class="workspace-title-row">
+        <div>
+          <div class="eyebrow">Why this route was selected</div>
+          <h2>Governance trigger rationale</h2>
+
+          <p class="subtitle">
+            The following governance indicators materially influenced the adaptive governance route.
+          </p>
+        </div>
+
+        <span class="pill ${routeClass}">
+          ${escapeHtml(route.label)}
+        </span>
       </div>
 
       <div class="divider"></div>
@@ -4951,119 +5009,173 @@ function renderResults() {
         routedAssessment.governanceTriggers?.length
           ? `
             <div class="list">
-              ${routedAssessment.governanceTriggers.slice(0, 6).map(trigger => {
-  const definition = getTriggerDefinition(trigger.id);
+              ${routedAssessment.governanceTriggers.slice(0, uxOrchestrationSettings.maxResultsTriggers).map(trigger => {
+                const definition = getTriggerDefinition(trigger.id);
 
-  const severityClass =
-    definition.severity === "critical"
-      ? "red"
-      : definition.severity === "enhanced"
-        ? "amber"
-        : "";
+                const severityClass =
+                  definition.severity === "critical"
+                    ? "red"
+                    : definition.severity === "enhanced"
+                      ? "amber"
+                      : "";
 
-  return `
-    <div class="list-item">
-      <div>
-        <div class="item-title">${escapeHtml(definition.title)}</div>
+                return `
+                  <div class="list-item">
+                    <div>
+                      <div class="item-title">${escapeHtml(definition.title)}</div>
 
-        <div class="item-meta">
-          ${escapeHtml(definition.rationale)}
-        </div>
+                      <div class="item-meta">
+                        ${escapeHtml(definition.rationale)}
+                      </div>
 
-        <div class="item-meta" style="margin-top:6px;">
-          Triggered by:
-          <strong>${escapeHtml(trigger.answer)}</strong>
-        </div>
-      </div>
+                      <div class="item-meta" style="margin-top:6px;">
+                        Triggered by:
+                        <strong>${escapeHtml(trigger.answer)}</strong>
+                      </div>
+                    </div>
 
-      <span class="pill ${severityClass}">
-        ${escapeHtml(definition.severity)}
-      </span>
-    </div>
-  `;
-}).join("")}
+                    <span class="pill ${severityClass}">
+                      ${escapeHtml(definition.severity)}
+                    </span>
+                  </div>
+                `;
+              }).join("")}
             </div>
           `
           : `
-            <p class="notice">No material escalation triggers were identified from the current answers.</p>
+            <p class="notice">
+              No material escalation triggers were identified from the current assessment.
+            </p>
           `
       }
     </div>
 
+    ${renderControlRecommendationCard(routedAssessment)}
+
     <div class="grid two">
-  <div class="card">
-    <div class="workspace-title-row">
-      <div>
+
+      <div class="card">
+        <div class="eyebrow">Risk profile</div>
+        <h2>${escapeHtml(routedAssessment.riskLevel)}</h2>
+
+        <div class="divider"></div>
+
+        ${renderPrioritisedRiskDrivers(drivers)}
+      </div>
+
+      <div class="card">
+        <div class="eyebrow">Assessment profile</div>
+        <h2>Section score profile</h2>
+
+        <div class="divider"></div>
+
+        ${renderSectionScoreProfile(routedAssessment.sectionScores)}
+      </div>
+
+    </div>
+
+    <div class="card">
+      <div class="workspace-title-row">
+        <div>
+          <div class="eyebrow">Recommended next actions</div>
+          <h2>Operational governance actions</h2>
+
+          <p class="subtitle">
+            Practical actions to support proportionate governance and deployment readiness.
+          </p>
+        </div>
+
+        <span class="pill">
+          ${requiredControls.length + recommendedControls.length} actions
+        </span>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="list">
+
+        ${requiredControls.map(control => `
+          <div class="list-item">
+            <div>
+              <div class="item-title">${escapeHtml(control.title)}</div>
+              <div class="item-meta">${escapeHtml(control.description)}</div>
+            </div>
+
+            <span class="pill red">
+              Required
+            </span>
+          </div>
+        `).join("")}
+
+        ${recommendedControls.slice(0, 4).map(control => `
+          <div class="list-item">
+            <div>
+              <div class="item-title">${escapeHtml(control.title)}</div>
+              <div class="item-meta">${escapeHtml(control.description)}</div>
+            </div>
+
+            <span class="pill amber">
+              Recommended
+            </span>
+          </div>
+        `).join("")}
+
+      </div>
+    </div>
+
+    <div class="grid two">
+
+      <div class="card">
         <div class="eyebrow">Auditability foundation</div>
         <h2>Assessment record</h2>
-        <p class="subtitle">
-          Lightweight audit metadata for ownership, review status, versioning, and defensible record keeping.
-        </p>
+
+        <div class="divider"></div>
+
+        <div class="list">
+          ${infoRow("Version", routedAssessment.metadata?.version || "1.0")}
+          ${infoRow("Owner", routedAssessment.metadata?.owner || "Not assigned")}
+          ${infoRow("Business area", routedAssessment.metadata?.businessArea || "Not assigned")}
+          ${infoRow("Created", formatDate(routedAssessment.metadata?.createdAt || routedAssessment.createdAt))}
+          ${infoRow("Last updated", formatDate(routedAssessment.metadata?.updatedAt || routedAssessment.updatedAt))}
+        </div>
       </div>
-      <span class="pill">${escapeHtml(routedAssessment.metadata?.assessmentStatus || routedAssessment.status || "Draft")}</span>
-    </div>
 
-    <div class="divider"></div>
-
-    <div class="list">
-      ${infoRow("Version", routedAssessment.metadata?.version || "1.0")}
-      ${infoRow("Owner", routedAssessment.metadata?.owner || routedAssessment.owner || "Not assigned")}
-      ${infoRow("Business area", routedAssessment.metadata?.businessArea || routedAssessment.businessArea || "Not assigned")}
-      ${infoRow("Assessment status", routedAssessment.metadata?.assessmentStatus || routedAssessment.status || "Draft")}
-      ${infoRow("Created", formatDate(routedAssessment.metadata?.createdAt || routedAssessment.createdAt))}
-      ${infoRow("Last updated", formatDate(routedAssessment.metadata?.updatedAt || routedAssessment.updatedAt))}
-      ${infoRow("Approval owner", routedAssessment.metadata?.approvalOwner || "Not assigned")}
-      ${infoRow("Approval date", routedAssessment.metadata?.approvalDate || "Not approved")}
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="workspace-title-row">
-      <div>
-        <div class="eyebrow">Decision history</div>
+      <div class="card">
+        <div class="eyebrow">Decision traceability</div>
         <h2>Audit trail</h2>
-        <p class="subtitle">
-          Recent changes and assessment events are retained locally to support traceability.
-        </p>
-      </div>
-      <span class="pill">${(routedAssessment.auditTrail || []).length} events</span>
-    </div>
 
-    <div class="divider"></div>
+        <div class="divider"></div>
 
-    ${
-      routedAssessment.auditTrail?.length
-        ? `
-          <div class="list">
-            ${routedAssessment.auditTrail.slice(-8).reverse().map(event => `
-              <div class="list-item">
-                <div>
-                  <div class="item-title">${escapeHtml(event.action)}</div>
-                  <div class="item-meta">${escapeHtml(event.detail)}</div>
-                </div>
-                <span class="pill">${escapeHtml(formatDate(event.timestamp))}</span>
+        ${
+          routedAssessment.auditTrail?.length
+            ? `
+              <div class="list">
+                ${routedAssessment.auditTrail.slice(-6).reverse().map(event => `
+                  <div class="list-item">
+                    <div>
+                      <div class="item-title">${escapeHtml(event.action)}</div>
+                      <div class="item-meta">${escapeHtml(event.detail)}</div>
+                    </div>
+
+                    <span class="pill">
+                      ${escapeHtml(formatDate(event.timestamp))}
+                    </span>
+                  </div>
+                `).join("")}
               </div>
-            `).join("")}
-          </div>
-        `
-        : `<p class="notice">No audit events have been recorded yet.</p>`
-    }
-  </div>
-</div>
-
-    <div class="grid two">
-      <div class="card">
-        <h2>Section score profile</h2>
-        ${renderSectionScores(assessment)}
+            `
+            : `
+              <p class="notice">
+                No audit events recorded.
+              </p>
+            `
+        }
       </div>
 
-      <div class="card">
-        <h2>Next actions</h2>
-        ${renderNextActions(assessment, recommendations)}
-      </div>
     </div>
-  `;
-}
+
+  </div>
+`;
 
 function getGovernanceDecision(assessment) {
   const routedAssessment = recalculateAssessment(assessment);
