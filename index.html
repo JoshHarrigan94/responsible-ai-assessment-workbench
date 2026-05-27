@@ -458,6 +458,67 @@
       margin: 18px 0;
     }
 
+    .compact-route-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+  padding: 18px;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, #ffffff, #f8fafc);
+  box-shadow: var(--shadow-card);
+}
+
+.compact-route-card h2 {
+  margin: 4px 0 6px;
+}
+
+.compact-route-card p {
+  margin: 0;
+  color: var(--slate-600);
+  font-size: 0.92rem;
+  max-width: 720px;
+}
+
+.compact-route-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  min-width: 220px;
+}
+
+.compact-governance-panel {
+  padding: 14px;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  background: #fff;
+}
+
+.compact-trigger-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 12px 0;
+  border-top: 1px solid var(--slate-100);
+}
+
+.compact-trigger-row:first-of-type {
+  border-top: 0;
+}
+
+.compact-trigger-row p {
+  margin: 4px 0 0;
+  color: var(--slate-600);
+  font-size: 0.9rem;
+}
+
+.compact-notice {
+  padding: 12px 14px;
+}
+
     .notice {
       padding: 14px 16px;
       border-radius: var(--radius-md);
@@ -2688,6 +2749,13 @@ updateBuildFlag("part2");
 ===================================================== */
 
 let wizardSectionIndex = 0;
+const uxOrchestrationSettings = {
+  showControlCardInWizard: false,
+  showTriggerDetailInWizard: true,
+  maxWizardTriggers: 2,
+  maxResultsTriggers: 6,
+  maxResultsControls: 8
+};
 const adaptiveAssessmentSettings = {
   const controlLibrary = {
   "human-review": {
@@ -3460,7 +3528,12 @@ const totalQuestions = visibleQuestions.length;
         ${renderSectionGovernanceGuidance(section, routedAssessment)}
 
         ${renderGovernanceRouteMiniCard(routedAssessment)}
-        ${renderControlRecommendationCard(routedAssessment)}
+
+${
+  uxOrchestrationSettings.showControlCardInWizard
+    ? renderControlRecommendationCard(routedAssessment)
+    : ""
+}
       <div class="grid">
         
         <div class="card">
@@ -3530,6 +3603,47 @@ function renderGovernanceTriggerExplanation(trigger) {
 }
 
 function renderSectionGovernanceGuidance(section, assessment) {
+  if (!uxOrchestrationSettings.showTriggerDetailInWizard) return "";
+
+  const triggers = (assessment.governanceTriggers || []).filter(trigger => {
+    return trigger.sectionId === section.id;
+  });
+
+  if (!triggers.length) {
+    return `
+      <div class="notice compact-notice">
+        This section helps confirm whether additional governance depth is needed.
+      </div>
+    `;
+  }
+
+  return `
+    <div class="compact-governance-panel">
+      <div class="eyebrow">Why this section matters</div>
+
+      ${triggers.slice(-uxOrchestrationSettings.maxWizardTriggers).reverse().map(trigger => {
+        const definition = getTriggerDefinition(trigger.id);
+
+        const severityClass =
+          definition.severity === "critical"
+            ? "red"
+            : definition.severity === "enhanced"
+              ? "amber"
+              : "";
+
+        return `
+          <div class="compact-trigger-row">
+            <div>
+              <strong>${escapeHtml(definition.title)}</strong>
+              <p>${escapeHtml(definition.rationale)}</p>
+            </div>
+            <span class="pill ${severityClass}">${escapeHtml(definition.severity)}</span>
+          </div>
+        `;
+      }).join("")}
+    </div>
+  `;
+}
   const triggers = (assessment.governanceTriggers || []).filter(trigger => {
     return trigger.sectionId === section.id;
   });
@@ -3601,14 +3715,18 @@ function renderControlRecommendationCard(assessment) {
       <div class="divider"></div>
 
       <h2>Required controls</h2>
-      ${renderControlList(controls.required, "No required controls identified yet.")}
-
+      ${renderControlList(
+  controls.required.slice(0, uxOrchestrationSettings.maxResultsControls),
+  "No required controls identified yet."
+)}
       ${
         controls.recommended.length
           ? `
             <div class="divider"></div>
             <h2>Recommended controls</h2>
-            ${renderControlList(controls.recommended)}
+            ${renderControlList(
+  controls.recommended.slice(0, uxOrchestrationSettings.maxResultsControls)
+)}
           `
           : ""
       }
@@ -3638,47 +3756,22 @@ function renderGovernanceRouteMiniCard(assessment) {
         : "green";
 
   const triggers = assessment.governanceTriggers || [];
+  const requiredControls = assessment.controlRecommendations?.required || [];
 
   return `
-    <div class="card">
-      <div class="workspace-title-row">
-        <div>
-          <div class="eyebrow">Live governance route</div>
-          <h2>${escapeHtml(route.label)}</h2>
-          <p class="subtitle">${escapeHtml(route.description)}</p>
-        </div>
+    <div class="compact-route-card">
+      <div>
+        <div class="eyebrow">Live governance route</div>
+        <h2>${escapeHtml(route.label)}</h2>
+        <p>${escapeHtml(route.description)}</p>
+      </div>
+
+      <div class="compact-route-meta">
         <span class="pill ${routeClass}">Level ${route.level}</span>
+        <span class="pill">${escapeHtml(assessment.routingConfidence || "Not assessed")} confidence</span>
+        <span class="pill">${requiredControls.length} required controls</span>
+        <span class="pill">${triggers.length} trigger${triggers.length === 1 ? "" : "s"}</span>
       </div>
-
-      <div class="divider"></div>
-
-      <div class="list">
-        ${infoRow("Approval route", route.approvalLevel)}
-        ${infoRow("Confidence", assessment.routingConfidence || "Not assessed")}
-      </div>
-
-      ${
-        triggers.length
-          ? `
-            <div class="divider"></div>
-            <div class="item-title">Latest governance triggers</div>
-            <div style="height:8px;"></div>
-            <div class="list">
-              ${triggers.slice(-3).reverse().map(trigger => `
-                <div class="list-item">
-                  <div>
-                    <div class="item-title">${escapeHtml(trigger.id)}</div>
-                    <div class="item-meta">${escapeHtml(trigger.answer)}</div>
-                  </div>
-                  <span class="pill ${trigger.routeImpact === "critical" ? "red" : trigger.routeImpact === "enhanced" ? "amber" : ""}">
-                    ${escapeHtml(trigger.routeImpact)}
-                  </span>
-                </div>
-              `).join("")}
-            </div>
-          `
-          : `<p class="notice">No escalation triggers yet. Low-risk answers will keep this route lightweight.</p>`
-      }
     </div>
   `;
 }
