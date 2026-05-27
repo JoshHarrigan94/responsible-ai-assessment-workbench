@@ -1291,14 +1291,14 @@
   subtitle: "Set up the generative AI / Co-Pilot use case before moving into the guided assessment wizard."
 },
   {
-    id: "Use Cases",
+    id: "assessments",
     label: "Use Cases",
     icon: "▣",
     title: "Use Case Assessment",
     subtitle: "Create, edit, complete, score, and export a selected AI use case assessment."
   },
   {
-    id: "Exports & Guidance",
+    id: "tools",
     label: "Exports & Guidance",
     icon: "✦",
     title: "Exports & Guidance",
@@ -2888,8 +2888,8 @@ maxHeroSummaryLength: 520,
   maxResultsTriggers: 6,
   maxResultsControls: 8
 };
-const adaptiveAssessmentSettings = {
-  const controlLibrary = {
+
+const controlLibrary = {
   "human-review": {
     title: "Human review before reliance",
     category: "Human oversight",
@@ -3237,6 +3237,9 @@ const routeBaselineControls = {
     severity: "critical"
   }
 };
+  };
+
+const adaptiveAssessmentSettings = {  
   enabled: true,
   alwaysShowSections: ["context", "governance"],
   alwaysShowQuestionIds: [
@@ -3314,25 +3317,17 @@ function getWizardSection() {
 }
 
 function setWizardSection(index) {
-  wizardSectionIndex = Math.max(0, Math.min(index, assessmentSections.length - 1));
-  state.activeAssessmentTab = "wizard";
-  state.activeRoute = "assessments";
-  saveState();
-  render();
-}
-
-function setWizardSection(index) {
   const assessment = getSelectedAssessment();
-const visibleSections = getVisibleAssessmentSections(assessment);
-const isLast = wizardSectionIndex === visibleSections.length - 1;
+  const visibleSections = getVisibleAssessmentSections(assessment);
 
-if (isLast) {
-  state.wizardMode = "review";
+  wizardSectionIndex = Math.max(0, Math.min(index, visibleSections.length - 1));
+
+  state.wizardMode = "questions";
   state.activeAssessmentTab = "wizard";
   state.activeRoute = "assessments";
+
   saveState();
   render();
-  return;
 }
 
 wizardSectionIndex += 1;
@@ -3343,6 +3338,43 @@ state.activeAssessmentTab = "wizard";
 
 saveState();
 render();
+}
+function completeCurrentWizardSection() {
+  const assessment = getSelectedAssessment();
+  const visibleSections = getVisibleAssessmentSections(assessment);
+  const isLast = wizardSectionIndex >= visibleSections.length - 1;
+
+  if (isLast) {
+    state.wizardMode = "review";
+  } else {
+    wizardSectionIndex += 1;
+    state.wizardMode = "questions";
+  }
+
+  state.activeAssessmentTab = "wizard";
+  state.activeRoute = "assessments";
+
+  saveState();
+  render();
+}
+
+function completeCurrentWizardSection() {
+  const assessment = getSelectedAssessment();
+  const visibleSections = getVisibleAssessmentSections(assessment);
+  const isLastSection = wizardSectionIndex >= visibleSections.length - 1;
+
+  if (isLastSection) {
+    state.wizardMode = "review";
+  } else {
+    wizardSectionIndex += 1;
+    state.wizardMode = "questions";
+  }
+
+  state.activeAssessmentTab = "wizard";
+  state.activeRoute = "assessments";
+
+  saveState();
+  render();
 }
 
 function getQuestionsForSection(sectionId, assessment = getSelectedAssessment()) {
@@ -4433,16 +4465,6 @@ function renderQuestionInput(assessment, question) {
   const status = answered
     ? `<div class="question-status">✓ Answer saved</div>`
     : `<div class="item-meta">Not answered yet</div>`;
-
-${
-  question.isPrimaryTrigger
-    ? `
-      <div class="notice" style="margin-top:10px;">
-        This is a primary governance routing question. Your answer may increase or reduce governance expectations.
-      </div>
-    `
-    : ""
-}
 
   if (question.type === "textarea") {
     return `
@@ -6195,6 +6217,11 @@ const governanceChecklistItems = [
 
 function generateMarkdownReport() {
   const assessment = getSelectedAssessment();
+
+  if (!assessment) {
+    return "# AI Governance Assessment Report\n\nNo assessment is currently selected.";
+  }
+
   const routedAssessment = recalculateAssessment(assessment);
 const decision = getGovernanceDecision(assessment);
 const route = routedAssessment.governanceRoute || getGovernanceRouteById("lightweight");
@@ -7290,40 +7317,7 @@ function renderAssessmentWorkspaceTab(assessment, tab) {
       `;
     }
 
-    function renderControlList(controls) {
-      if (!controls || !controls.length) {
-        return emptyState("No controls yet", "Part 5 will add richer recommended controls.");
-      }
-
-      return `
-        <div class="list">
-          ${controls.map(control => `
-            <div class="list-item">
-              <div>
-                <div class="item-title">${escapeHtml(control.name)}</div>
-                <div class="item-meta">${escapeHtml(control.category)} · ${escapeHtml(control.description)}</div>
-                ${
-  control.evidenceExamples?.length
-    ? `
-      <div class="item-meta" style="margin-top:6px;">
-        Example evidence:
-        ${escapeHtml(control.evidenceExamples.slice(0, 2).join(", "))}
-      </div>
-    `
-    : ""
-}
-
-<div class="item-meta" style="margin-top:6px;">
-  Evidence status:
-  <strong>${escapeHtml(control.evidenceStatus || "not-started")}</strong>
-</div>
-              </div>
-              <span class="pill">${escapeHtml(control.strength || "Control")}</span>
-            </div>
-          `).join("")}
-        </div>
-      `;
-    }
+    
 
     function metricCard(label, value, helper) {
       return `
@@ -7790,10 +7784,7 @@ if (promptHelperInput) {
   updatePromptHelper(promptHelperInput.value);
   return;
 }
-const input = event.target.closest("[data-input-field]");
-      if (!input) return;
-
-		const answerInput = event.target.closest("[data-answer-question]");
+const answerInput = event.target.closest("[data-answer-question]");
 if (answerInput) {
   updateAssessmentAnswer(
     answerInput.dataset.assessmentId,
@@ -7802,6 +7793,9 @@ if (answerInput) {
   );
   return;
 }
+
+const input = event.target.closest("[data-input-field]");
+if (!input) return;
       updateAssessmentField(
         input.dataset.assessmentId,
         input.dataset.inputField,
