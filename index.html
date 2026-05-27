@@ -497,6 +497,37 @@
 }
 
 @media (max-width: 900px) {
+  .evidence-control-item {
+  align-items: flex-start;
+}
+
+.evidence-fields {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.evidence-fields label {
+  display: grid;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--slate-600);
+}
+
+.evidence-fields select,
+.evidence-fields textarea {
+  width: 100%;
+  border: 1px solid var(--slate-200);
+  border-radius: 12px;
+  padding: 10px;
+  font: inherit;
+  background: #fff;
+}
+
+.evidence-fields textarea {
+  resize: vertical;
+}
   .results-metric-strip {
     grid-template-columns: 1fr 1fr;
   }
@@ -2812,6 +2843,42 @@ updateBuildFlag("part2");
 ===================================================== */
 
 let wizardSectionIndex = 0;
+const approvalWorkflowStates = [
+  {
+    id: "draft",
+    label: "Draft",
+    description: "Assessment is still being completed."
+  },
+  {
+    id: "ready-for-review",
+    label: "Ready for review",
+    description: "Assessment is complete and ready for governance review."
+  },
+  {
+    id: "under-review",
+    label: "Under review",
+    description: "Assessment is being reviewed by the relevant governance function."
+  },
+  {
+    id: "approved-with-conditions",
+    label: "Approved with conditions",
+    description: "Use case may proceed once specified conditions are met."
+  },
+  {
+    id: "approved",
+    label: "Approved",
+    description: "Use case has been approved for the assessed scope."
+  },
+  {
+    id: "rejected",
+    label: "Rejected",
+    description: "Use case should not proceed in its current form."
+  }
+];
+
+function getApprovalWorkflowState(stateId) {
+  return approvalWorkflowStates.find(state => state.id === stateId) || approvalWorkflowStates[0];
+}
 const uxOrchestrationSettings = {
   showCompactResultsMetrics: true,
 maxHeroSummaryLength: 520,
@@ -2827,85 +2894,168 @@ const adaptiveAssessmentSettings = {
     title: "Human review before reliance",
     category: "Human oversight",
     description: "Outputs should be reviewed by an accountable human before being relied upon.",
-    priority: "required"
+    priority: "required",
+    evidenceExamples: [
+      "Documented reviewer process",
+      "Human approval checkpoint",
+      "Operational review workflow"
+    ]
   },
+
   "human-override": {
     title: "Human override and intervention route",
     category: "Human oversight",
     description: "Users must be able to stop, override, or reverse AI-supported outcomes where appropriate.",
-    priority: "required"
+    priority: "required",
+    evidenceExamples: [
+      "Override mechanism",
+      "Manual escalation route",
+      "Fallback operational process"
+    ]
   },
+
   "customer-transparency": {
     title: "Customer transparency consideration",
     category: "Transparency",
     description: "Assess whether customers or users should be informed that AI is involved.",
-    priority: "recommended"
+    priority: "recommended",
+    evidenceExamples: [
+      "Customer disclosure wording",
+      "Transparency statement",
+      "User guidance"
+    ]
   },
+
   "fairness-review": {
     title: "Fairness and customer outcome review",
     category: "Fairness",
     description: "Review whether the use case could create unfair treatment, bias, or inconsistent outcomes.",
-    priority: "required"
+    priority: "required",
+    evidenceExamples: [
+      "Fairness assessment",
+      "Outcome testing",
+      "Bias challenge notes"
+    ]
   },
+
   "privacy-review": {
     title: "Privacy review",
     category: "Privacy",
     description: "Confirm lawful basis, purpose limitation, minimisation, retention, and privacy obligations.",
-    priority: "required"
+    priority: "required",
+    evidenceExamples: [
+      "Privacy assessment",
+      "Data flow review",
+      "Data minimisation evidence"
+    ]
   },
+
   "dpia": {
     title: "DPIA screening or DPIA",
     category: "Privacy",
     description: "Screen whether a Data Protection Impact Assessment is required.",
-    priority: "recommended"
+    priority: "recommended",
+    evidenceExamples: [
+      "DPIA screening output",
+      "Completed DPIA",
+      "Privacy sign-off"
+    ]
   },
+
   "supplier-assurance": {
     title: "Supplier assurance",
     category: "Third-party risk",
     description: "Review vendor controls, contractual terms, security posture, data handling, and service dependency.",
-    priority: "required"
+    priority: "required",
+    evidenceExamples: [
+      "Supplier due diligence",
+      "Contract review",
+      "Security assurance pack"
+    ]
   },
+
   "security-review": {
     title: "Security review",
     category: "Security",
     description: "Assess access, data leakage, prompt injection, misuse, and operational security risks.",
-    priority: "required"
+    priority: "required",
+    evidenceExamples: [
+      "Security assessment",
+      "Threat model",
+      "Access control review"
+    ]
   },
+
   "model-validation": {
     title: "Model validation or output testing",
     category: "Technical assurance",
     description: "Test outputs against clear acceptance criteria before operational reliance.",
-    priority: "required"
+    priority: "required",
+    evidenceExamples: [
+      "Validation testing",
+      "Acceptance criteria evidence",
+      "Output QA review"
+    ]
   },
+
   "monitoring": {
     title: "Ongoing monitoring",
     category: "Monitoring",
     description: "Define how output quality, incidents, drift, complaints, and control effectiveness will be monitored.",
-    priority: "required"
+    priority: "required",
+    evidenceExamples: [
+      "Monitoring dashboard",
+      "Review cadence",
+      "Incident monitoring process"
+    ]
   },
+
   "incident-process": {
     title: "AI incident process",
     category: "Monitoring",
     description: "Define how AI-related errors, harms, complaints, or unexpected behaviours will be escalated.",
-    priority: "recommended"
+    priority: "recommended",
+    evidenceExamples: [
+      "Incident workflow",
+      "Escalation matrix",
+      "Operational support process"
+    ]
   },
+
   "documentation": {
     title: "Use case documentation",
     category: "Governance",
     description: "Document purpose, owners, users, data, limitations, controls, approvals, and monitoring.",
-    priority: "required"
+    priority: "required",
+    evidenceExamples: [
+      "Assessment export",
+      "Governance documentation",
+      "Operational process notes"
+    ]
   },
+
   "approval-gate": {
     title: "Governance approval gate",
     category: "Governance",
     description: "Confirm the correct approval route before launch or material change.",
-    priority: "required"
+    priority: "required",
+    evidenceExamples: [
+      "Approval record",
+      "Governance sign-off",
+      "Review evidence"
+    ]
   },
+
   "senior-review": {
     title: "Senior governance review",
     category: "Governance",
     description: "Escalate for senior review where risks are critical, autonomous, customer-material, or weakly controlled.",
-    priority: "required"
+    priority: "required",
+    evidenceExamples: [
+      "Senior approval",
+      "Governance committee review",
+      "Executive sign-off"
+    ]
   }
 };
 
@@ -3730,6 +3880,36 @@ function renderSectionGovernanceGuidance(section, assessment) {
   `;
 }
 
+function calculateEvidenceSummary(controlRecommendations) {
+  const controls = controlRecommendations?.all || [];
+
+  const summary = {
+    total: controls.length,
+    notStarted: 0,
+    inProgress: 0,
+    evidenced: 0,
+    notApplicable: 0,
+    completion: 0
+  };
+
+  controls.forEach(control => {
+    const status = control.evidenceStatus || "not-started";
+
+    if (status === "not-started") summary.notStarted += 1;
+    if (status === "in-progress") summary.inProgress += 1;
+    if (status === "evidenced") summary.evidenced += 1;
+    if (status === "not-applicable") summary.notApplicable += 1;
+  });
+
+  if (summary.total > 0) {
+    summary.completion = Math.round(
+      ((summary.evidenced + summary.notApplicable) / summary.total) * 100
+    );
+  }
+
+  return summary;
+}
+
 function renderControlList(controls, emptyMessage = "No controls identified yet.") {
   if (!controls || !controls.length) {
     return `<p class="notice">${escapeHtml(emptyMessage)}</p>`;
@@ -3738,16 +3918,44 @@ function renderControlList(controls, emptyMessage = "No controls identified yet.
   return `
     <div class="list">
       ${controls.map(control => `
-        <div class="list-item">
+        <div class="list-item evidence-control-item">
           <div>
             <div class="item-title">${escapeHtml(control.title)}</div>
             <div class="item-meta">${escapeHtml(control.category)} · ${escapeHtml(control.description)}</div>
+
             ${
-              control.triggeredBy?.length
-                ? `<div class="item-meta" style="margin-top:6px;">Triggered by: ${escapeHtml(control.triggeredBy.join(", "))}</div>`
+              control.evidenceExamples?.length
+                ? `
+                  <div class="item-meta" style="margin-top:6px;">
+                    Example evidence: ${escapeHtml(control.evidenceExamples.slice(0, 2).join(", "))}
+                  </div>
+                `
                 : ""
             }
+
+            <div class="evidence-fields">
+              <label>
+                Evidence status
+                <select onchange="updateControlEvidence('${escapeHtml(control.id)}', 'evidenceStatus', this.value)">
+                  ${["not-started", "in-progress", "evidenced", "not-applicable"].map(status => `
+                    <option value="${status}" ${control.evidenceStatus === status ? "selected" : ""}>
+                      ${status}
+                    </option>
+                  `).join("")}
+                </select>
+              </label>
+
+              <label>
+                Evidence notes
+                <textarea
+                  rows="2"
+                  placeholder="Add evidence notes, location, link reference, or reviewer comment..."
+                  onchange="updateControlEvidence('${escapeHtml(control.id)}', 'evidenceNotes', this.value)"
+                >${escapeHtml(control.evidenceNotes || "")}</textarea>
+              </label>
+            </div>
           </div>
+
           <span class="pill ${control.priority === "required" ? "red" : control.priority === "recommended" ? "amber" : ""}">
             ${escapeHtml(control.priority)}
           </span>
@@ -3757,6 +3965,80 @@ function renderControlList(controls, emptyMessage = "No controls identified yet.
   `;
 }
 
+function calculateDeploymentReadiness(assessment) {
+  const routedAssessment = recalculateAssessment(assessment);
+  const routeId = routedAssessment.governanceRouteId || "lightweight";
+  const evidenceSummary = routedAssessment.evidenceSummary || {
+    total: 0,
+    notStarted: 0,
+    inProgress: 0,
+    evidenced: 0,
+    notApplicable: 0,
+    completion: 0
+  };
+
+  const requiredControls = routedAssessment.controlRecommendations?.required || [];
+  const unevidencedRequiredControls = requiredControls.filter(control => {
+    return !["evidenced", "not-applicable"].includes(control.evidenceStatus || "not-started");
+  });
+
+  const approvalState = routedAssessment.metadata?.approvalWorkflowState || "draft";
+  const confidence = routedAssessment.routingConfidence || "Medium";
+  const progress = routedAssessment.progress || 0;
+
+  const blockers = [];
+  const warnings = [];
+
+  if (progress < 100) {
+    blockers.push("Assessment is incomplete.");
+  }
+
+  if (confidence === "Low") {
+    blockers.push("Routing confidence is low because primary governance questions remain unanswered.");
+  }
+
+  if (unevidencedRequiredControls.length) {
+    blockers.push(`${unevidencedRequiredControls.length} required control(s) are not evidenced.`);
+  }
+
+  if (routeId === "critical" && approvalState !== "approved") {
+    blockers.push("Critical route requires explicit approval before deployment.");
+  }
+
+  if (routeId === "enhanced" && !["approved", "approved-with-conditions"].includes(approvalState)) {
+    warnings.push("Enhanced route should receive governance approval or conditional approval before deployment.");
+  }
+
+  if (approvalState === "rejected") {
+    blockers.push("Approval workflow state is rejected.");
+  }
+
+  if (approvalState === "draft") {
+    warnings.push("Approval workflow remains in draft.");
+  }
+
+  let readiness = "Ready";
+  let readinessLevel = "ready";
+
+  if (blockers.length) {
+    readiness = "Blocked";
+    readinessLevel = "blocked";
+  } else if (warnings.length) {
+    readiness = "Conditional";
+    readinessLevel = "conditional";
+  }
+
+  return {
+    readiness,
+    readinessLevel,
+    evidenceCompletion: evidenceSummary.completion,
+    blockers,
+    warnings,
+    unevidencedRequiredControls,
+    approvalState
+  };
+}
+
 function generateNextActions(assessment) {
   const routedAssessment = recalculateAssessment(assessment);
   const decision = getGovernanceDecision(assessment);
@@ -3764,8 +4046,26 @@ function generateNextActions(assessment) {
   const requiredControls = routedAssessment.controlRecommendations?.required || [];
   const recommendedControls = routedAssessment.controlRecommendations?.recommended || [];
   const triggers = routedAssessment.governanceTriggers || [];
-
   const actions = [];
+  const readiness = calculateDeploymentReadiness(routedAssessment);
+
+readiness.blockers.forEach(blocker => {
+  actions.push({
+    phase: "Deployment readiness",
+    title: "Resolve deployment blocker",
+    detail: blocker,
+    priority: "required"
+  });
+});
+
+readiness.warnings.forEach(warning => {
+  actions.push({
+    phase: "Deployment readiness",
+    title: "Review deployment warning",
+    detail: warning,
+    priority: "recommended"
+  });
+});
 
   if (routedAssessment.progress < 100) {
     actions.push({
@@ -3847,6 +4147,156 @@ function generateNextActions(assessment) {
   return actions;
 }
 
+function renderDeploymentReadinessCard(assessment) {
+  const readiness = calculateDeploymentReadiness(assessment);
+
+  const readinessClass =
+    readiness.readinessLevel === "blocked"
+      ? "red"
+      : readiness.readinessLevel === "conditional"
+        ? "amber"
+        : "green";
+
+  return `
+    <div class="card">
+      <div class="workspace-title-row">
+        <div>
+          <div class="eyebrow">Deployment readiness gate</div>
+          <h2>${escapeHtml(readiness.readiness)}</h2>
+          <p class="subtitle">
+            Readiness is based on assessment completion, routing confidence, required control evidence, and approval state.
+          </p>
+        </div>
+        <span class="pill ${readinessClass}">
+          ${escapeHtml(readiness.readiness)}
+        </span>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="list">
+        ${infoRow("Evidence completion", `${readiness.evidenceCompletion}%`)}
+        ${infoRow("Approval state", getApprovalWorkflowState(readiness.approvalState).label)}
+        ${infoRow("Blockers", `${readiness.blockers.length}`)}
+        ${infoRow("Warnings", `${readiness.warnings.length}`)}
+      </div>
+
+      ${
+        readiness.blockers.length
+          ? `
+            <div class="divider"></div>
+            <h2>Blocking issues</h2>
+            <div class="list">
+              ${readiness.blockers.map(blocker => `
+                <div class="list-item">
+                  <div>
+                    <div class="item-title">${escapeHtml(blocker)}</div>
+                    <div class="item-meta">Resolve before deployment readiness can be confirmed.</div>
+                  </div>
+                  <span class="pill red">Blocked</span>
+                </div>
+              `).join("")}
+            </div>
+          `
+          : ""
+      }
+
+      ${
+        readiness.warnings.length
+          ? `
+            <div class="divider"></div>
+            <h2>Warnings</h2>
+            <div class="list">
+              ${readiness.warnings.map(warning => `
+                <div class="list-item">
+                  <div>
+                    <div class="item-title">${escapeHtml(warning)}</div>
+                    <div class="item-meta">Review before launch or material reliance.</div>
+                  </div>
+                  <span class="pill amber">Warning</span>
+                </div>
+              `).join("")}
+            </div>
+          `
+          : ""
+      }
+
+      ${
+        readiness.unevidencedRequiredControls.length
+          ? `
+            <div class="divider"></div>
+            <h2>Required controls needing evidence</h2>
+            <div class="list">
+              ${readiness.unevidencedRequiredControls.map(control => `
+                <div class="list-item">
+                  <div>
+                    <div class="item-title">${escapeHtml(control.title)}</div>
+                    <div class="item-meta">${escapeHtml(control.description)}</div>
+                  </div>
+                  <span class="pill red">${escapeHtml(control.evidenceStatus || "not-started")}</span>
+                </div>
+              `).join("")}
+            </div>
+          `
+          : ""
+      }
+    </div>
+  `;
+}
+
+function renderApprovalWorkflowCard(assessment) {
+  const metadata = assessment.metadata || {};
+  const currentState = metadata.approvalWorkflowState || "draft";
+
+  return `
+    <div class="card">
+      <div class="workspace-title-row">
+        <div>
+          <div class="eyebrow">Approval workflow</div>
+          <h2>Review and approval state</h2>
+          <p class="subtitle">
+            Track the current governance approval position and any review notes.
+          </p>
+        </div>
+        <span class="pill">${escapeHtml(getApprovalWorkflowState(currentState).label)}</span>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="evidence-fields">
+        <label>
+          Approval state
+          <select onchange="updateApprovalWorkflow('approvalWorkflowState', this.value)">
+            ${approvalWorkflowStates.map(state => `
+              <option value="${state.id}" ${currentState === state.id ? "selected" : ""}>
+                ${state.label}
+              </option>
+            `).join("")}
+          </select>
+        </label>
+
+        <label>
+          Approval owner
+          <input
+            value="${escapeHtml(metadata.approvalOwner || "")}"
+            placeholder="Name or function responsible for approval"
+            onchange="updateApprovalWorkflow('approvalOwner', this.value)"
+          />
+        </label>
+
+        <label>
+          Approval notes
+          <textarea
+            rows="3"
+            placeholder="Add approval notes, review position, conditions, or decision context..."
+            onchange="updateApprovalWorkflow('approvalNotes', this.value)"
+          >${escapeHtml(metadata.approvalNotes || "")}</textarea>
+        </label>
+      </div>
+    </div>
+  `;
+}
+
 function renderNextActionPlanCard(assessment) {
   const actions = generateNextActions(assessment);
 
@@ -3888,25 +4338,45 @@ function renderControlRecommendationCard(assessment) {
     recommended: [],
     optional: []
   };
+  const evidenceSummary = assessment.evidenceSummary || {
+  total: 0,
+  notStarted: 0,
+  inProgress: 0,
+  evidenced: 0,
+  notApplicable: 0,
+  completion: 0
+};
 
   return `
-    ${renderNextActionPlanCard(routedAssessment)}
+    <div class="card">
+      <div class="workspace-title-row">
+        <div>
+          <div class="eyebrow">Control recommendation engine</div>
+          <h2>Recommended controls</h2>
+          <p class="subtitle">
+            Controls are generated from the adaptive governance route and escalation triggers.
+          </p>
+        </div>
+        <span class="pill">${controls.required.length} required</span>
+<span class="pill">${evidenceSummary.completion}% evidenced</span>
+      </div>
 
       <div class="divider"></div>
 
       <h2>Required controls</h2>
       ${renderControlList(
-  controls.required.slice(0, uxOrchestrationSettings.maxResultsControls),
-  "No required controls identified yet."
-)}
+        controls.required.slice(0, uxOrchestrationSettings.maxResultsControls),
+        "No required controls identified yet."
+      )}
+
       ${
         controls.recommended.length
           ? `
             <div class="divider"></div>
             <h2>Recommended controls</h2>
             ${renderControlList(
-  controls.recommended.slice(0, uxOrchestrationSettings.maxResultsControls)
-)}
+              controls.recommended.slice(0, uxOrchestrationSettings.maxResultsControls)
+            )}
           `
           : ""
       }
@@ -4226,8 +4696,12 @@ metadata: {
   updatedAt: nowIso(),
   lastReviewedAt: "",
   approvalOwner: "",
-  approvalDate: ""
+  approvalDate: "",
+approvalWorkflowState: "draft",
+approvalConditions: [],
+approvalNotes: ""
 },
+controlEvidence: {},
 auditTrail: [
   {
     timestamp: nowIso(),
@@ -4288,6 +4762,73 @@ updatedAt: nowIso()
 
       saveState();
     }
+
+function updateApprovalWorkflow(field, value) {
+  const assessment = getSelectedAssessment();
+  if (!assessment) return;
+
+  const next = recalculateAssessment({
+    ...assessment,
+    metadata: {
+      ...(assessment.metadata || {}),
+      [field]: value,
+      updatedAt: nowIso()
+    },
+    auditTrail: [
+      ...(assessment.auditTrail || []),
+      {
+        timestamp: nowIso(),
+        action: "Approval workflow updated",
+        detail: `${field} updated.`,
+        actor: assessment.metadata?.owner || assessment.owner || "Current user"
+      }
+    ],
+    updatedAt: nowIso()
+  });
+
+  state.assessments = state.assessments.map(item =>
+    item.id === next.id ? next : item
+  );
+
+  saveState();
+  render();
+}
+
+function updateControlEvidence(controlId, field, value) {
+  const assessment = getSelectedAssessment();
+  if (!assessment) return;
+
+  const evidence = {
+    ...(assessment.controlEvidence || {}),
+    [controlId]: {
+      ...(assessment.controlEvidence?.[controlId] || {}),
+      [field]: value,
+      updatedAt: nowIso()
+    }
+  };
+
+  const next = recalculateAssessment({
+    ...assessment,
+    controlEvidence: evidence,
+    auditTrail: [
+      ...(assessment.auditTrail || []),
+      {
+        timestamp: nowIso(),
+        action: "Control evidence updated",
+        detail: `${controlId} ${field} updated.`,
+        actor: assessment.metadata?.owner || assessment.owner || "Current user"
+      }
+    ],
+    updatedAt: nowIso()
+  });
+
+  state.assessments = state.assessments.map(item =>
+    item.id === next.id ? next : item
+  );
+
+  saveState();
+  render();
+}
 
     function updateAssessmentAnswer(id, questionId, value) {
       state.assessments = state.assessments.map(assessment => {
@@ -4449,11 +4990,19 @@ function calculateControlRecommendations(routing) {
         .filter(trigger => (triggerControlMap[trigger.id] || []).includes(controlId))
         .map(trigger => trigger.id);
 
-      return {
-        id: controlId,
-        ...control,
-        triggeredBy
-      };
+      const savedEvidence = routing.assessment?.controlEvidence?.[controlId] || {};
+
+return {
+  id: controlId,
+  ...control,
+  triggeredBy,
+  evidenceStatus: savedEvidence.evidenceStatus || "not-started",
+  evidenceNotes: savedEvidence.evidenceNotes || "",
+  evidenceOwner: savedEvidence.evidenceOwner || "",
+  evidenceUpdatedAt: savedEvidence.updatedAt || "",
+  evidenceLinks: savedEvidence.evidenceLinks || [],
+  evidenceFiles: savedEvidence.evidenceFiles || []
+};
     })
     .filter(Boolean);
 
@@ -4556,14 +5105,15 @@ function calculateGovernanceRouting(assessment) {
     routingConfidence = "Medium";
   }
   const controlRecommendations = calculateControlRecommendations({
-    routeId,
-    route,
-    triggers,
-    primarySignals,
-    domainProfile,
-    criticalTriggers,
-    enhancedTriggers
-  });
+  assessment,
+  routeId,
+  route,
+  triggers,
+  primarySignals,
+  domainProfile,
+  criticalTriggers,
+  enhancedTriggers
+});
   return {
     routeId,
     route,
@@ -4725,6 +5275,9 @@ const total = visibleQuestions.length || 0;
     governanceDomainProfile: governanceRouting.domainProfile,
     routingConfidence: governanceRouting.routingConfidence,
     controlRecommendations: governanceRouting.controlRecommendations,
+    evidenceSummary: calculateEvidenceSummary(
+  governanceRouting.controlRecommendations
+),
     unansweredPrimaryQuestions: governanceRouting.unansweredPrimaryQuestions,
 
     status: getAssessmentStatus(assessment, progress, scoring.weightedScore),
@@ -4734,7 +5287,10 @@ metadata: {
   owner: assessment.metadata?.owner || assessment.owner || "",
   businessArea: assessment.metadata?.businessArea || assessment.businessArea || "",
   updatedAt: nowIso(),
-  assessmentStatus: getAssessmentStatus(assessment, progress, scoring.weightedScore)
+  assessmentStatus: getAssessmentStatus(assessment, progress, scoring.weightedScore),
+approvalWorkflowState: assessment.metadata?.approvalWorkflowState || "draft",
+approvalConditions: assessment.metadata?.approvalConditions || [],
+approvalNotes: assessment.metadata?.approvalNotes || ""
 },
 auditTrail: assessment.auditTrail || []
   };
@@ -5073,16 +5629,16 @@ function renderResults() {
     `;
   }
 
-  const recommendations = getRecommendedControls(assessment);
-  const requiredControls = routedAssessment.controlRecommendations?.required || [];
-const recommendedControls = routedAssessment.controlRecommendations?.recommended || [];
-const triggerCount = routedAssessment.governanceTriggers?.length || 0;
-const unansweredPrimary = routedAssessment.unansweredPrimaryQuestions?.length || 0;
-  const drivers = getRiskDrivers(assessment);
-  const band = assessment.riskBand || riskBands?.find(item => item.label === assessment.riskLevel);
-  const decision = getGovernanceDecision(assessment);
   const routedAssessment = recalculateAssessment(assessment);
+  const decision = getGovernanceDecision(assessment);
   const route = routedAssessment.governanceRoute || getGovernanceRouteById("lightweight");
+
+  const requiredControls = routedAssessment.controlRecommendations?.required || [];
+  const recommendedControls = routedAssessment.controlRecommendations?.recommended || [];
+  const triggerCount = routedAssessment.governanceTriggers?.length || 0;
+  const unansweredPrimary = routedAssessment.unansweredPrimaryQuestions?.length || 0;
+  const drivers = getRiskDrivers(routedAssessment);
+
   const routeClass = route.id === "critical"
     ? "red"
     : route.id === "enhanced"
@@ -5090,301 +5646,212 @@ const unansweredPrimary = routedAssessment.unansweredPrimaryQuestions?.length ||
       : route.id === "standard"
         ? ""
         : "green";
+
   return `
-    <div class="risk-hero">
-      <div class="workspace-title-row">
-        <div>
-                    <div class="eyebrow">Assessment verdict</div>
-          <h2 class="workspace-title">${escapeHtml(assessment.riskLevel)}</h2>
-          <div style="height:8px;"></div>
-          <span class="pill ${routeClass}">${escapeHtml(route.label)}</span>
-          <p class="subtitle hero-summary">
-  ${escapeHtml(truncateText(generateExecutiveSummary(routedAssessment), uxOrchestrationSettings.maxHeroSummaryLength))}
-</p>
+    <div class="stack">
 
-${
-  uxOrchestrationSettings.showCompactResultsMetrics
-    ? renderResultsMetricStrip(routedAssessment, decision, route, requiredControls)
-    : ""
-}
-        </div>
+      <div class="hero-card">
+        <div class="workspace-title-row">
+          <div>
+            <div class="eyebrow">Governance decision</div>
+            <h1 class="workspace-title">${escapeHtml(decision.decision)}</h1>
 
-        <div>
-          <div class="risk-score-large">${assessment.score ?? 0}</div>
-          <div class="item-meta">Risk score / 100</div>
-        </div>
-      </div>
-
-      <div class="progress-bar">
-        <div class="progress-fill" style="width:${assessment.score || 0}%"></div>
-      </div>
-
-      <div class="toolbar">
-        <button class="button primary" data-action="set-assessment-tab" data-tab="controls">Review recommended actions</button>
-        <button class="button" data-action="set-assessment-tab" data-tab="export">Export summary</button>
-        <button class="button" data-action="print-view">Print view</button>
-      </div>
-    </div>
-
-   return `
-  <div class="stack">
-
-    <div class="hero-card">
-      <div class="workspace-title-row">
-        <div>
-          <div class="eyebrow">Governance decision</div>
-          <h1 class="workspace-title">${escapeHtml(decision.decision)}</h1>
-
-          <p class="subtitle">
-            ${escapeHtml(decision.summary)}
-          </p>
-        </div>
-
-        <div class="hero-metrics subtle-hero-metrics">
-          <span class="pill ${routeClass}">
-            ${escapeHtml(route.label)}
-          </span>
-
-          <span class="pill">
-            ${escapeHtml(routedAssessment.routingConfidence || "Not assessed")} confidence
-          </span>
-
-          <span class="pill">
-            ${requiredControls.length} required controls
-          </span>
-        </div>
-      </div>
-    </div>
-
-    <div class="grid two">
-
-      <div class="card">
-        <div class="eyebrow">Governance route</div>
-        <h2>${escapeHtml(route.label)}</h2>
-
-        <p class="subtitle">
-          ${escapeHtml(route.description)}
-        </p>
-
-        <div class="divider"></div>
-
-        <div class="list">
-          ${infoRow("Approval route", route.approvalLevel)}
-          ${infoRow("Assurance depth", route.assuranceDepth)}
-          ${infoRow("Decision level", decision.decisionLevel)}
-          ${infoRow("Assessment status", decision.assessmentStatus)}
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="eyebrow">Assessment coverage</div>
-        <h2>Governance completeness</h2>
-
-        <div class="divider"></div>
-
-        <div class="list">
-          ${infoRow("Completion", `${routedAssessment.progress}%`)}
-          ${infoRow("Governance triggers", `${triggerCount}`)}
-          ${infoRow("Required controls", `${requiredControls.length}`)}
-          ${infoRow("Unanswered primary questions", `${unansweredPrimary}`)}
-        </div>
-      </div>
-
-    </div>
-
-    <div class="card">
-      <div class="workspace-title-row">
-        <div>
-          <div class="eyebrow">Why this route was selected</div>
-          <h2>Governance trigger rationale</h2>
-
-          <p class="subtitle">
-            The following governance indicators materially influenced the adaptive governance route.
-          </p>
-        </div>
-
-        <span class="pill ${routeClass}">
-          ${escapeHtml(route.label)}
-        </span>
-      </div>
-
-      <div class="divider"></div>
-
-      ${
-        routedAssessment.governanceTriggers?.length
-          ? `
-            <div class="list">
-              ${routedAssessment.governanceTriggers.slice(0, uxOrchestrationSettings.maxResultsTriggers).map(trigger => {
-                const definition = getTriggerDefinition(trigger.id);
-
-                const severityClass =
-                  definition.severity === "critical"
-                    ? "red"
-                    : definition.severity === "enhanced"
-                      ? "amber"
-                      : "";
-
-                return `
-                  <div class="list-item">
-                    <div>
-                      <div class="item-title">${escapeHtml(definition.title)}</div>
-
-                      <div class="item-meta">
-                        ${escapeHtml(definition.rationale)}
-                      </div>
-
-                      <div class="item-meta" style="margin-top:6px;">
-                        Triggered by:
-                        <strong>${escapeHtml(trigger.answer)}</strong>
-                      </div>
-                    </div>
-
-                    <span class="pill ${severityClass}">
-                      ${escapeHtml(definition.severity)}
-                    </span>
-                  </div>
-                `;
-              }).join("")}
-            </div>
-          `
-          : `
-            <p class="notice">
-              No material escalation triggers were identified from the current assessment.
+            <p class="subtitle hero-summary">
+              ${escapeHtml(truncateText(generateExecutiveSummary(routedAssessment), uxOrchestrationSettings.maxHeroSummaryLength))}
             </p>
-          `
-      }
-    </div>
 
-    ${renderControlRecommendationCard(routedAssessment)}
+            ${
+              uxOrchestrationSettings.showCompactResultsMetrics
+                ? renderResultsMetricStrip(routedAssessment, decision, route, requiredControls)
+                : ""
+            }
+          </div>
 
-    <div class="grid two">
-
-      <div class="card">
-        <div class="eyebrow">Risk profile</div>
-        <h2>${escapeHtml(routedAssessment.riskLevel)}</h2>
-
-        <div class="divider"></div>
-
-        ${renderPrioritisedRiskDrivers(drivers)}
+          <div class="hero-metrics subtle-hero-metrics">
+            <span class="pill ${routeClass}">${escapeHtml(route.label)}</span>
+            <span class="pill">${escapeHtml(routedAssessment.routingConfidence || "Not assessed")} confidence</span>
+            <span class="pill">${requiredControls.length} required controls</span>
+            <span class="pill">
+  ${escapeHtml(calculateDeploymentReadiness(routedAssessment).readiness)} readiness
+</span>
+           </div>
+        </div>
       </div>
 
-      <div class="card">
-        <div class="eyebrow">Assessment profile</div>
-        <h2>Section score profile</h2>
+      <div class="grid two">
+        <div class="card">
+          <div class="eyebrow">Governance route</div>
+          <h2>${escapeHtml(route.label)}</h2>
 
-        <div class="divider"></div>
+          <p class="subtitle">${escapeHtml(route.description)}</p>
 
-        ${renderSectionScoreProfile(routedAssessment.sectionScores)}
-      </div>
+          <div class="divider"></div>
 
-    </div>
-
-    <div class="card">
-      <div class="workspace-title-row">
-        <div>
-          <div class="eyebrow">Recommended next actions</div>
-          <h2>Operational governance actions</h2>
-
-          <p class="subtitle">
-            Practical actions to support proportionate governance and deployment readiness.
-          </p>
+          <div class="list">
+            ${infoRow("Approval route", route.approvalLevel)}
+            ${infoRow("Assurance depth", route.assuranceDepth)}
+            ${infoRow("Decision level", decision.decisionLevel)}
+            ${infoRow("Assessment status", decision.assessmentStatus)}
+            ${infoRow("Approval workflow", decision.approvalWorkflowState)}
+            ${infoRow("Deployment readiness", decision.deploymentReadiness)}
+          </div>
         </div>
 
-        <span class="pill">
-          ${requiredControls.length + recommendedControls.length} actions
-        </span>
-      </div>
+        <div class="card">
+          <div class="eyebrow">Assessment coverage</div>
+          <h2>Governance completeness</h2>
 
-      <div class="divider"></div>
+          <div class="divider"></div>
 
-      <div class="list">
-
-        ${requiredControls.map(control => `
-          <div class="list-item">
-            <div>
-              <div class="item-title">${escapeHtml(control.title)}</div>
-              <div class="item-meta">${escapeHtml(control.description)}</div>
-            </div>
-
-            <span class="pill red">
-              Required
-            </span>
+          <div class="list">
+            ${infoRow("Completion", `${routedAssessment.progress}%`)}
+            ${infoRow("Governance triggers", `${triggerCount}`)}
+            ${infoRow("Required controls", `${requiredControls.length}`)}
+            ${infoRow("Evidence completion", `${routedAssessment.evidenceSummary?.completion || 0}%`)}
+            ${infoRow("Unanswered primary questions", `${unansweredPrimary}`)}
           </div>
-        `).join("")}
-
-        ${recommendedControls.slice(0, 4).map(control => `
-          <div class="list-item">
-            <div>
-              <div class="item-title">${escapeHtml(control.title)}</div>
-              <div class="item-meta">${escapeHtml(control.description)}</div>
-            </div>
-
-            <span class="pill amber">
-              Recommended
-            </span>
-          </div>
-        `).join("")}
-
-      </div>
-    </div>
-
-    <div class="grid two">
-
-      <div class="card">
-        <div class="eyebrow">Auditability foundation</div>
-        <h2>Assessment record</h2>
-
-        <div class="divider"></div>
-
-        <div class="list">
-          ${infoRow("Version", routedAssessment.metadata?.version || "1.0")}
-          ${infoRow("Owner", routedAssessment.metadata?.owner || "Not assigned")}
-          ${infoRow("Business area", routedAssessment.metadata?.businessArea || "Not assigned")}
-          ${infoRow("Created", formatDate(routedAssessment.metadata?.createdAt || routedAssessment.createdAt))}
-          ${infoRow("Last updated", formatDate(routedAssessment.metadata?.updatedAt || routedAssessment.updatedAt))}
         </div>
       </div>
 
       <div class="card">
-        <div class="eyebrow">Decision traceability</div>
-        <h2>Audit trail</h2>
+        <div class="workspace-title-row">
+          <div>
+            <div class="eyebrow">Why this route was selected</div>
+            <h2>Governance trigger rationale</h2>
+
+            <p class="subtitle">
+              The following governance indicators materially influenced the adaptive governance route.
+            </p>
+          </div>
+
+          <span class="pill ${routeClass}">${escapeHtml(route.label)}</span>
+        </div>
 
         <div class="divider"></div>
 
         ${
-          routedAssessment.auditTrail?.length
+          routedAssessment.governanceTriggers?.length
             ? `
               <div class="list">
-                ${routedAssessment.auditTrail.slice(-6).reverse().map(event => `
-                  <div class="list-item">
-                    <div>
-                      <div class="item-title">${escapeHtml(event.action)}</div>
-                      <div class="item-meta">${escapeHtml(event.detail)}</div>
-                    </div>
+                ${routedAssessment.governanceTriggers.slice(0, uxOrchestrationSettings.maxResultsTriggers).map(trigger => {
+                  const definition = getTriggerDefinition(trigger.id);
 
-                    <span class="pill">
-                      ${escapeHtml(formatDate(event.timestamp))}
-                    </span>
-                  </div>
-                `).join("")}
+                  const severityClass =
+                    definition.severity === "critical"
+                      ? "red"
+                      : definition.severity === "enhanced"
+                        ? "amber"
+                        : "";
+
+                  return `
+                    <div class="list-item">
+                      <div>
+                        <div class="item-title">${escapeHtml(definition.title)}</div>
+                        <div class="item-meta">${escapeHtml(definition.rationale)}</div>
+                        <div class="item-meta" style="margin-top:6px;">
+                          Triggered by: <strong>${escapeHtml(trigger.answer)}</strong>
+                        </div>
+                      </div>
+
+                      <span class="pill ${severityClass}">
+                        ${escapeHtml(definition.severity)}
+                      </span>
+                    </div>
+                  `;
+                }).join("")}
               </div>
             `
             : `
               <p class="notice">
-                No audit events recorded.
+                No material escalation triggers were identified from the current assessment.
               </p>
             `
         }
       </div>
 
-    </div>
+      ${renderControlRecommendationCard(routedAssessment)}
+     ${renderDeploymentReadinessCard(routedAssessment)}
+       ${renderApprovalWorkflowCard(routedAssessment)}
+      ${renderNextActionPlanCard(routedAssessment)}
 
-  </div>
-`;
+      <div class="grid two">
+        <div class="card">
+          <div class="eyebrow">Risk profile</div>
+          <h2>${escapeHtml(routedAssessment.riskLevel)}</h2>
+
+          <div class="divider"></div>
+
+          ${renderPrioritisedRiskDrivers(drivers)}
+        </div>
+
+        <div class="card">
+          <div class="eyebrow">Assessment profile</div>
+          <h2>Section score profile</h2>
+
+          <div class="divider"></div>
+
+          ${renderSectionScoreProfile(routedAssessment.sectionScores)}
+        </div>
+      </div>
+
+      <div class="grid two">
+        <div class="card">
+          <div class="eyebrow">Auditability foundation</div>
+          <h2>Assessment record</h2>
+
+          <div class="divider"></div>
+
+          <div class="list">
+            ${infoRow("Version", routedAssessment.metadata?.version || "1.0")}
+            ${infoRow("Owner", routedAssessment.metadata?.owner || "Not assigned")}
+            ${infoRow("Business area", routedAssessment.metadata?.businessArea || "Not assigned")}
+            ${infoRow("Assessment status", routedAssessment.metadata?.assessmentStatus || routedAssessment.status || "Draft")}
+           ${infoRow("Approval workflow", getApprovalWorkflowState(routedAssessment.metadata?.approvalWorkflowState || "draft").label)}
+${infoRow("Approval owner", routedAssessment.metadata?.approvalOwner || "Not assigned")}
+${infoRow("Approval notes", routedAssessment.metadata?.approvalNotes || "No approval notes recorded")}
+             ${infoRow("Created", formatDate(routedAssessment.metadata?.createdAt || routedAssessment.createdAt))}
+            ${infoRow("Last updated", formatDate(routedAssessment.metadata?.updatedAt || routedAssessment.updatedAt))}
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="eyebrow">Decision traceability</div>
+          <h2>Audit trail</h2>
+
+          <div class="divider"></div>
+
+          ${
+            routedAssessment.auditTrail?.length
+              ? `
+                <div class="list">
+                  ${routedAssessment.auditTrail.slice(-6).reverse().map(event => `
+                    <div class="list-item">
+                      <div>
+                        <div class="item-title">${escapeHtml(event.action)}</div>
+                        <div class="item-meta">${escapeHtml(event.detail)}</div>
+                      </div>
+
+                      <span class="pill">${escapeHtml(formatDate(event.timestamp))}</span>
+                    </div>
+                  `).join("")}
+                </div>
+              `
+              : `<p class="notice">No audit events recorded.</p>`
+          }
+        </div>
+      </div>
+
+    </div>
+  `;
+}
 
 function getGovernanceDecision(assessment) {
   const routedAssessment = recalculateAssessment(assessment);
   const assessmentStatus = routedAssessment.metadata?.assessmentStatus || routedAssessment.status || "Draft";
+  const approvalWorkflowState = getApprovalWorkflowState(
+  routedAssessment.metadata?.approvalWorkflowState || "draft"
+);
+const deploymentReadiness = calculateDeploymentReadiness(routedAssessment);
   const score = routedAssessment.score || 0;
   const progress = routedAssessment.progress || 0;
   const routeId = routedAssessment.governanceRouteId || "lightweight";
@@ -5400,6 +5867,9 @@ function getGovernanceDecision(assessment) {
       decision: "Assessment incomplete",
       decisionLevel: "draft",
       assessmentStatus,
+      approvalWorkflowState: approvalWorkflowState.label,
+      deploymentReadiness: deploymentReadiness.readiness,
+deploymentReadinessLevel: deploymentReadiness.readinessLevel,
       reviewRoute: "Complete the active wizard questions before formal review",
       approval: "Not ready for deployment decision",
       monitoring: "Not yet defined",
@@ -5416,6 +5886,9 @@ function getGovernanceDecision(assessment) {
       decision: "More information required",
       decisionLevel: "blocked",
       assessmentStatus,
+      approvalWorkflowState: approvalWorkflowState.label,
+      deploymentReadiness: deploymentReadiness.readiness,
+deploymentReadinessLevel: deploymentReadiness.readinessLevel,
       reviewRoute: "Business owner to complete missing primary governance questions",
       approval: "Do not approve until routing confidence improves",
       monitoring: "Not yet defined",
@@ -5432,6 +5905,9 @@ function getGovernanceDecision(assessment) {
       decision: "Senior review required",
       decisionLevel: "critical",
       assessmentStatus,
+      approvalWorkflowState: approvalWorkflowState.label,
+      deploymentReadiness: deploymentReadiness.readiness,
+deploymentReadinessLevel: deploymentReadiness.readinessLevel,
       reviewRoute: "Responsible AI, Data Governance, Privacy, Security, Legal/Compliance, and senior business owner review",
       approval: "Do not deploy without explicit senior approval and evidence review",
       monitoring: "Continuous or enhanced monitoring required before go-live",
@@ -5449,6 +5925,9 @@ function getGovernanceDecision(assessment) {
       decision: "Enhanced review required",
       decisionLevel: "enhanced",
       assessmentStatus,
+      approvalWorkflowState: approvalWorkflowState.label,
+      deploymentReadiness: deploymentReadiness.readiness,
+deploymentReadinessLevel: deploymentReadiness.readinessLevel,
       reviewRoute: "Responsible AI / Data Governance review with Privacy, Security, Legal/Compliance, and business owner input as required",
       approval: "Can progress only after required controls are completed and reviewed",
       monitoring: "Formal monitoring plan required before go-live",
@@ -5466,6 +5945,9 @@ function getGovernanceDecision(assessment) {
       decision: "Approved with conditions",
       decisionLevel: "conditional",
       assessmentStatus,
+      approvalWorkflowState: approvalWorkflowState.label,
+      deploymentReadiness: deploymentReadiness.readiness,
+deploymentReadinessLevel: deploymentReadiness.readinessLevel,
       reviewRoute: "Business owner sign-off with Responsible AI / Data Governance support where needed",
       approval: "Can proceed if required controls are completed and evidence is retained",
       monitoring: "Define a proportionate review cadence",
@@ -5482,6 +5964,9 @@ function getGovernanceDecision(assessment) {
     decision: "Baseline governance sufficient",
     decisionLevel: "approved",
     assessmentStatus,
+    approvalWorkflowState: approvalWorkflowState.label,
+    deploymentReadiness: deploymentReadiness.readiness,
+deploymentReadinessLevel: deploymentReadiness.readinessLevel,
     reviewRoute: "Business owner sign-off with baseline documentation",
     approval: "Can proceed subject to normal governance expectations",
     monitoring: "Review if scope, data, model, or usage changes",
@@ -6817,6 +7302,21 @@ function renderAssessmentWorkspaceTab(assessment, tab) {
               <div>
                 <div class="item-title">${escapeHtml(control.name)}</div>
                 <div class="item-meta">${escapeHtml(control.category)} · ${escapeHtml(control.description)}</div>
+                ${
+  control.evidenceExamples?.length
+    ? `
+      <div class="item-meta" style="margin-top:6px;">
+        Example evidence:
+        ${escapeHtml(control.evidenceExamples.slice(0, 2).join(", "))}
+      </div>
+    `
+    : ""
+}
+
+<div class="item-meta" style="margin-top:6px;">
+  Evidence status:
+  <strong>${escapeHtml(control.evidenceStatus || "not-started")}</strong>
+</div>
               </div>
               <span class="pill">${escapeHtml(control.strength || "Control")}</span>
             </div>
