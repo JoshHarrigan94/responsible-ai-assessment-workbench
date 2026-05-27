@@ -4775,11 +4775,13 @@ function renderResults() {
         <h2>Governance decision</h2>
         <div class="list">
           ${infoRow("Recommended decision", decision.decision)}
+          ${infoRow("Decision level", decision.decisionLevel)}
           ${infoRow("Adaptive route", route.label)}
           ${infoRow("Route approval", route.approvalLevel)}
           ${infoRow("Assurance depth", route.assuranceDepth)}
           ${infoRow("Routing confidence", routedAssessment.routingConfidence || "Not assessed")}
           ${infoRow("Monitoring expectation", decision.monitoring)}
+          ${infoRow("Decision rationale", decision.rationale?.join(" "))}
         </div>
       </div>
     </div>
@@ -4870,48 +4872,109 @@ function renderResults() {
 }
 
 function getGovernanceDecision(assessment) {
-  const score = assessment.score || 0;
-  const progress = assessment.progress || 0;
+  const routedAssessment = recalculateAssessment(assessment);
+  const score = routedAssessment.score || 0;
+  const progress = routedAssessment.progress || 0;
+  const routeId = routedAssessment.governanceRouteId || "lightweight";
+  const route = routedAssessment.governanceRoute || getGovernanceRouteById(routeId);
+  const confidence = routedAssessment.routingConfidence || "Medium";
+  const requiredControls = routedAssessment.controlRecommendations?.required || [];
+  const criticalTriggers = (routedAssessment.governanceTriggers || []).filter(trigger => {
+    return trigger.routeImpact === "critical";
+  });
 
   if (progress < 100) {
     return {
       decision: "Assessment incomplete",
-      reviewRoute: "Complete wizard before formal review",
+      decisionLevel: "draft",
+      reviewRoute: "Complete the active wizard questions before formal review",
       approval: "Not ready for deployment decision",
       monitoring: "Not yet defined",
-      summary: "This assessment is still incomplete. Complete all wizard sections before relying on the risk outcome."
+      summary: "This assessment is still incomplete. Complete the active governance questions before relying on the outcome.",
+      rationale: [
+        "The assessment has not reached 100% completion.",
+        "Routing may change as further answers are provided."
+      ]
     };
   }
 
-  if (score >= 55) {
+  if (confidence === "Low") {
+    return {
+      decision: "More information required",
+      decisionLevel: "blocked",
+      reviewRoute: "Business owner to complete missing primary governance questions",
+      approval: "Do not approve until routing confidence improves",
+      monitoring: "Not yet defined",
+      summary: "The assessment does not contain enough primary routing information to support a defensible governance decision.",
+      rationale: [
+        "Routing confidence is low.",
+        "Primary governance trigger questions remain unanswered."
+      ]
+    };
+  }
+
+  if (routeId === "critical" || criticalTriggers.length > 0) {
+    return {
+      decision: "Senior review required",
+      decisionLevel: "critical",
+      reviewRoute: "Responsible AI, Data Governance, Privacy, Security, Legal/Compliance, and senior business owner review",
+      approval: "Do not deploy without explicit senior approval and evidence review",
+      monitoring: "Continuous or enhanced monitoring required before go-live",
+      summary: "This use case has critical governance triggers and should not proceed without senior review, formal assurance, and evidenced controls.",
+      rationale: [
+        `Adaptive route selected: ${route.label}.`,
+        `${criticalTriggers.length} critical trigger(s) identified.`,
+        `${requiredControls.length} required control(s) generated.`
+      ]
+    };
+  }
+
+  if (routeId === "enhanced" || score >= 55) {
     return {
       decision: "Enhanced review required",
-      reviewRoute: "Responsible AI, Data Governance, Privacy, Security, and senior business owner review",
-      approval: "Do not deploy without explicit approval and evidence review",
+      decisionLevel: "enhanced",
+      reviewRoute: "Responsible AI / Data Governance review with Privacy, Security, Legal/Compliance, and business owner input as required",
+      approval: "Can progress only after required controls are completed and reviewed",
       monitoring: "Formal monitoring plan required before go-live",
-      summary: "This use case has significant risk indicators and should not proceed without enhanced governance review."
+      summary: "This use case has elevated governance indicators and requires enhanced review before deployment or material reliance.",
+      rationale: [
+        `Adaptive route selected: ${route.label}.`,
+        `Current risk score: ${score}/100.`,
+        `${requiredControls.length} required control(s) generated.`
+      ]
     };
   }
 
-  if (score >= 25) {
+  if (routeId === "standard" || score >= 25) {
     return {
-      decision: "Proceed only with controls",
-      reviewRoute: "Responsible AI / Data Governance review with business owner sign-off",
-      approval: "Can progress if recommended controls are completed and evidenced",
-      monitoring: "Define recurring monitoring and review cadence",
-      summary: "This use case has material risk indicators. It may proceed only if controls are implemented and review evidence is retained."
+      decision: "Approved with conditions",
+      decisionLevel: "conditional",
+      reviewRoute: "Business owner sign-off with Responsible AI / Data Governance support where needed",
+      approval: "Can proceed if required controls are completed and evidence is retained",
+      monitoring: "Define a proportionate review cadence",
+      summary: "This use case may proceed through standard governance, provided required controls are completed and ownership remains clear.",
+      rationale: [
+        `Adaptive route selected: ${route.label}.`,
+        `Current risk score: ${score}/100.`,
+        "Standard governance controls should be evidenced."
+      ]
     };
   }
 
   return {
     decision: "Baseline governance sufficient",
+    decisionLevel: "approved",
     reviewRoute: "Business owner sign-off with baseline documentation",
     approval: "Can proceed subject to normal governance expectations",
     monitoring: "Review if scope, data, model, or usage changes",
-    summary: "This use case appears low risk based on current answers, provided baseline documentation and oversight are maintained."
+    summary: "This use case appears suitable for lightweight governance based on current answers, provided baseline documentation and human accountability are maintained.",
+    rationale: [
+      `Adaptive route selected: ${route.label}.`,
+      "No material escalation triggers dominate the current assessment.",
+      "Baseline controls remain expected."
+    ]
   };
 }
-
 function generateExecutiveSummary(assessment, drivers, recommendations) {
   const decision = getGovernanceDecision(assessment);
   const topDrivers = drivers.slice(0, 3).map(driver => driver.label).join("; ") || "no major risk drivers identified";
