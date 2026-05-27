@@ -3460,8 +3460,9 @@ const totalQuestions = visibleQuestions.length;
         ${renderSectionGovernanceGuidance(section, routedAssessment)}
 
         ${renderGovernanceRouteMiniCard(routedAssessment)}
-
+        ${renderControlRecommendationCard(routedAssessment)}
       <div class="grid">
+        
         <div class="card">
           <div class="workspace-title-row">
             <div>
@@ -3546,6 +3547,81 @@ function renderSectionGovernanceGuidance(section, assessment) {
       ${triggers.slice(-2).reverse().map(trigger => {
         return renderGovernanceTriggerExplanation(trigger);
       }).join("")}
+    </div>
+  `;
+}
+
+function renderControlList(controls, emptyMessage = "No controls identified yet.") {
+  if (!controls || !controls.length) {
+    return `<p class="notice">${escapeHtml(emptyMessage)}</p>`;
+  }
+
+  return `
+    <div class="list">
+      ${controls.map(control => `
+        <div class="list-item">
+          <div>
+            <div class="item-title">${escapeHtml(control.title)}</div>
+            <div class="item-meta">${escapeHtml(control.category)} · ${escapeHtml(control.description)}</div>
+            ${
+              control.triggeredBy?.length
+                ? `<div class="item-meta" style="margin-top:6px;">Triggered by: ${escapeHtml(control.triggeredBy.join(", "))}</div>`
+                : ""
+            }
+          </div>
+          <span class="pill ${control.priority === "required" ? "red" : control.priority === "recommended" ? "amber" : ""}">
+            ${escapeHtml(control.priority)}
+          </span>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+function renderControlRecommendationCard(assessment) {
+  const controls = assessment.controlRecommendations || {
+    required: [],
+    recommended: [],
+    optional: []
+  };
+
+  return `
+    <div class="card">
+      <div class="workspace-title-row">
+        <div>
+          <div class="eyebrow">Control recommendation engine</div>
+          <h2>Recommended controls</h2>
+          <p class="subtitle">
+            Controls are generated from the adaptive governance route and the escalation triggers identified in the assessment.
+          </p>
+        </div>
+        <span class="pill">${controls.required.length} required</span>
+      </div>
+
+      <div class="divider"></div>
+
+      <h2>Required controls</h2>
+      ${renderControlList(controls.required, "No required controls identified yet.")}
+
+      ${
+        controls.recommended.length
+          ? `
+            <div class="divider"></div>
+            <h2>Recommended controls</h2>
+            ${renderControlList(controls.recommended)}
+          `
+          : ""
+      }
+
+      ${
+        controls.optional.length
+          ? `
+            <div class="divider"></div>
+            <h2>Optional uplift controls</h2>
+            ${renderControlList(controls.optional)}
+          `
+          : ""
+      }
     </div>
   `;
 }
@@ -4174,7 +4250,15 @@ function calculateGovernanceRouting(assessment) {
   } else if (unansweredPrimaryQuestions.length > 0) {
     routingConfidence = "Medium";
   }
-
+  const controlRecommendations = calculateControlRecommendations({
+    routeId,
+    route,
+    triggers,
+    primarySignals,
+    domainProfile,
+    criticalTriggers,
+    enhancedTriggers
+  });
   return {
     routeId,
     route,
@@ -4189,7 +4273,8 @@ function calculateGovernanceRouting(assessment) {
     criticalTriggers,
     enhancedTriggers,
     unansweredPrimaryQuestions,
-    routingConfidence
+        routingConfidence,
+    controlRecommendations
   };
 }
 function calculateAssessmentScore(assessment) {
@@ -4334,6 +4419,7 @@ const total = visibleQuestions.length || 0;
     primaryGovernanceSignals: governanceRouting.primarySignals,
     governanceDomainProfile: governanceRouting.domainProfile,
     routingConfidence: governanceRouting.routingConfidence,
+    controlRecommendations: governanceRouting.controlRecommendations,
     unansweredPrimaryQuestions: governanceRouting.unansweredPrimaryQuestions,
 
     status: getAssessmentStatus(assessment, progress, scoring.weightedScore),
@@ -4709,6 +4795,8 @@ function renderResults() {
         ${renderPriorityRecommendations(recommendations)}
       </div>
     </div>
+    
+    ${renderControlRecommendationCard(routedAssessment)}
     
         <div class="card">
       <div class="workspace-title-row">
