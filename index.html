@@ -3329,26 +3329,6 @@ function setWizardSection(index) {
   render();
 }
 
-
-function completeCurrentWizardSection() {
-  const assessment = getSelectedAssessment();
-  const visibleSections = getVisibleAssessmentSections(assessment);
-  const isLast = wizardSectionIndex >= visibleSections.length - 1;
-
-  if (isLast) {
-    state.wizardMode = "review";
-  } else {
-    wizardSectionIndex += 1;
-    state.wizardMode = "questions";
-  }
-
-  state.activeAssessmentTab = "wizard";
-  state.activeRoute = "assessments";
-
-  saveState();
-  render();
-}
-
 function completeCurrentWizardSection() {
   const assessment = getSelectedAssessment();
   const visibleSections = getVisibleAssessmentSections(assessment);
@@ -3870,26 +3850,7 @@ function renderSectionGovernanceGuidance(section, assessment) {
     </div>
   `;
 }
-  const triggers = (assessment.governanceTriggers || []).filter(trigger => {
-    return trigger.sectionId === section.id;
-  });
-
-  if (!triggers.length) {
-    return `
-      <div class="notice">
-        This section helps assess governance expectations associated with this use case.
-      </div>
-    `;
-  }
-
-  return `
-    <div class="stack">
-      ${triggers.slice(-2).reverse().map(trigger => {
-        return renderGovernanceTriggerExplanation(trigger);
-      }).join("")}
-    </div>
-  `;
-}
+  
 
 function calculateEvidenceSummary(controlRecommendations) {
   const controls = controlRecommendations?.all || [];
