@@ -1379,31 +1379,143 @@ function openAssessmentWorkspace(id, tabId = "overview") {
    START PART 2 — ASSESSMENT QUESTION BANK
 ===================================================== */
 
+const governanceRoutes = [
+  {
+    id: "lightweight",
+    label: "Lightweight Review",
+    level: 1,
+    description: "Low-risk internal productivity or experimentation use cases.",
+    approvalLevel: "Line manager / business owner",
+    assuranceDepth: "Basic registration and responsible use acknowledgement"
+  },
+  {
+    id: "standard",
+    label: "Standard Governance",
+    level: 2,
+    description: "Operational AI support with moderate governance exposure.",
+    approvalLevel: "Business owner",
+    assuranceDepth: "Structured assessment, ownership, and monitoring expectations"
+  },
+  {
+    id: "enhanced",
+    label: "Enhanced Governance",
+    level: 3,
+    description: "Customer-affecting, regulated, or higher-risk AI systems.",
+    approvalLevel: "Governance forum / cross-functional review",
+    assuranceDepth: "Formal review, policy mapping, control evidence, and technical assessment"
+  },
+  {
+    id: "critical",
+    label: "Critical / Restricted",
+    level: 4,
+    description: "High-impact, autonomous, vulnerable-customer, or materially regulated AI systems.",
+    approvalLevel: "Senior governance approval",
+    assuranceDepth: "Enhanced assurance, mandatory validation, continuous monitoring, and explicit approval gates"
+  }
+];
+
+const governanceDomains = [
+  {
+    id: "context",
+    label: "Use Case Context",
+    purpose: "Understand the purpose, ownership, users, and operating environment of the AI use case."
+  },
+  {
+    id: "userImpact",
+    label: "User & Customer Impact",
+    purpose: "Identify who may be affected and whether outcomes could materially influence customers, colleagues, or external users."
+  },
+  {
+    id: "dataSensitivity",
+    label: "Data Sensitivity",
+    purpose: "Understand privacy, confidentiality, financial data, and special-category data exposure."
+  },
+  {
+    id: "automationAutonomy",
+    label: "Automation & Autonomy",
+    purpose: "Assess whether AI supports, recommends, automates, or directly performs actions."
+  },
+  {
+    id: "regulatoryExposure",
+    label: "Regulatory Exposure",
+    purpose: "Identify links to financial services regulation, Consumer Duty, GDPR, EU AI Act-style obligations, and regulated decision-making."
+  },
+  {
+    id: "externalExposure",
+    label: "External Exposure",
+    purpose: "Assess whether the AI system is internally contained, vendor-hosted, customer-facing, or publicly exposed."
+  },
+  {
+    id: "explainability",
+    label: "Explainability",
+    purpose: "Assess whether outputs can be understood, justified, challenged, and communicated."
+  },
+  {
+    id: "monitoring",
+    label: "Monitoring",
+    purpose: "Assess whether performance, incidents, outputs, and controls can be monitored over time."
+  },
+  {
+    id: "humanOversight",
+    label: "Human Oversight",
+    purpose: "Assess whether human review is meaningful, skilled, timely, and able to intervene."
+  },
+  {
+    id: "governanceReadiness",
+    label: "Governance Readiness",
+    purpose: "Assess ownership, documentation, approvals, and readiness for controlled deployment."
+  }
+];
+
 const assessmentSections = [
   {
     id: "context",
     title: "Use case context",
+    domainId: "context",
+    routeRelevance: ["lightweight", "standard", "enhanced", "critical"],
     description: "Understand what the AI system is being used for, who owns it, and where it sits in the business process."
-  },
-  {
-    id: "data",
-    title: "Data and privacy",
-    description: "Identify personal data, sensitive data, data quality risks, and privacy obligations."
   },
   {
     id: "impact",
     title: "People and customer impact",
+    domainId: "userImpact",
+    routeRelevance: ["standard", "enhanced", "critical"],
     description: "Assess whether the use case affects customers, colleagues, vulnerable groups, decisions, or access to services."
+  },
+  {
+    id: "data",
+    title: "Data and privacy",
+    domainId: "dataSensitivity",
+    routeRelevance: ["standard", "enhanced", "critical"],
+    description: "Identify personal data, sensitive data, financial data, data quality risks, and privacy obligations."
+  },
+  {
+    id: "automation",
+    title: "Automation and autonomy",
+    domainId: "automationAutonomy",
+    routeRelevance: ["standard", "enhanced", "critical"],
+    description: "Understand whether AI outputs are advisory, decision-supporting, workflow-triggering, or autonomous."
+  },
+  {
+    id: "regulation",
+    title: "Regulatory exposure",
+    domainId: "regulatoryExposure",
+    routeRelevance: ["enhanced", "critical"],
+    description: "Identify whether the use case creates financial services, Consumer Duty, GDPR, or EU AI Act-style governance obligations."
   },
   {
     id: "model",
     title: "Model behaviour and reliability",
-    description: "Review explainability, accuracy, hallucination risk, human oversight, and operational dependency."
+    domainId: "explainability",
+    routeRelevance: ["standard", "enhanced", "critical"],
+    description: "Review explainability, accuracy, hallucination risk, testing, reliability, and operational dependency."
   },
   {
     id: "governance",
     title: "Governance and assurance",
-    description: "Check ownership, documentation, monitoring, controls, and readiness for deployment."
+    domainId: "governanceReadiness",
+    routeRelevance: ["lightweight", "standard", "enhanced", "critical"],
+    description: "Check ownership, documentation, monitoring, controls, approvals, and readiness for deployment."
   }
 ];
 
@@ -1411,270 +1523,1153 @@ const assessmentQuestions = [
   {
     id: "context_purpose",
     sectionId: "context",
+    domainId: "context",
     type: "textarea",
     label: "What is the AI use case trying to achieve?",
     helper: "Describe the business problem, intended outcome, and why AI is being used.",
     riskWeight: 1,
+    routeSignal: "context",
+    isPrimaryTrigger: false,
+    requiredForRoutes: ["lightweight", "standard", "enhanced", "critical"],
+    tags: ["purpose", "scope", "business-context"],
     scoring: {
       unclear: 3,
       narrow: 1,
       broad: 2
     }
   },
+
   {
     id: "context_users",
     sectionId: "context",
+    domainId: "userImpact",
     type: "select",
-    label: "Who will use the AI output?",
-    helper: "Think about colleagues, customers, third parties, automated processes, or decision makers.",
+    label: "Who will use or receive the AI output?",
+    helper: "This determines the initial user-impact profile. Customer-facing or external use should increase governance depth.",
+    riskWeight: 3,
+    routeSignal: "userImpact",
+    isPrimaryTrigger: true,
+    requiredForRoutes: ["lightweight", "standard", "enhanced", "critical"],
+    tags: ["users", "customer-impact", "external-users"],
     options: [
-      { value: "", label: "Select an option", score: 0 },
-      { value: "internal_support", label: "Internal colleagues for support only", score: 1 },
-      { value: "expert_review", label: "Specialist users with review responsibility", score: 1 },
-      { value: "frontline", label: "Frontline colleagues serving customers", score: 2 },
-      { value: "customer_facing", label: "Customers or external users", score: 3 },
-      { value: "automated_process", label: "An automated process or workflow", score: 3 }
-    ]
-  },
-  {
-    id: "context_decision_role",
-    sectionId: "context",
-    type: "select",
-    label: "What role does the AI output play in decisions?",
-    helper: "This is one of the most important risk indicators.",
-    options: [
-      { value: "", label: "Select an option", score: 0 },
-      { value: "informational", label: "Informational only", score: 1 },
-      { value: "recommendation", label: "Provides recommendations for a human", score: 2 },
-      { value: "decision_support", label: "Materially influences a decision", score: 3 },
-      { value: "automated_decision", label: "Makes or triggers a decision automatically", score: 5 }
-    ]
-  },
-  {
-    id: "context_supplier",
-    sectionId: "context",
-    type: "select",
-    label: "Is this internally built or supplied by a third party?",
-    helper: "Third-party tools may need supplier assurance, contractual review, and operational monitoring.",
-    options: [
-      { value: "", label: "Select an option", score: 0 },
-      { value: "internal", label: "Internally built", score: 1 },
-      { value: "approved_supplier", label: "Approved supplier or enterprise platform", score: 2 },
-      { value: "new_supplier", label: "New supplier or unassured tool", score: 4 },
-      { value: "unknown", label: "Unknown", score: 4 }
+      {
+        value: "",
+        label: "Select an option",
+        score: 0
+      },
+      {
+        value: "internal_support",
+        label: "Internal colleagues for support only",
+        score: 1,
+        routeImpact: "lightweight",
+        triggers: []
+      },
+      {
+        value: "expert_review",
+        label: "Specialist users with review responsibility",
+        score: 1,
+        routeImpact: "standard",
+        triggers: ["skilled-human-review"]
+      },
+      {
+        value: "frontline",
+        label: "Frontline colleagues serving customers",
+        score: 2,
+        routeImpact: "standard",
+        triggers: ["customer-indirect-impact"]
+      },
+      {
+        value: "customer_facing",
+        label: "Customers or external users",
+        score: 4,
+        routeImpact: "enhanced",
+        triggers: ["customer-facing", "external-user-impact", "transparency-needed"]
+      },
+      {
+        value: "automated_process",
+        label: "An automated process or workflow",
+        score: 4,
+        routeImpact: "enhanced",
+        triggers: ["automation", "workflow-action"]
+      }
     ]
   },
 
   {
-    id: "data_personal",
-    sectionId: "data",
+    id: "context_decision_role",
+    sectionId: "context",
+    domainId: "automationAutonomy",
     type: "select",
-    label: "Does the use case process personal data?",
-    helper: "Personal data increases privacy, legal, and governance obligations.",
+    label: "What role does the AI output play in decisions?",
+    helper: "Decision-support, recommendations, and automated decisions increase governance expectations.",
+    riskWeight: 4,
+    routeSignal: "automationAutonomy",
+    isPrimaryTrigger: true,
+    requiredForRoutes: ["lightweight", "standard", "enhanced", "critical"],
+    tags: ["decisioning", "automation", "human-in-the-loop"],
     options: [
-      { value: "", label: "Select an option", score: 0 },
-      { value: "no", label: "No personal data", score: 0 },
-      { value: "limited", label: "Limited personal data", score: 2 },
-      { value: "significant", label: "Significant personal data", score: 4 },
-      { value: "unknown", label: "Unknown or not yet assessed", score: 4 }
+      {
+        value: "",
+        label: "Select an option",
+        score: 0
+      },
+      {
+        value: "informational",
+        label: "Informational only",
+        score: 1,
+        routeImpact: "lightweight",
+        triggers: []
+      },
+      {
+        value: "drafting",
+        label: "Drafts content for human review",
+        score: 1,
+        routeImpact: "standard",
+        triggers: ["human-review-required"]
+      },
+      {
+        value: "recommendation",
+        label: "Provides recommendations for a human",
+        score: 3,
+        routeImpact: "standard",
+        triggers: ["decision-support", "human-accountability-needed"]
+      },
+      {
+        value: "prioritisation",
+        label: "Prioritises cases, customers, claims, risks, or work queues",
+        score: 4,
+        routeImpact: "enhanced",
+        triggers: ["prioritisation", "fairness-review-needed"]
+      },
+      {
+        value: "automated_decision",
+        label: "Makes or triggers decisions automatically",
+        score: 5,
+        routeImpact: "critical",
+        triggers: ["automated-decision", "senior-review-needed", "human-override-required"]
+      }
     ]
   },
+
   {
-    id: "data_sensitive",
-    sectionId: "data",
+    id: "context_supplier",
+    sectionId: "context",
+    domainId: "externalExposure",
     type: "select",
-    label: "Does it use sensitive or special category data?",
-    helper: "Includes health, biometric, ethnicity, religion, political views, criminal offence data, or similar high-sensitivity fields.",
+    label: "Is the AI capability internally built or supplied by a third party?",
+    helper: "Third-party tools may need supplier assurance, contractual review, security review, and operational monitoring.",
+    riskWeight: 2,
+    routeSignal: "externalExposure",
+    isPrimaryTrigger: true,
+    requiredForRoutes: ["lightweight", "standard", "enhanced", "critical"],
+    tags: ["supplier", "vendor", "third-party", "outsourcing"],
     options: [
-      { value: "", label: "Select an option", score: 0 },
-      { value: "no", label: "No", score: 0 },
-      { value: "possible", label: "Possibly", score: 3 },
-      { value: "yes", label: "Yes", score: 5 },
-      { value: "unknown", label: "Unknown", score: 5 }
-    ]
-  },
-  {
-    id: "data_quality",
-    sectionId: "data",
-    type: "select",
-    label: "How reliable is the input data?",
-    helper: "Poor data quality can create inaccurate, unfair, or misleading outputs.",
-    options: [
-      { value: "", label: "Select an option", score: 0 },
-      { value: "known_good", label: "Known, governed, and quality checked", score: 0 },
-      { value: "partially_known", label: "Partially understood or inconsistently governed", score: 2 },
-      { value: "poor", label: "Known quality issues", score: 4 },
-      { value: "unknown", label: "Unknown quality", score: 4 }
-    ]
-  },
-  {
-    id: "data_reuse",
-    sectionId: "data",
-    type: "select",
-    label: "Is data being reused for a new purpose?",
-    helper: "Purpose change may require privacy, ethics, and policy review.",
-    options: [
-      { value: "", label: "Select an option", score: 0 },
-      { value: "no", label: "No, same purpose", score: 0 },
-      { value: "minor", label: "Minor adjacent reuse", score: 1 },
-      { value: "material", label: "Materially new purpose", score: 3 },
-      { value: "unknown", label: "Unknown", score: 3 }
+      {
+        value: "",
+        label: "Select an option",
+        score: 0
+      },
+      {
+        value: "internal",
+        label: "Internally built",
+        score: 1,
+        routeImpact: "standard",
+        triggers: []
+      },
+      {
+        value: "approved_supplier",
+        label: "Approved supplier or enterprise platform",
+        score: 2,
+        routeImpact: "standard",
+        triggers: ["supplier-assurance"]
+      },
+      {
+        value: "new_supplier",
+        label: "New supplier or unassured tool",
+        score: 4,
+        routeImpact: "enhanced",
+        triggers: ["new-supplier", "supplier-assurance", "security-review-needed"]
+      },
+      {
+        value: "unknown",
+        label: "Unknown",
+        score: 4,
+        routeImpact: "enhanced",
+        triggers: ["unknown-supplier", "supplier-assurance-needed"]
+      }
     ]
   },
 
   {
     id: "impact_customer",
     sectionId: "impact",
+    domainId: "userImpact",
     type: "select",
     label: "Could this affect customers or external individuals?",
-    helper: "Consider pricing, eligibility, service quality, claims, complaints, communications, or access.",
+    helper: "Consider pricing, eligibility, service quality, claims, complaints, communications, access, or customer treatment.",
+    riskWeight: 4,
+    routeSignal: "userImpact",
+    isPrimaryTrigger: true,
+    requiredForRoutes: ["standard", "enhanced", "critical"],
+    tags: ["customer-impact", "consumer-duty", "fairness"],
     options: [
-      { value: "", label: "Select an option", score: 0 },
-      { value: "no", label: "No direct customer impact", score: 0 },
-      { value: "indirect", label: "Indirect customer impact", score: 2 },
-      { value: "direct_low", label: "Direct but low materiality", score: 3 },
-      { value: "direct_high", label: "Direct and material impact", score: 5 }
+      {
+        value: "",
+        label: "Select an option",
+        score: 0
+      },
+      {
+        value: "no",
+        label: "No direct customer impact",
+        score: 0,
+        routeImpact: "lightweight",
+        triggers: []
+      },
+      {
+        value: "indirect",
+        label: "Indirect customer impact",
+        score: 2,
+        routeImpact: "standard",
+        triggers: ["customer-indirect-impact"]
+      },
+      {
+        value: "direct_low",
+        label: "Direct but low materiality",
+        score: 3,
+        routeImpact: "enhanced",
+        triggers: ["customer-facing", "transparency-needed"]
+      },
+      {
+        value: "direct_high",
+        label: "Direct and material customer impact",
+        score: 5,
+        routeImpact: "critical",
+        triggers: ["material-customer-impact", "consumer-duty", "senior-review-needed"]
+      }
     ]
   },
+
   {
     id: "impact_vulnerable",
     sectionId: "impact",
+    domainId: "userImpact",
     type: "select",
     label: "Could vulnerable customers or protected groups be affected?",
-    helper: "This increases the need for fairness, accessibility, explainability, and human oversight.",
+    helper: "This increases the need for fairness, accessibility, explainability, monitoring, and human oversight.",
+    riskWeight: 5,
+    routeSignal: "userImpact",
+    isPrimaryTrigger: true,
+    requiredForRoutes: ["enhanced", "critical"],
+    tags: ["vulnerable-customers", "protected-groups", "fairness"],
     options: [
-      { value: "", label: "Select an option", score: 0 },
-      { value: "no", label: "No", score: 0 },
-      { value: "possible", label: "Possibly", score: 3 },
-      { value: "yes", label: "Yes", score: 5 },
-      { value: "unknown", label: "Unknown", score: 5 }
+      {
+        value: "",
+        label: "Select an option",
+        score: 0
+      },
+      {
+        value: "no",
+        label: "No",
+        score: 0,
+        routeImpact: "standard",
+        triggers: []
+      },
+      {
+        value: "possible",
+        label: "Possibly",
+        score: 3,
+        routeImpact: "enhanced",
+        triggers: ["vulnerable-customer-possible", "fairness-review-needed"]
+      },
+      {
+        value: "yes",
+        label: "Yes",
+        score: 5,
+        routeImpact: "critical",
+        triggers: ["vulnerable-customer-impact", "senior-review-needed", "enhanced-oversight-needed"]
+      },
+      {
+        value: "unknown",
+        label: "Unknown",
+        score: 5,
+        routeImpact: "critical",
+        triggers: ["unknown-vulnerability-impact", "fairness-review-needed"]
+      }
     ]
   },
+
   {
     id: "impact_financial",
     sectionId: "impact",
+    domainId: "regulatoryExposure",
     type: "select",
     label: "Could the output influence financial outcomes?",
-    helper: "Includes pricing, affordability, credit, claims, fees, loss, eligibility, or commercial decisions.",
+    helper: "Includes pricing, affordability, credit, claims, fees, loss, eligibility, underwriting, complaints, or commercial decisions.",
+    riskWeight: 5,
+    routeSignal: "regulatoryExposure",
+    isPrimaryTrigger: true,
+    requiredForRoutes: ["standard", "enhanced", "critical"],
+    tags: ["financial-outcome", "regulated-decision", "materiality"],
     options: [
-      { value: "", label: "Select an option", score: 0 },
-      { value: "no", label: "No", score: 0 },
-      { value: "minor", label: "Minor or indirect influence", score: 2 },
-      { value: "material", label: "Material influence", score: 4 },
-      { value: "critical", label: "Critical or automated financial outcome", score: 5 }
+      {
+        value: "",
+        label: "Select an option",
+        score: 0
+      },
+      {
+        value: "no",
+        label: "No",
+        score: 0,
+        routeImpact: "lightweight",
+        triggers: []
+      },
+      {
+        value: "minor",
+        label: "Minor or indirect influence",
+        score: 2,
+        routeImpact: "standard",
+        triggers: ["financial-influence-minor"]
+      },
+      {
+        value: "material",
+        label: "Material influence",
+        score: 4,
+        routeImpact: "enhanced",
+        triggers: ["financial-outcome-impact", "regulated-review-needed"]
+      },
+      {
+        value: "critical",
+        label: "Critical or automated financial outcome",
+        score: 5,
+        routeImpact: "critical",
+        triggers: ["automated-financial-outcome", "senior-review-needed", "model-validation-needed"]
+      }
+    ]
+  },
+
+  {
+    id: "data_personal",
+    sectionId: "data",
+    domainId: "dataSensitivity",
+    type: "select",
+    label: "Does the use case process personal data?",
+    helper: "Personal data increases privacy, legal, and governance obligations.",
+    riskWeight: 4,
+    routeSignal: "dataSensitivity",
+    isPrimaryTrigger: true,
+    requiredForRoutes: ["standard", "enhanced", "critical"],
+    tags: ["personal-data", "gdpr", "privacy"],
+    options: [
+      {
+        value: "",
+        label: "Select an option",
+        score: 0
+      },
+      {
+        value: "no",
+        label: "No personal data",
+        score: 0,
+        routeImpact: "lightweight",
+        triggers: []
+      },
+      {
+        value: "limited",
+        label: "Limited personal data",
+        score: 2,
+        routeImpact: "standard",
+        triggers: ["personal-data", "privacy-review-consider"]
+      },
+      {
+        value: "significant",
+        label: "Significant personal data",
+        score: 4,
+        routeImpact: "enhanced",
+        triggers: ["personal-data", "privacy-review-needed", "dpia-consider"]
+      },
+      {
+        value: "unknown",
+        label: "Unknown or not yet assessed",
+        score: 4,
+        routeImpact: "enhanced",
+        triggers: ["unknown-data", "privacy-review-needed"]
+      }
+    ]
+  },
+
+  {
+    id: "data_sensitive",
+    sectionId: "data",
+    domainId: "dataSensitivity",
+    type: "select",
+    label: "Does it use sensitive or special category data?",
+    helper: "Includes health, biometric, ethnicity, religion, political views, criminal offence data, or similar high-sensitivity fields.",
+    riskWeight: 5,
+    routeSignal: "dataSensitivity",
+    isPrimaryTrigger: true,
+    requiredForRoutes: ["enhanced", "critical"],
+    tags: ["special-category-data", "sensitive-data", "privacy"],
+    options: [
+      {
+        value: "",
+        label: "Select an option",
+        score: 0
+      },
+      {
+        value: "no",
+        label: "No",
+        score: 0,
+        routeImpact: "standard",
+        triggers: []
+      },
+      {
+        value: "possible",
+        label: "Possibly",
+        score: 3,
+        routeImpact: "enhanced",
+        triggers: ["possible-sensitive-data", "privacy-review-needed"]
+      },
+      {
+        value: "yes",
+        label: "Yes",
+        score: 5,
+        routeImpact: "critical",
+        triggers: ["special-category-data", "dpia-likely", "senior-review-needed"]
+      },
+      {
+        value: "unknown",
+        label: "Unknown",
+        score: 5,
+        routeImpact: "critical",
+        triggers: ["unknown-sensitive-data", "privacy-review-needed"]
+      }
+    ]
+  },
+
+  {
+    id: "data_financial",
+    sectionId: "data",
+    domainId: "dataSensitivity",
+    type: "select",
+    label: "Does the use case process customer financial or policy data?",
+    helper: "Financial, claims, pricing, affordability, underwriting, or policy data can increase regulatory and conduct risk.",
+    riskWeight: 4,
+    routeSignal: "dataSensitivity",
+    isPrimaryTrigger: true,
+    requiredForRoutes: ["standard", "enhanced", "critical"],
+    tags: ["financial-data", "policy-data", "claims-data"],
+    options: [
+      {
+        value: "",
+        label: "Select an option",
+        score: 0
+      },
+      {
+        value: "no",
+        label: "No",
+        score: 0,
+        routeImpact: "lightweight",
+        triggers: []
+      },
+      {
+        value: "limited",
+        label: "Limited or aggregated financial data",
+        score: 2,
+        routeImpact: "standard",
+        triggers: ["financial-data-limited"]
+      },
+      {
+        value: "yes",
+        label: "Yes, identifiable customer financial or policy data",
+        score: 4,
+        routeImpact: "enhanced",
+        triggers: ["financial-data", "regulated-review-needed"]
+      },
+      {
+        value: "unknown",
+        label: "Unknown",
+        score: 4,
+        routeImpact: "enhanced",
+        triggers: ["unknown-financial-data"]
+      }
+    ]
+  },
+
+  {
+    id: "data_quality",
+    sectionId: "data",
+    domainId: "dataSensitivity",
+    type: "select",
+    label: "How reliable is the input data?",
+    helper: "Poor data quality can create inaccurate, unfair, misleading, or non-compliant outputs.",
+    riskWeight: 3,
+    routeSignal: "dataSensitivity",
+    isPrimaryTrigger: false,
+    requiredForRoutes: ["standard", "enhanced", "critical"],
+    tags: ["data-quality", "lineage", "accuracy"],
+    options: [
+      {
+        value: "",
+        label: "Select an option",
+        score: 0
+      },
+      {
+        value: "known_good",
+        label: "Known, governed, and quality checked",
+        score: 0,
+        routeImpact: "lightweight",
+        triggers: []
+      },
+      {
+        value: "partially_known",
+        label: "Partially understood or inconsistently governed",
+        score: 2,
+        routeImpact: "standard",
+        triggers: ["data-quality-review"]
+      },
+      {
+        value: "poor",
+        label: "Known quality issues",
+        score: 4,
+        routeImpact: "enhanced",
+        triggers: ["poor-data-quality", "testing-needed"]
+      },
+      {
+        value: "unknown",
+        label: "Unknown quality",
+        score: 4,
+        routeImpact: "enhanced",
+        triggers: ["unknown-data-quality", "testing-needed"]
+      }
+    ]
+  },
+
+  {
+    id: "data_reuse",
+    sectionId: "data",
+    domainId: "dataSensitivity",
+    type: "select",
+    label: "Is data being reused for a new purpose?",
+    helper: "Purpose change may require privacy, ethics, policy, and fairness review.",
+    riskWeight: 3,
+    routeSignal: "dataSensitivity",
+    isPrimaryTrigger: false,
+    requiredForRoutes: ["standard", "enhanced", "critical"],
+    tags: ["purpose-limitation", "data-reuse", "privacy"],
+    options: [
+      {
+        value: "",
+        label: "Select an option",
+        score: 0
+      },
+      {
+        value: "no",
+        label: "No, same purpose",
+        score: 0,
+        routeImpact: "lightweight",
+        triggers: []
+      },
+      {
+        value: "minor",
+        label: "Minor adjacent reuse",
+        score: 1,
+        routeImpact: "standard",
+        triggers: ["purpose-reuse-minor"]
+      },
+      {
+        value: "material",
+        label: "Materially new purpose",
+        score: 3,
+        routeImpact: "enhanced",
+        triggers: ["purpose-change", "privacy-review-needed"]
+      },
+      {
+        value: "unknown",
+        label: "Unknown",
+        score: 3,
+        routeImpact: "enhanced",
+        triggers: ["unknown-purpose", "privacy-review-needed"]
+      }
+    ]
+  },
+
+  {
+    id: "automation_level",
+    sectionId: "automation",
+    domainId: "automationAutonomy",
+    type: "select",
+    label: "How autonomous is the AI system?",
+    helper: "Autonomy is one of the clearest escalation triggers. The more the AI can act without human control, the deeper the governance route.",
+    riskWeight: 5,
+    routeSignal: "automationAutonomy",
+    isPrimaryTrigger: true,
+    requiredForRoutes: ["standard", "enhanced", "critical"],
+    tags: ["autonomy", "automation", "human-control"],
+    options: [
+      {
+        value: "",
+        label: "Select an option",
+        score: 0
+      },
+      {
+        value: "suggestion_only",
+        label: "Suggestion only, no action taken",
+        score: 1,
+        routeImpact: "lightweight",
+        triggers: []
+      },
+      {
+        value: "human_approval",
+        label: "Human approval required before action",
+        score: 2,
+        routeImpact: "standard",
+        triggers: ["human-approval"]
+      },
+      {
+        value: "workflow_trigger",
+        label: "Can trigger workflow actions",
+        score: 4,
+        routeImpact: "enhanced",
+        triggers: ["workflow-action", "monitoring-needed"]
+      },
+      {
+        value: "autonomous_action",
+        label: "Can act autonomously without prior human approval",
+        score: 5,
+        routeImpact: "critical",
+        triggers: ["autonomous-action", "senior-review-needed", "human-override-required"]
+      }
+    ]
+  },
+
+  {
+    id: "automation_reversibility",
+    sectionId: "automation",
+    domainId: "humanOversight",
+    type: "select",
+    label: "Can humans stop, intervene, or reverse outcomes?",
+    helper: "Weak reversibility increases residual risk, especially for customer or financial outcomes.",
+    riskWeight: 4,
+    routeSignal: "humanOversight",
+    isPrimaryTrigger: false,
+    requiredForRoutes: ["standard", "enhanced", "critical"],
+    tags: ["override", "reversibility", "human-oversight"],
+    options: [
+      {
+        value: "",
+        label: "Select an option",
+        score: 0
+      },
+      {
+        value: "yes_clear",
+        label: "Yes, clearly and quickly",
+        score: 0,
+        routeImpact: "standard",
+        triggers: []
+      },
+      {
+        value: "partial",
+        label: "Partially, but with limitations",
+        score: 2,
+        routeImpact: "enhanced",
+        triggers: ["limited-override"]
+      },
+      {
+        value: "no",
+        label: "No meaningful intervention or reversal route",
+        score: 5,
+        routeImpact: "critical",
+        triggers: ["no-override", "senior-review-needed"]
+      },
+      {
+        value: "unknown",
+        label: "Unknown",
+        score: 4,
+        routeImpact: "enhanced",
+        triggers: ["unknown-override"]
+      }
+    ]
+  },
+
+  {
+    id: "regulatory_activity",
+    sectionId: "regulation",
+    domainId: "regulatoryExposure",
+    type: "select",
+    label: "Does the use case support regulated financial services activity?",
+    helper: "Consider claims, complaints, underwriting, pricing, affordability, vulnerability, fraud, financial crime, risk management, or customer communications.",
+    riskWeight: 5,
+    routeSignal: "regulatoryExposure",
+    isPrimaryTrigger: true,
+    requiredForRoutes: ["enhanced", "critical"],
+    tags: ["regulated-activity", "fca", "consumer-duty"],
+    options: [
+      {
+        value: "",
+        label: "Select an option",
+        score: 0
+      },
+      {
+        value: "no",
+        label: "No",
+        score: 0,
+        routeImpact: "standard",
+        triggers: []
+      },
+      {
+        value: "indirect",
+        label: "Indirectly supports regulated activity",
+        score: 2,
+        routeImpact: "standard",
+        triggers: ["regulated-activity-indirect"]
+      },
+      {
+        value: "yes_material",
+        label: "Yes, materially supports regulated activity",
+        score: 4,
+        routeImpact: "enhanced",
+        triggers: ["regulated-activity", "policy-review-needed"]
+      },
+      {
+        value: "yes_decisioning",
+        label: "Yes, influences or automates regulated decisions",
+        score: 5,
+        routeImpact: "critical",
+        triggers: ["regulated-decisioning", "senior-review-needed", "model-validation-needed"]
+      }
+    ]
+  },
+
+  {
+    id: "regulatory_explainability_expectation",
+    sectionId: "regulation",
+    domainId: "regulatoryExposure",
+    type: "select",
+    label: "Would a regulator, customer, or reviewer expect the outcome to be explainable?",
+    helper: "If an outcome affects customers, money, treatment, access, or regulated processes, explainability expectations increase.",
+    riskWeight: 4,
+    routeSignal: "regulatoryExposure",
+    isPrimaryTrigger: false,
+    requiredForRoutes: ["enhanced", "critical"],
+    tags: ["explainability", "regulatory-expectation", "challenge"],
+    options: [
+      {
+        value: "",
+        label: "Select an option",
+        score: 0
+      },
+      {
+        value: "no",
+        label: "No meaningful expectation",
+        score: 0,
+        routeImpact: "standard",
+        triggers: []
+      },
+      {
+        value: "possibly",
+        label: "Possibly",
+        score: 2,
+        routeImpact: "enhanced",
+        triggers: ["explainability-needed"]
+      },
+      {
+        value: "yes",
+        label: "Yes",
+        score: 4,
+        routeImpact: "enhanced",
+        triggers: ["explainability-needed", "challenge-route-needed"]
+      },
+      {
+        value: "unknown",
+        label: "Unknown",
+        score: 4,
+        routeImpact: "enhanced",
+        triggers: ["unknown-explainability-expectation"]
+      }
     ]
   },
 
   {
     id: "model_explainability",
     sectionId: "model",
+    domainId: "explainability",
     type: "select",
     label: "Can users explain how the output was produced?",
-    helper: "Low explainability increases review and challenge difficulty.",
+    helper: "Low explainability increases review, challenge, fairness, and accountability difficulty.",
+    riskWeight: 4,
+    routeSignal: "explainability",
+    isPrimaryTrigger: false,
+    requiredForRoutes: ["standard", "enhanced", "critical"],
+    tags: ["explainability", "interpretability", "challenge"],
     options: [
-      { value: "", label: "Select an option", score: 0 },
-      { value: "clear", label: "Yes, clear and explainable", score: 0 },
-      { value: "partial", label: "Partially explainable", score: 2 },
-      { value: "limited", label: "Limited explainability", score: 4 },
-      { value: "unknown", label: "Unknown", score: 4 }
+      {
+        value: "",
+        label: "Select an option",
+        score: 0
+      },
+      {
+        value: "clear",
+        label: "Yes, clear and explainable",
+        score: 0,
+        routeImpact: "standard",
+        triggers: []
+      },
+      {
+        value: "partial",
+        label: "Partially explainable",
+        score: 2,
+        routeImpact: "standard",
+        triggers: ["partial-explainability"]
+      },
+      {
+        value: "limited",
+        label: "Limited explainability",
+        score: 4,
+        routeImpact: "enhanced",
+        triggers: ["limited-explainability", "challenge-route-needed"]
+      },
+      {
+        value: "unknown",
+        label: "Unknown",
+        score: 4,
+        routeImpact: "enhanced",
+        triggers: ["unknown-explainability"]
+      }
     ]
   },
+
   {
     id: "model_accuracy",
     sectionId: "model",
+    domainId: "monitoring",
     type: "select",
     label: "How well has output accuracy been tested?",
-    helper: "Untested outputs should not be relied on for material decisions.",
+    helper: "Untested outputs should not be relied on for material, customer, financial, or regulated decisions.",
+    riskWeight: 4,
+    routeSignal: "monitoring",
+    isPrimaryTrigger: false,
+    requiredForRoutes: ["standard", "enhanced", "critical"],
+    tags: ["testing", "validation", "accuracy"],
     options: [
-      { value: "", label: "Select an option", score: 0 },
-      { value: "tested", label: "Tested with clear acceptance criteria", score: 0 },
-      { value: "sampled", label: "Sample tested informally", score: 2 },
-      { value: "limited", label: "Limited testing", score: 3 },
-      { value: "not_tested", label: "Not tested", score: 5 }
+      {
+        value: "",
+        label: "Select an option",
+        score: 0
+      },
+      {
+        value: "tested",
+        label: "Tested with clear acceptance criteria",
+        score: 0,
+        routeImpact: "standard",
+        triggers: []
+      },
+      {
+        value: "sampled",
+        label: "Sample tested informally",
+        score: 2,
+        routeImpact: "standard",
+        triggers: ["testing-light"]
+      },
+      {
+        value: "limited",
+        label: "Limited testing",
+        score: 3,
+        routeImpact: "enhanced",
+        triggers: ["testing-needed"]
+      },
+      {
+        value: "not_tested",
+        label: "Not tested",
+        score: 5,
+        routeImpact: "critical",
+        triggers: ["not-tested", "validation-needed"]
+      }
     ]
   },
+
   {
     id: "model_hallucination",
     sectionId: "model",
+    domainId: "monitoring",
     type: "select",
     label: "Is there a risk of hallucination or fabricated output?",
-    helper: "Especially relevant for generative AI, summarisation, advice, drafting, or content generation.",
+    helper: "Especially relevant for generative AI, summarisation, advice, drafting, customer communication, or content generation.",
+    riskWeight: 3,
+    routeSignal: "monitoring",
+    isPrimaryTrigger: false,
+    requiredForRoutes: ["standard", "enhanced", "critical"],
+    tags: ["hallucination", "generative-ai", "content-risk"],
     options: [
-      { value: "", label: "Select an option", score: 0 },
-      { value: "none", label: "No meaningful hallucination risk", score: 0 },
-      { value: "low", label: "Low risk", score: 1 },
-      { value: "medium", label: "Medium risk", score: 3 },
-      { value: "high", label: "High risk", score: 5 }
+      {
+        value: "",
+        label: "Select an option",
+        score: 0
+      },
+      {
+        value: "none",
+        label: "No meaningful hallucination risk",
+        score: 0,
+        routeImpact: "lightweight",
+        triggers: []
+      },
+      {
+        value: "low",
+        label: "Low risk",
+        score: 1,
+        routeImpact: "standard",
+        triggers: []
+      },
+      {
+        value: "medium",
+        label: "Medium risk",
+        score: 3,
+        routeImpact: "enhanced",
+        triggers: ["hallucination-risk", "output-review-needed"]
+      },
+      {
+        value: "high",
+        label: "High risk",
+        score: 5,
+        routeImpact: "critical",
+        triggers: ["high-hallucination-risk", "validation-needed"]
+      }
     ]
   },
+
   {
     id: "model_human_oversight",
     sectionId: "model",
+    domainId: "humanOversight",
     type: "select",
     label: "Is meaningful human oversight in place?",
-    helper: "Oversight should be skilled, timely, documented, and able to challenge the output.",
+    helper: "Oversight should be skilled, timely, documented, and able to challenge the AI output.",
+    riskWeight: 5,
+    routeSignal: "humanOversight",
+    isPrimaryTrigger: false,
+    requiredForRoutes: ["lightweight", "standard", "enhanced", "critical"],
+    tags: ["human-oversight", "accountability", "challenge"],
     options: [
-      { value: "", label: "Select an option", score: 0 },
-      { value: "strong", label: "Yes, strong oversight", score: 0 },
-      { value: "basic", label: "Basic oversight", score: 2 },
-      { value: "weak", label: "Weak oversight", score: 4 },
-      { value: "none", label: "No meaningful oversight", score: 5 }
+      {
+        value: "",
+        label: "Select an option",
+        score: 0
+      },
+      {
+        value: "strong",
+        label: "Yes, strong oversight",
+        score: 0,
+        routeImpact: "lightweight",
+        triggers: []
+      },
+      {
+        value: "basic",
+        label: "Basic oversight",
+        score: 2,
+        routeImpact: "standard",
+        triggers: ["basic-oversight"]
+      },
+      {
+        value: "weak",
+        label: "Weak oversight",
+        score: 4,
+        routeImpact: "enhanced",
+        triggers: ["weak-oversight", "oversight-uplift-needed"]
+      },
+      {
+        value: "none",
+        label: "No meaningful oversight",
+        score: 5,
+        routeImpact: "critical",
+        triggers: ["no-human-oversight", "senior-review-needed"]
+      }
     ]
   },
 
   {
     id: "governance_owner",
     sectionId: "governance",
+    domainId: "governanceReadiness",
     type: "select",
     label: "Is there a named accountable owner?",
     helper: "Every use case should have clear business and technical accountability.",
+    riskWeight: 3,
+    routeSignal: "governanceReadiness",
+    isPrimaryTrigger: false,
+    requiredForRoutes: ["lightweight", "standard", "enhanced", "critical"],
+    tags: ["ownership", "accountability", "governance"],
     options: [
-      { value: "", label: "Select an option", score: 0 },
-      { value: "yes", label: "Yes", score: 0 },
-      { value: "partial", label: "Partially clear", score: 2 },
-      { value: "no", label: "No", score: 4 }
+      {
+        value: "",
+        label: "Select an option",
+        score: 0
+      },
+      {
+        value: "yes",
+        label: "Yes",
+        score: 0,
+        routeImpact: "lightweight",
+        triggers: []
+      },
+      {
+        value: "partial",
+        label: "Partially clear",
+        score: 2,
+        routeImpact: "standard",
+        triggers: ["ownership-unclear"]
+      },
+      {
+        value: "no",
+        label: "No",
+        score: 4,
+        routeImpact: "enhanced",
+        triggers: ["no-owner", "ownership-needed"]
+      }
     ]
   },
+
   {
     id: "governance_documentation",
     sectionId: "governance",
+    domainId: "governanceReadiness",
     type: "select",
     label: "Is documentation in place?",
     helper: "Include purpose, data, model behaviour, limitations, testing, owners, controls, and approval records.",
+    riskWeight: 3,
+    routeSignal: "governanceReadiness",
+    isPrimaryTrigger: false,
+    requiredForRoutes: ["lightweight", "standard", "enhanced", "critical"],
+    tags: ["documentation", "evidence", "auditability"],
     options: [
-      { value: "", label: "Select an option", score: 0 },
-      { value: "complete", label: "Complete and maintained", score: 0 },
-      { value: "partial", label: "Partial", score: 2 },
-      { value: "minimal", label: "Minimal", score: 3 },
-      { value: "none", label: "None", score: 5 }
+      {
+        value: "",
+        label: "Select an option",
+        score: 0
+      },
+      {
+        value: "complete",
+        label: "Complete and maintained",
+        score: 0,
+        routeImpact: "lightweight",
+        triggers: []
+      },
+      {
+        value: "partial",
+        label: "Partial",
+        score: 2,
+        routeImpact: "standard",
+        triggers: ["documentation-partial"]
+      },
+      {
+        value: "minimal",
+        label: "Minimal",
+        score: 3,
+        routeImpact: "enhanced",
+        triggers: ["documentation-needed"]
+      },
+      {
+        value: "none",
+        label: "None",
+        score: 5,
+        routeImpact: "critical",
+        triggers: ["no-documentation", "not-ready-for-approval"]
+      }
     ]
   },
+
   {
     id: "governance_monitoring",
     sectionId: "governance",
+    domainId: "monitoring",
     type: "select",
     label: "Is ongoing monitoring defined?",
     helper: "Consider drift, output quality, complaints, incidents, performance, and control effectiveness.",
+    riskWeight: 4,
+    routeSignal: "monitoring",
+    isPrimaryTrigger: false,
+    requiredForRoutes: ["standard", "enhanced", "critical"],
+    tags: ["monitoring", "incident-management", "control-effectiveness"],
     options: [
-      { value: "", label: "Select an option", score: 0 },
-      { value: "defined", label: "Yes, monitoring is defined", score: 0 },
-      { value: "manual", label: "Manual or informal monitoring", score: 2 },
-      { value: "planned", label: "Planned but not yet implemented", score: 3 },
-      { value: "none", label: "No monitoring", score: 5 }
+      {
+        value: "",
+        label: "Select an option",
+        score: 0
+      },
+      {
+        value: "defined",
+        label: "Yes, monitoring is defined",
+        score: 0,
+        routeImpact: "standard",
+        triggers: []
+      },
+      {
+        value: "manual",
+        label: "Manual or informal monitoring",
+        score: 2,
+        routeImpact: "standard",
+        triggers: ["manual-monitoring"]
+      },
+      {
+        value: "planned",
+        label: "Planned but not yet implemented",
+        score: 3,
+        routeImpact: "enhanced",
+        triggers: ["monitoring-not-live"]
+      },
+      {
+        value: "none",
+        label: "No monitoring",
+        score: 5,
+        routeImpact: "critical",
+        triggers: ["no-monitoring", "not-ready-for-approval"]
+      }
     ]
   },
+
   {
     id: "governance_approval",
     sectionId: "governance",
+    domainId: "governanceReadiness",
     type: "select",
     label: "Has the use case received appropriate approval?",
-    helper: "Higher risk use cases may require legal, privacy, risk, compliance, security, model risk, or senior approval.",
+    helper: "Higher-risk use cases may require legal, privacy, risk, compliance, security, model risk, or senior approval.",
+    riskWeight: 3,
+    routeSignal: "governanceReadiness",
+    isPrimaryTrigger: false,
+    requiredForRoutes: ["lightweight", "standard", "enhanced", "critical"],
+    tags: ["approval", "governance-state", "readiness"],
     options: [
-      { value: "", label: "Select an option", score: 0 },
-      { value: "approved", label: "Approved", score: 0 },
-      { value: "in_review", label: "In review", score: 2 },
-      { value: "not_started", label: "Not started", score: 4 },
-      { value: "unknown", label: "Unknown", score: 4 }
+      {
+        value: "",
+        label: "Select an option",
+        score: 0
+      },
+      {
+        value: "approved",
+        label: "Approved",
+        score: 0,
+        routeImpact: "lightweight",
+        triggers: []
+      },
+      {
+        value: "in_review",
+        label: "In review",
+        score: 2,
+        routeImpact: "standard",
+        triggers: ["approval-in-review"]
+      },
+      {
+        value: "not_started",
+        label: "Not started",
+        score: 4,
+        routeImpact: "enhanced",
+        triggers: ["approval-needed"]
+      },
+      {
+        value: "unknown",
+        label: "Unknown",
+        score: 4,
+        routeImpact: "enhanced",
+        triggers: ["approval-unknown"]
+      }
     ]
   }
 ];
@@ -1693,6 +2688,332 @@ updateBuildFlag("part2");
 ===================================================== */
 
 let wizardSectionIndex = 0;
+const adaptiveAssessmentSettings = {
+  const controlLibrary = {
+  "human-review": {
+    title: "Human review before reliance",
+    category: "Human oversight",
+    description: "Outputs should be reviewed by an accountable human before being relied upon.",
+    priority: "required"
+  },
+  "human-override": {
+    title: "Human override and intervention route",
+    category: "Human oversight",
+    description: "Users must be able to stop, override, or reverse AI-supported outcomes where appropriate.",
+    priority: "required"
+  },
+  "customer-transparency": {
+    title: "Customer transparency consideration",
+    category: "Transparency",
+    description: "Assess whether customers or users should be informed that AI is involved.",
+    priority: "recommended"
+  },
+  "fairness-review": {
+    title: "Fairness and customer outcome review",
+    category: "Fairness",
+    description: "Review whether the use case could create unfair treatment, bias, or inconsistent outcomes.",
+    priority: "required"
+  },
+  "privacy-review": {
+    title: "Privacy review",
+    category: "Privacy",
+    description: "Confirm lawful basis, purpose limitation, minimisation, retention, and privacy obligations.",
+    priority: "required"
+  },
+  "dpia": {
+    title: "DPIA screening or DPIA",
+    category: "Privacy",
+    description: "Screen whether a Data Protection Impact Assessment is required.",
+    priority: "recommended"
+  },
+  "supplier-assurance": {
+    title: "Supplier assurance",
+    category: "Third-party risk",
+    description: "Review vendor controls, contractual terms, security posture, data handling, and service dependency.",
+    priority: "required"
+  },
+  "security-review": {
+    title: "Security review",
+    category: "Security",
+    description: "Assess access, data leakage, prompt injection, misuse, and operational security risks.",
+    priority: "required"
+  },
+  "model-validation": {
+    title: "Model validation or output testing",
+    category: "Technical assurance",
+    description: "Test outputs against clear acceptance criteria before operational reliance.",
+    priority: "required"
+  },
+  "monitoring": {
+    title: "Ongoing monitoring",
+    category: "Monitoring",
+    description: "Define how output quality, incidents, drift, complaints, and control effectiveness will be monitored.",
+    priority: "required"
+  },
+  "incident-process": {
+    title: "AI incident process",
+    category: "Monitoring",
+    description: "Define how AI-related errors, harms, complaints, or unexpected behaviours will be escalated.",
+    priority: "recommended"
+  },
+  "documentation": {
+    title: "Use case documentation",
+    category: "Governance",
+    description: "Document purpose, owners, users, data, limitations, controls, approvals, and monitoring.",
+    priority: "required"
+  },
+  "approval-gate": {
+    title: "Governance approval gate",
+    category: "Governance",
+    description: "Confirm the correct approval route before launch or material change.",
+    priority: "required"
+  },
+  "senior-review": {
+    title: "Senior governance review",
+    category: "Governance",
+    description: "Escalate for senior review where risks are critical, autonomous, customer-material, or weakly controlled.",
+    priority: "required"
+  }
+};
+
+const triggerControlMap = {
+  "customer-facing": ["customer-transparency", "human-review", "monitoring"],
+  "external-user-impact": ["customer-transparency", "monitoring"],
+  "automation": ["human-review", "monitoring"],
+  "workflow-action": ["human-override", "monitoring", "incident-process"],
+  "automated-decision": ["human-override", "model-validation", "senior-review", "monitoring"],
+  "human-override-required": ["human-override"],
+  "fairness-review-needed": ["fairness-review"],
+  "vulnerable-customer-impact": ["fairness-review", "senior-review", "human-review"],
+  "consumer-duty": ["fairness-review", "monitoring", "documentation"],
+  "privacy-review-needed": ["privacy-review", "dpia"],
+  "special-category-data": ["privacy-review", "dpia", "senior-review"],
+  "financial-outcome-impact": ["fairness-review", "model-validation", "approval-gate"],
+  "regulated-review-needed": ["approval-gate", "documentation", "monitoring"],
+  "regulated-decisioning": ["senior-review", "model-validation", "human-override", "monitoring"],
+  "limited-explainability": ["human-review", "documentation"],
+  "hallucination-risk": ["human-review", "model-validation", "monitoring"],
+  "high-hallucination-risk": ["model-validation", "human-review", "senior-review"],
+  "weak-oversight": ["human-review", "human-override"],
+  "no-human-oversight": ["human-review", "human-override", "senior-review"],
+  "no-monitoring": ["monitoring", "incident-process"],
+  "not-ready-for-approval": ["documentation", "approval-gate"]
+};
+
+const routeBaselineControls = {
+  lightweight: ["human-review", "documentation"],
+  standard: ["human-review", "documentation", "monitoring"],
+  enhanced: ["human-review", "documentation", "monitoring", "approval-gate", "privacy-review"],
+  critical: ["senior-review", "human-override", "model-validation", "monitoring", "documentation", "approval-gate"]
+};
+  const governanceTriggerLibrary = {
+  "customer-facing": {
+    title: "Customer-facing AI identified",
+    rationale: "Customer-affecting AI systems require enhanced transparency, fairness, and oversight expectations.",
+    implication: "Additional governance review and customer impact controls are recommended.",
+    severity: "enhanced"
+  },
+
+  "external-user-impact": {
+    title: "External user impact identified",
+    rationale: "External users introduce reputational, operational, and conduct considerations.",
+    implication: "Enhanced governance and communication considerations may apply.",
+    severity: "enhanced"
+  },
+
+  "automation": {
+    title: "Automation identified",
+    rationale: "Automated actions increase operational and accountability risk.",
+    implication: "Monitoring and human oversight expectations increase.",
+    severity: "enhanced"
+  },
+
+  "workflow-action": {
+    title: "Workflow-triggering AI identified",
+    rationale: "AI systems capable of triggering workflows require stronger controls and traceability.",
+    implication: "Operational governance and intervention capability should be assessed.",
+    severity: "enhanced"
+  },
+
+  "automated-decision": {
+    title: "Automated decision-making identified",
+    rationale: "Automated decisions may materially affect customers, colleagues, or regulated outcomes.",
+    implication: "Senior governance review and strong oversight controls are required.",
+    severity: "critical"
+  },
+
+  "human-override-required": {
+    title: "Human override requirement identified",
+    rationale: "Where AI materially affects outcomes, humans should be able to intervene or reverse actions.",
+    implication: "Override capability and accountability controls should be evidenced.",
+    severity: "critical"
+  },
+
+  "fairness-review-needed": {
+    title: "Fairness review recommended",
+    rationale: "The use case may affect customer treatment, prioritisation, or protected groups.",
+    implication: "Fairness and challenge processes should be considered.",
+    severity: "enhanced"
+  },
+
+  "vulnerable-customer-impact": {
+    title: "Vulnerable customer impact identified",
+    rationale: "Use cases affecting vulnerable customers require enhanced scrutiny and governance safeguards.",
+    implication: "Enhanced oversight and governance approval are expected.",
+    severity: "critical"
+  },
+
+  "consumer-duty": {
+    title: "Consumer Duty relevance identified",
+    rationale: "The use case may influence customer outcomes or treatment.",
+    implication: "Customer fairness and outcome monitoring should be considered.",
+    severity: "enhanced"
+  },
+
+  "privacy-review-needed": {
+    title: "Privacy review recommended",
+    rationale: "Personal or sensitive data processing increases privacy obligations.",
+    implication: "Privacy assessment or DPIA review may be required.",
+    severity: "enhanced"
+  },
+
+  "special-category-data": {
+    title: "Special category data identified",
+    rationale: "Sensitive personal data creates heightened privacy and governance obligations.",
+    implication: "Enhanced review and formal controls are required.",
+    severity: "critical"
+  },
+
+  "financial-outcome-impact": {
+    title: "Financial outcome influence identified",
+    rationale: "The use case may influence pricing, claims, affordability, or customer financial outcomes.",
+    implication: "Regulatory and governance scrutiny increase significantly.",
+    severity: "enhanced"
+  },
+
+  "regulated-review-needed": {
+    title: "Regulatory review recommended",
+    rationale: "The use case interacts with regulated financial services processes or outcomes.",
+    implication: "Cross-functional governance review should be considered.",
+    severity: "enhanced"
+  },
+
+  "regulated-decisioning": {
+    title: "Regulated decision-making identified",
+    rationale: "The use case influences or automates regulated decisions.",
+    implication: "Senior governance and model validation expectations apply.",
+    severity: "critical"
+  },
+
+  "limited-explainability": {
+    title: "Limited explainability identified",
+    rationale: "Low explainability reduces challengeability and transparency.",
+    implication: "Additional oversight and governance review are recommended.",
+    severity: "enhanced"
+  },
+
+  "hallucination-risk": {
+    title: "Hallucination risk identified",
+    rationale: "Generated outputs may contain fabricated or misleading information.",
+    implication: "Output review and monitoring controls should be strengthened.",
+    severity: "enhanced"
+  },
+
+  "high-hallucination-risk": {
+    title: "High hallucination risk identified",
+    rationale: "Unreliable generated outputs may create operational, customer, or regulatory harm.",
+    implication: "Validation and strong human review are required.",
+    severity: "critical"
+  },
+
+  "weak-oversight": {
+    title: "Weak human oversight identified",
+    rationale: "Limited human challenge capability increases operational and accountability risk.",
+    implication: "Oversight controls should be strengthened before deployment.",
+    severity: "enhanced"
+  },
+
+  "no-human-oversight": {
+    title: "No meaningful human oversight identified",
+    rationale: "Lack of oversight significantly increases governance and accountability risk.",
+    implication: "Senior review and strong intervention controls are required.",
+    severity: "critical"
+  },
+
+  "no-monitoring": {
+    title: "No monitoring identified",
+    rationale: "Without monitoring, incidents, drift, and harmful outputs may go undetected.",
+    implication: "Monitoring controls should be implemented before deployment.",
+    severity: "critical"
+  },
+
+  "not-ready-for-approval": {
+    title: "Governance readiness concern identified",
+    rationale: "The use case lacks sufficient governance readiness indicators.",
+    implication: "Deployment should not proceed without remediation.",
+    severity: "critical"
+  }
+};
+  enabled: true,
+  alwaysShowSections: ["context", "governance"],
+  alwaysShowQuestionIds: [
+    "context_purpose",
+    "context_users",
+    "context_decision_role",
+    "context_supplier",
+    "model_human_oversight",
+    "governance_owner",
+    "governance_documentation",
+    "governance_approval"
+  ]
+};
+
+function getVisibleAssessmentSections(assessment) {
+  if (!adaptiveAssessmentSettings.enabled) return assessmentSections;
+
+  const routing = calculateGovernanceRouting(assessment || {});
+  const routeId = routing.routeId || "lightweight";
+
+  return assessmentSections.filter(section => {
+    if (adaptiveAssessmentSettings.alwaysShowSections.includes(section.id)) return true;
+    if (!section.routeRelevance || !section.routeRelevance.length) return true;
+
+    return section.routeRelevance.includes(routeId);
+  });
+}
+
+function isQuestionVisible(question, assessment) {
+  if (!adaptiveAssessmentSettings.enabled) return true;
+  if (adaptiveAssessmentSettings.alwaysShowQuestionIds.includes(question.id)) return true;
+
+  const routing = calculateGovernanceRouting(assessment || {});
+  const routeId = routing.routeId || "lightweight";
+
+  if (!question.requiredForRoutes || !question.requiredForRoutes.length) return true;
+
+  return question.requiredForRoutes.includes(routeId);
+}
+
+function getVisibleQuestionsForSection(assessment, sectionId) {
+  return assessmentQuestions.filter(question => {
+    return question.sectionId === sectionId && isQuestionVisible(question, assessment);
+  });
+}
+
+function getVisibleAssessmentQuestions(assessment) {
+  return assessmentQuestions.filter(question => isQuestionVisible(question, assessment));
+}
+
+function clampWizardSectionIndex(assessment) {
+  const visibleSections = getVisibleAssessmentSections(assessment);
+
+  if (!visibleSections.length) {
+    wizardSectionIndex = 0;
+    return;
+  }
+
+  wizardSectionIndex = Math.max(0, Math.min(wizardSectionIndex, visibleSections.length - 1));
+}
 
 function setWizardMode(mode) {
   state.wizardMode = mode;
@@ -1703,7 +3024,10 @@ function setWizardMode(mode) {
 }
 
 function getWizardSection() {
-  return assessmentSections[wizardSectionIndex] || assessmentSections[0] || null;
+  const assessment = getSelectedAssessment();
+  const visibleSections = getVisibleAssessmentSections(assessment);
+
+  return visibleSections[wizardSectionIndex] || visibleSections[0] || assessmentSections[0] || null;
 }
 
 function setWizardSection(index) {
@@ -1714,10 +3038,12 @@ function setWizardSection(index) {
   render();
 }
 
-function completeCurrentWizardSection() {
-  const isLast = wizardSectionIndex === assessmentSections.length - 1;
+function setWizardSection(index) {
+  const assessment = getSelectedAssessment();
+const visibleSections = getVisibleAssessmentSections(assessment);
+const isLast = wizardSectionIndex === visibleSections.length - 1;
 
-  if (isLast) {
+if (isLast) {
   state.wizardMode = "review";
   state.activeAssessmentTab = "wizard";
   state.activeRoute = "assessments";
@@ -1726,20 +3052,22 @@ function completeCurrentWizardSection() {
   return;
 }
 
-  wizardSectionIndex += 1;
-  state.wizardMode = "intro";
-  state.activeRoute = "assessments";
-  state.activeAssessmentTab = "wizard";
-  saveState();
-  render();
+wizardSectionIndex += 1;
+
+state.wizardMode = "intro";
+state.activeRoute = "assessments";
+state.activeAssessmentTab = "wizard";
+
+saveState();
+render();
 }
 
-function getQuestionsForSection(sectionId) {
-  return assessmentQuestions.filter(question => question.sectionId === sectionId);
+function getQuestionsForSection(sectionId, assessment = getSelectedAssessment()) {
+  return getVisibleQuestionsForSection(assessment, sectionId);
 }
 
 function getAnsweredCount(assessment) {
-  return assessmentQuestions.filter(question => {
+  return getVisibleAssessmentQuestions(assessment).filter(question => {
     const value = assessment.answers?.[question.id];
     return value !== undefined && value !== null && value !== "";
   }).length;
@@ -1758,7 +3086,7 @@ function getSectionProgress(assessment, sectionId) {
 }
 
 function getMissingAnswers(assessment) {
-  return assessmentQuestions.filter(question => {
+  return getVisibleAssessmentQuestions(assessment).filter(question => {
     const value = assessment.answers?.[question.id];
     return value === undefined || value === null || value === "";
   });
@@ -1766,10 +3094,22 @@ function getMissingAnswers(assessment) {
 
 function renderAssessmentReview(assessment) {
   const missing = getMissingAnswers(assessment);
-  const answered = assessmentQuestions.length - missing.length;
-  const progress = assessmentQuestions.length
-    ? Math.round((answered / assessmentQuestions.length) * 100)
-    : 0;
+  const visibleQuestions = getVisibleAssessmentQuestions(assessment);
+const answered = visibleQuestions.length - missing.length;
+const progress = visibleQuestions.length
+  ? Math.round((answered / visibleQuestions.length) * 100)
+  : 0;
+
+const visibleSections = getVisibleAssessmentSections(assessment);
+  const routedAssessment = recalculateAssessment(assessment);
+  const route = routedAssessment.governanceRoute || getGovernanceRouteById("lightweight");
+  const routeClass = route.id === "critical"
+    ? "red"
+    : route.id === "enhanced"
+      ? "amber"
+      : route.id === "standard"
+        ? ""
+        : "green";
 
   return `
     <div class="card hero-card">
@@ -1793,8 +3133,10 @@ function renderAssessmentReview(assessment) {
       <div class="review-status-strip">
         <span class="trust-pill">Answered: ${answered}</span>
         <span class="trust-pill">Missing: ${missing.length}</span>
-        <span class="trust-pill">Sections: ${assessmentSections.length}</span>
-        <span class="trust-pill">Draft risk: ${escapeHtml(assessment.riskLevel)}</span>
+        <span class="trust-pill">Active sections: ${visibleSections.length}</span>
+                <span class="trust-pill">Draft risk: ${escapeHtml(routedAssessment.riskLevel)}</span>
+        <span class="trust-pill">Governance route: ${escapeHtml(route.label)}</span>
+        <span class="trust-pill">Routing confidence: ${escapeHtml(routedAssessment.routingConfidence || "Not assessed")}</span>
       </div>
     </div>
 
@@ -1832,8 +3174,51 @@ function renderAssessmentReview(assessment) {
         `
     }
 
+    <div class="card">
+      <div class="workspace-title-row">
+        <div>
+          <div class="eyebrow">Adaptive governance route</div>
+          <h2>${escapeHtml(route.label)}</h2>
+          <p class="subtitle">${escapeHtml(route.description)}</p>
+        </div>
+        <span class="pill ${routeClass}">Level ${route.level}</span>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="list">
+        ${infoRow("Approval route", route.approvalLevel)}
+        ${infoRow("Assurance depth", route.assuranceDepth)}
+        ${infoRow("Routing confidence", routedAssessment.routingConfidence || "Not assessed")}
+      </div>
+
+      ${
+        routedAssessment.governanceTriggers?.length
+          ? `
+            <div class="divider"></div>
+            <h2>Key escalation triggers</h2>
+            <div class="list">
+              ${routedAssessment.governanceTriggers.slice(0, 5).map(trigger => `
+                <div class="list-item">
+                  <div>
+                    <div class="item-title">${escapeHtml(trigger.questionLabel)}</div>
+                    <div class="item-meta">${escapeHtml(trigger.answer)} · ${escapeHtml(trigger.id)}</div>
+                  </div>
+                  <span class="pill ${trigger.routeImpact === "critical" ? "red" : trigger.routeImpact === "enhanced" ? "amber" : ""}">
+                    ${escapeHtml(trigger.routeImpact)}
+                  </span>
+                </div>
+              `).join("")}
+            </div>
+          `
+          : `
+            <p class="notice">No material governance escalation triggers have been identified yet.</p>
+          `
+      }
+    </div>
+
     <div class="review-summary-grid">
-      ${assessmentSections.map(section => renderReviewSection(assessment, section)).join("")}
+      ${visibleSections.map(section => renderReviewSection(assessment, section)).join("")}
     </div>
 
     <div class="wizard-footer">
@@ -1897,8 +3282,10 @@ function getSectionTitle(sectionId) {
 }
 
 function editReviewSection(sectionId) {
-  const index = assessmentSections.findIndex(section => section.id === sectionId);
-  wizardSectionIndex = Math.max(0, index);
+  const assessment = getSelectedAssessment();
+const visibleSections = getVisibleAssessmentSections(assessment);
+const index = visibleSections.findIndex(section => section.id === sectionId);
+wizardSectionIndex = Math.max(0, index);
   state.wizardMode = "questions";
   state.activeRoute = "assessments";
   state.activeAssessmentTab = "wizard";
@@ -1950,7 +3337,7 @@ function renderWizardJourneyIntro(assessment) {
         </div>
 
         <div class="journey-map">
-          ${assessmentSections.map((section, index) => {
+          ${getVisibleAssessmentSections(assessment).map((section, index) => {
             const progress = getSectionProgress(assessment, section.id);
             const complete = progress === 100;
             const active = index === wizardSectionIndex;
@@ -2009,13 +3396,24 @@ if (state.wizardMode === "review") {
   return renderAssessmentReview(assessment);
 }
 
-  const section = getWizardSection();
-  const questions = getQuestionsForSection(section.id);
-  const answeredCount = getAnsweredCount(assessment);
-  const totalQuestions = assessmentQuestions.length;
+  clampWizardSectionIndex(assessment);
+
+const section = getWizardSection();
+const questions = getQuestionsForSection(section.id, assessment);
+const answeredCount = getAnsweredCount(assessment);
+const visibleQuestions = getVisibleAssessmentQuestions(assessment);
+const totalQuestions = visibleQuestions.length;
   const progress = totalQuestions ? Math.round((answeredCount / totalQuestions) * 100) : 0;
   const currentSectionProgress = getSectionProgress(assessment, section.id);
-
+  const routedAssessment = recalculateAssessment(assessment);
+  const route = routedAssessment.governanceRoute || getGovernanceRouteById("lightweight");
+  const routeClass = route.id === "critical"
+    ? "red"
+    : route.id === "enhanced"
+      ? "amber"
+      : route.id === "standard"
+        ? ""
+        : "green";
   return `
     <div class="card hero-card">
       <div class="workspace-title-row">
@@ -2026,7 +3424,9 @@ if (state.wizardMode === "review") {
         </div>
 
         <div>
-          <span class="pill ${progress === 100 ? "green" : ""}">${progress}% complete</span>
+                    <span class="pill ${progress === 100 ? "green" : ""}">${progress}% complete</span>
+          <div style="height:6px;"></div>
+          <span class="pill ${routeClass}">${escapeHtml(route.label)}</span>
           <div class="save-status">✓ Saved locally</div>
         </div>
       </div>
@@ -2037,8 +3437,8 @@ if (state.wizardMode === "review") {
         <div class="progress-fill" style="width:${progress}%"></div>
       </div>
 
-      <p class="item-meta" style="margin-top:10px;">
-        ${answeredCount} of ${totalQuestions} questions answered · Current section ${currentSectionProgress}% complete
+            <p class="item-meta" style="margin-top:10px;">
+        ${answeredCount} of ${totalQuestions} questions answered · Current section ${currentSectionProgress}% complete · Routing confidence: ${escapeHtml(routedAssessment.routingConfidence || "Not assessed")}
       </p>
     </div>
 
@@ -2053,10 +3453,13 @@ if (state.wizardMode === "review") {
 
         <div class="divider"></div>
 
-        <div class="notice">
+                      <div class="notice">
           ${renderWizardGuidance(section.id)}
         </div>
-      </div>
+
+        ${renderSectionGovernanceGuidance(section, routedAssessment)}
+
+        ${renderGovernanceRouteMiniCard(routedAssessment)}
 
       <div class="grid">
         <div class="card">
@@ -2081,6 +3484,129 @@ if (state.wizardMode === "review") {
   `;
 }
 
+function getTriggerDefinition(triggerId) {
+  return governanceTriggerLibrary[triggerId] || {
+    title: triggerId.replaceAll("-", " "),
+    rationale: "Additional governance review may be appropriate.",
+    implication: "Further assessment may be required.",
+    severity: "standard"
+  };
+}
+
+function renderGovernanceTriggerExplanation(trigger) {
+  const definition = getTriggerDefinition(trigger.id);
+
+  const severityClass =
+    definition.severity === "critical"
+      ? "red"
+      : definition.severity === "enhanced"
+        ? "amber"
+        : "";
+
+  return `
+    <div class="card">
+      <div class="workspace-title-row">
+        <div>
+          <div class="eyebrow">Governance trigger</div>
+          <h2>${escapeHtml(definition.title)}</h2>
+          <p class="subtitle">${escapeHtml(definition.rationale)}</p>
+        </div>
+
+        <span class="pill ${severityClass}">
+          ${escapeHtml(definition.severity)}
+        </span>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="list">
+        ${infoRow("Trigger source", trigger.questionLabel)}
+        ${infoRow("Selected answer", trigger.answer)}
+        ${infoRow("Governance implication", definition.implication)}
+      </div>
+    </div>
+  `;
+}
+
+function renderSectionGovernanceGuidance(section, assessment) {
+  const triggers = (assessment.governanceTriggers || []).filter(trigger => {
+    return trigger.sectionId === section.id;
+  });
+
+  if (!triggers.length) {
+    return `
+      <div class="notice">
+        This section helps assess governance expectations associated with this use case.
+      </div>
+    `;
+  }
+
+  return `
+    <div class="stack">
+      ${triggers.slice(-2).reverse().map(trigger => {
+        return renderGovernanceTriggerExplanation(trigger);
+      }).join("")}
+    </div>
+  `;
+}
+
+function renderGovernanceRouteMiniCard(assessment) {
+  const route = assessment.governanceRoute || getGovernanceRouteById("lightweight");
+
+  const routeClass = route.id === "critical"
+    ? "red"
+    : route.id === "enhanced"
+      ? "amber"
+      : route.id === "standard"
+        ? ""
+        : "green";
+
+  const triggers = assessment.governanceTriggers || [];
+
+  return `
+    <div class="card">
+      <div class="workspace-title-row">
+        <div>
+          <div class="eyebrow">Live governance route</div>
+          <h2>${escapeHtml(route.label)}</h2>
+          <p class="subtitle">${escapeHtml(route.description)}</p>
+        </div>
+        <span class="pill ${routeClass}">Level ${route.level}</span>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="list">
+        ${infoRow("Approval route", route.approvalLevel)}
+        ${infoRow("Confidence", assessment.routingConfidence || "Not assessed")}
+      </div>
+
+      ${
+        triggers.length
+          ? `
+            <div class="divider"></div>
+            <div class="item-title">Latest governance triggers</div>
+            <div style="height:8px;"></div>
+            <div class="list">
+              ${triggers.slice(-3).reverse().map(trigger => `
+                <div class="list-item">
+                  <div>
+                    <div class="item-title">${escapeHtml(trigger.id)}</div>
+                    <div class="item-meta">${escapeHtml(trigger.answer)}</div>
+                  </div>
+                  <span class="pill ${trigger.routeImpact === "critical" ? "red" : trigger.routeImpact === "enhanced" ? "amber" : ""}">
+                    ${escapeHtml(trigger.routeImpact)}
+                  </span>
+                </div>
+              `).join("")}
+            </div>
+          `
+          : `<p class="notice">No escalation triggers yet. Low-risk answers will keep this route lightweight.</p>`
+      }
+    </div>
+  `;
+}
+
 function renderQuestionInput(assessment, question) {
   const value = assessment.answers?.[question.id] ?? "";
   const answered = value !== undefined && value !== null && value !== "";
@@ -2088,6 +3614,16 @@ function renderQuestionInput(assessment, question) {
   const status = answered
     ? `<div class="question-status">✓ Answer saved</div>`
     : `<div class="item-meta">Not answered yet</div>`;
+
+${
+  question.isPrimaryTrigger
+    ? `
+      <div class="notice" style="margin-top:10px;">
+        This is a primary governance routing question. Your answer may increase or reduce governance expectations.
+      </div>
+    `
+    : ""
+}
 
   if (question.type === "textarea") {
     return `
@@ -2165,7 +3701,7 @@ function renderQuestionInput(assessment, question) {
 function renderWizardStepper(assessment) {
   return `
     <div class="wizard-stepper">
-      ${assessmentSections.map((section, index) => {
+      ${getVisibleAssessmentSections(assessment).map((section, index) => {
         const progress = getSectionProgress(assessment, section.id);
         const isActive = index === wizardSectionIndex;
         const isComplete = progress === 100;
@@ -2210,10 +3746,10 @@ function renderWizardGuidance(sectionId) {
 
 function renderWizardFooter(assessment) {
   const progress = assessment.progress || 0;
-  const isFirst = wizardSectionIndex === 0;
-  const isLast = wizardSectionIndex === assessmentSections.length - 1;
-  const nextSection = assessmentSections[wizardSectionIndex + 1];
-
+  const visibleSections = getVisibleAssessmentSections(assessment);
+const isFirst = wizardSectionIndex === 0;
+const isLast = wizardSectionIndex === visibleSections.length - 1;
+const nextSection = visibleSections[wizardSectionIndex + 1];
   return `
     <div class="wizard-footer">
       <div class="workspace-title-row">
@@ -2475,7 +4011,187 @@ function getMaxQuestionScore(question) {
 
   return 0;
 }
+const governanceRouteOrder = {
+  lightweight: 1,
+  standard: 2,
+  enhanced: 3,
+  critical: 4
+};
 
+function getGovernanceRouteById(routeId) {
+  return governanceRoutes.find(route => route.id === routeId) || governanceRoutes[0];
+}
+
+function getSelectedQuestionOption(question, answerValue) {
+  if (!question || question.type !== "select") return null;
+
+  return (question.options || []).find(option => String(option.value) === String(answerValue)) || null;
+}
+
+function getHighestGovernanceRoute(routeIds = []) {
+  if (!routeIds.length) return "lightweight";
+
+  return routeIds.reduce((highest, current) => {
+    const highestLevel = governanceRouteOrder[highest] || 1;
+    const currentLevel = governanceRouteOrder[current] || 1;
+
+    return currentLevel > highestLevel ? current : highest;
+  }, "lightweight");
+}
+
+function uniqueValues(values) {
+  return [...new Set(values.filter(Boolean))];
+}
+
+function getControlById(controlId) {
+  return controlLibrary[controlId] || null;
+}
+
+function calculateControlRecommendations(routing) {
+  const routeId = routing.routeId || "lightweight";
+  const triggerIds = (routing.triggers || []).map(trigger => trigger.id);
+
+  const baselineControlIds = routeBaselineControls[routeId] || [];
+  const triggeredControlIds = triggerIds.flatMap(triggerId => triggerControlMap[triggerId] || []);
+
+  const allControlIds = uniqueValues([
+    ...baselineControlIds,
+    ...triggeredControlIds
+  ]);
+
+  const controls = allControlIds
+    .map(controlId => {
+      const control = getControlById(controlId);
+      if (!control) return null;
+
+      const triggeredBy = (routing.triggers || [])
+        .filter(trigger => (triggerControlMap[trigger.id] || []).includes(controlId))
+        .map(trigger => trigger.id);
+
+      return {
+        id: controlId,
+        ...control,
+        triggeredBy
+      };
+    })
+    .filter(Boolean);
+
+  const required = controls.filter(control => control.priority === "required");
+  const recommended = controls.filter(control => control.priority === "recommended");
+  const optional = controls.filter(control => control.priority === "optional");
+
+  return {
+    all: controls,
+    required,
+    recommended,
+    optional
+  };
+}
+
+function calculateGovernanceRouting(assessment) {
+  const answers = assessment.answers || {};
+
+  const triggeredRoutes = [];
+  const triggers = [];
+  const primarySignals = [];
+  const domainScores = {};
+  const unansweredPrimaryQuestions = [];
+
+  assessmentQuestions.forEach(question => {
+    const answerValue = answers[question.id];
+    const answered = answerValue !== undefined && answerValue !== null && answerValue !== "";
+
+    if (question.isPrimaryTrigger && !answered) {
+      unansweredPrimaryQuestions.push(question.id);
+    }
+
+    if (!answered) return;
+
+    const selectedOption = getSelectedQuestionOption(question, answerValue);
+    const questionScore = getQuestionScore(question, answerValue);
+    const domainId = question.domainId || "general";
+
+    if (!domainScores[domainId]) {
+      domainScores[domainId] = {
+        domainId,
+        rawScore: 0,
+        maxScore: 0,
+        questions: 0
+      };
+    }
+
+    domainScores[domainId].rawScore += questionScore;
+    domainScores[domainId].maxScore += getMaxQuestionScore(question);
+    domainScores[domainId].questions += 1;
+
+    if (selectedOption?.routeImpact) {
+      triggeredRoutes.push(selectedOption.routeImpact);
+    }
+
+    if (selectedOption?.triggers?.length) {
+      selectedOption.triggers.forEach(triggerId => {
+        triggers.push({
+          id: triggerId,
+          questionId: question.id,
+          questionLabel: question.label,
+          answer: selectedOption.label,
+          domainId: question.domainId,
+          sectionId: question.sectionId,
+          routeImpact: selectedOption.routeImpact || "standard",
+          score: Number(selectedOption.score || 0),
+          isPrimaryTrigger: Boolean(question.isPrimaryTrigger)
+        });
+      });
+    }
+
+    if (question.isPrimaryTrigger) {
+      primarySignals.push({
+        questionId: question.id,
+        questionLabel: question.label,
+        domainId: question.domainId,
+        answer: selectedOption?.label || getAnswerLabel(question, answerValue),
+        routeImpact: selectedOption?.routeImpact || "standard",
+        score: questionScore
+      });
+    }
+  });
+
+  const routeId = getHighestGovernanceRoute(triggeredRoutes);
+  const route = getGovernanceRouteById(routeId);
+
+  const domainProfile = Object.values(domainScores).map(domain => ({
+    ...domain,
+    percentage: domain.maxScore ? Math.round((domain.rawScore / domain.maxScore) * 100) : 0
+  }));
+
+  const criticalTriggers = triggers.filter(trigger => trigger.routeImpact === "critical");
+  const enhancedTriggers = triggers.filter(trigger => trigger.routeImpact === "enhanced");
+
+  let routingConfidence = "High";
+
+  if (unansweredPrimaryQuestions.length >= 3) {
+    routingConfidence = "Low";
+  } else if (unansweredPrimaryQuestions.length > 0) {
+    routingConfidence = "Medium";
+  }
+
+  return {
+    routeId,
+    route,
+    routeLabel: route.label,
+    routeLevel: route.level,
+    routeDescription: route.description,
+    approvalLevel: route.approvalLevel,
+    assuranceDepth: route.assuranceDepth,
+    triggers,
+    primarySignals,
+    domainProfile,
+    criticalTriggers,
+    enhancedTriggers,
+    unansweredPrimaryQuestions,
+    routingConfidence
+  };
+}
 function calculateAssessmentScore(assessment) {
   if (!assessmentQuestions.length) {
     return {
@@ -2568,9 +4284,16 @@ function getAnswerLabel(question, answerValue) {
 }
 
 function getAssessmentStatus(assessment, progress, weightedScore) {
+  const routeId = assessment.governanceRouteId || "lightweight";
+
   if (progress < 100) return "Draft";
+
+  if (routeId === "critical") return "Senior review required";
+  if (routeId === "enhanced") return "Enhanced review required";
+
   if (weightedScore >= 55) return "Enhanced review required";
   if (weightedScore >= 25) return "Review required";
+
   return "Complete";
 }
 
@@ -2580,10 +4303,17 @@ updateBuildFlag("part4");
    END PART 4 — SCORING ENGINE + RISK LOGIC
 ===================================================== */
     function recalculateAssessment(assessment) {
-  const answered = Object.values(assessment.answers || {}).filter(value => value !== "" && value !== null && value !== undefined).length;
-  const total = assessmentQuestions.length || 0;
+  const visibleQuestions = getVisibleAssessmentQuestions(assessment);
+const answered = visibleQuestions.filter(question => {
+  const value = assessment.answers?.[question.id];
+  return value !== "" && value !== null && value !== undefined;
+}).length;
+
+const total = visibleQuestions.length || 0;
   const progress = total ? Math.round((answered / total) * 100) : 0;
+
   const scoring = calculateAssessmentScore(assessment);
+  const governanceRouting = calculateGovernanceRouting(assessment);
 
   return {
     ...assessment,
@@ -2595,6 +4325,17 @@ updateBuildFlag("part4");
     riskBand: scoring.riskBand,
     sectionScores: scoring.sectionScores,
     riskDrivers: scoring.drivers,
+
+    governanceRouteId: governanceRouting.routeId,
+    governanceRoute: governanceRouting.route,
+    governanceRouteLabel: governanceRouting.routeLabel,
+    governanceRouteLevel: governanceRouting.routeLevel,
+    governanceTriggers: governanceRouting.triggers,
+    primaryGovernanceSignals: governanceRouting.primarySignals,
+    governanceDomainProfile: governanceRouting.domainProfile,
+    routingConfidence: governanceRouting.routingConfidence,
+    unansweredPrimaryQuestions: governanceRouting.unansweredPrimaryQuestions,
+
     status: getAssessmentStatus(assessment, progress, scoring.weightedScore),
     updatedAt: nowIso()
   };
@@ -2899,13 +4640,23 @@ function renderResults() {
   const drivers = getRiskDrivers(assessment);
   const band = assessment.riskBand || riskBands?.find(item => item.label === assessment.riskLevel);
   const decision = getGovernanceDecision(assessment);
-
+  const routedAssessment = recalculateAssessment(assessment);
+  const route = routedAssessment.governanceRoute || getGovernanceRouteById("lightweight");
+  const routeClass = route.id === "critical"
+    ? "red"
+    : route.id === "enhanced"
+      ? "amber"
+      : route.id === "standard"
+        ? ""
+        : "green";
   return `
     <div class="risk-hero">
       <div class="workspace-title-row">
         <div>
-          <div class="eyebrow">Assessment verdict</div>
+                    <div class="eyebrow">Assessment verdict</div>
           <h2 class="workspace-title">${escapeHtml(assessment.riskLevel)}</h2>
+          <div style="height:8px;"></div>
+          <span class="pill ${routeClass}">${escapeHtml(route.label)}</span>
           <p class="subtitle">
             ${escapeHtml(decision.summary)}
           </p>
@@ -2934,12 +4685,14 @@ function renderResults() {
         <p class="executive-summary">${escapeHtml(generateExecutiveSummary(assessment, drivers, recommendations))}</p>
       </div>
 
-      <div class="card">
+            <div class="card">
         <h2>Governance decision</h2>
         <div class="list">
           ${infoRow("Recommended decision", decision.decision)}
-          ${infoRow("Review route", decision.reviewRoute)}
-          ${infoRow("Approval position", decision.approval)}
+          ${infoRow("Adaptive route", route.label)}
+          ${infoRow("Route approval", route.approvalLevel)}
+          ${infoRow("Assurance depth", route.assuranceDepth)}
+          ${infoRow("Routing confidence", routedAssessment.routingConfidence || "Not assessed")}
           ${infoRow("Monitoring expectation", decision.monitoring)}
         </div>
       </div>
@@ -2955,6 +4708,63 @@ function renderResults() {
         <h2>Priority controls</h2>
         ${renderPriorityRecommendations(recommendations)}
       </div>
+    </div>
+    
+        <div class="card">
+      <div class="workspace-title-row">
+        <div>
+          <div class="eyebrow">Governance trigger explanation</div>
+          <h2>Why this route was selected</h2>
+          <p class="subtitle">
+            This explains the main signals that escalated the assessment route. It supports transparent, defensible governance rather than black-box scoring.
+          </p>
+        </div>
+        <span class="pill ${routeClass}">${escapeHtml(route.label)}</span>
+      </div>
+
+      <div class="divider"></div>
+
+      ${
+        routedAssessment.governanceTriggers?.length
+          ? `
+            <div class="list">
+              ${routedAssessment.governanceTriggers.slice(0, 6).map(trigger => {
+  const definition = getTriggerDefinition(trigger.id);
+
+  const severityClass =
+    definition.severity === "critical"
+      ? "red"
+      : definition.severity === "enhanced"
+        ? "amber"
+        : "";
+
+  return `
+    <div class="list-item">
+      <div>
+        <div class="item-title">${escapeHtml(definition.title)}</div>
+
+        <div class="item-meta">
+          ${escapeHtml(definition.rationale)}
+        </div>
+
+        <div class="item-meta" style="margin-top:6px;">
+          Triggered by:
+          <strong>${escapeHtml(trigger.answer)}</strong>
+        </div>
+      </div>
+
+      <span class="pill ${severityClass}">
+        ${escapeHtml(definition.severity)}
+      </span>
+    </div>
+  `;
+}).join("")}
+            </div>
+          `
+          : `
+            <p class="notice">No material escalation triggers were identified from the current answers.</p>
+          `
+      }
     </div>
 
     <div class="grid two">
