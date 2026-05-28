@@ -1,3 +1,22 @@
+function recalculateAssessment(assessment) {
+  const scoreSummary = calculateAssessmentScore(assessment);
+  const routing = calculateGovernanceRouting(assessment);
+  const controls = calculateControlRecommendations(routing);
+
+  const progress = scoreSummary.progress || 0;
+  const weightedScore = scoreSummary.weightedScore || 0;
+
+  return {
+    ...assessment,
+    progress,
+    weightedScore,
+    sectionScores: scoreSummary.sectionScores || [],
+    routing,
+    controls,
+    status: getAssessmentStatus(assessment, progress, weightedScore),
+    updatedAt: assessment.updatedAt || nowIso()
+  };
+}
 const STORAGE_KEY = "responsible-ai-assessment-workbench-v1";
 
 const defaultState = {
